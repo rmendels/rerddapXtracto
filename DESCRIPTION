@@ -1,0 +1,25 @@
+Package: rerddapXtracto
+Type: Package
+Title: Extracts Environmental Data from ERD's ERDDAP Web Service
+Version: 0.1.0
+Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
+Description: The xtractomatic package contains three functions that access
+    environmental data from ERD's ERDDAP service. The rxtracto function extracts
+    data along a trajectory for a given "radius" around the point. The
+    rxtracto_3D function extracts data in a box. The rxtractogon function
+    extracts data in a polygon. There are also two helper functions to obtain
+    information about available data.
+    
+    These functions differ from those in the xtractomatic package in that they
+    use the `rerddap` package to access gridded data on any ERDDAP server, but
+    they require the user to provide initial information about the data
+    to be extracted.
+URL: https://github.com/rmendels/rerddapXtracto
+BugReports: https://github.com/rmendels/rerddapXtracto/issues
+License: CC0 + file LICENSE
+LazyData: TRUE
+Imports:
+    rerddap,
+    ncdf4,
+    sp
+RoxygenNote: 5.0.1
