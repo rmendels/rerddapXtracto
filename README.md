@@ -3,6 +3,8 @@ rerddapXtracto - R package for accessing environmental data using rerddap  (** F
 
 `rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude and time points; in a 3D bounding box; or within a polygon (through time).  
 
+These functions differ from those in the xtractomatic package in that they use the `rerddap` package to access gridded data on any ERDDAP server, but they require the user to provide initial information about the data to be extracted.
+
 
 There are three main data extraction functions in the `xtractomatic` package: 
 
