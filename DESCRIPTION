@@ -9,7 +9,6 @@ Description: The xtractomatic package contains three functions that access
     rxtracto_3D function extracts data in a box. The rxtractogon function
     extracts data in a polygon. There are also two helper functions to obtain
     information about available data.
-    
     These functions differ from those in the xtractomatic package in that they
     use the `rerddap` package to access gridded data on any ERDDAP server, but
     they require the user to provide initial information about the data
