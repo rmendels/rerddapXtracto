@@ -17,6 +17,7 @@
 #' @param zName - character string with name of the zcoord in the ERDDAP dataset (default "altitude")
 #' @param tName - character string with name of the tcoord in the ERDDAP dataset (default "time")
 #' @param urlbase - base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+#' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @return structure with data and dimensions:
 #' \itemize{
 #'   \item extract$data - the data array dimensioned (lon,lat,time)
@@ -64,7 +65,7 @@
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xName=xName, yName=yName, zName=zName)
 #'
 
-rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap') {
+rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
 
   #  check that a valid rerddap info structure is being passed
   if (!(is(dataInfo, "info"))) {
@@ -201,6 +202,10 @@ if (tName %in% names(dataCoordList)) {
     erddapTcoord[1] <- isotime[which.min(abs(udtime- tcoordLim[1]))]
     erddapTcoord[2] <- isotime[which.min(abs(udtime - tcoordLim[2]))]
 }
+myCallOpts <- ""
+if(verbose){
+  myCallOpts <- "callopts = httr::verbose()"
+}
 griddapCmd <- 'rerddap::griddap(dataInfo,'
 if(!is.null(xcoord)){
   griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapXcoord[1],',',erddapXcoord[2],'),')
@@ -214,7 +219,7 @@ if(!is.null(zcoord)){
 if(!is.null(tcoord)){
   griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTcoord[1],'","',erddapTcoord[2],'"),')
 }
-griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE)')
+griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE',myCallOpts,')')
 griddapExtract <- eval(parse(text = griddapCmd))
 
 datafileID <- ncdf4::nc_open(griddapExtract$summary$filename)

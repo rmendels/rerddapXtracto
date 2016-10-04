@@ -12,6 +12,12 @@
 #'   degrees N; -90 to 90)of polygon
 #' @param tcoord - 2-array of minimum and maximum times as 'YYYY-MM-DD'
 #' @param zcoord -  a real number with the z-coordinate(usually altitude or depth)
+#' @param xName - character string with name of the xcoord in the ERDDAP dataset (default "longitude")
+#' @param yName - character string with name of the ycoord in the ERDDAP dataset (default "latitude")
+#' @param zName - character string with name of the zcoord in the ERDDAP dataset (default "altitude")
+#' @param tName - character string with name of the tcoord in the ERDDAP dataset (default "time")
+#' @param urlbase - base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+#' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @return structure with data and dimensions
 #' \itemize{
 #'   \item extract$data - the masked data array dimensioned (lon,lat,time)
@@ -44,7 +50,7 @@
 
 
 
-rxtractogon <- function(dataInfo, parameter, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap') {
+rxtractogon <- function(dataInfo, parameter, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
 
 
   #  check that a valid rerddap info structure is being passed
@@ -75,7 +81,7 @@ xcoord1 <- c(min(xcoord), max(xcoord))
 ycoord1 <- c(min(ycoord), max(ycoord))
 
 # call xtracto to get data
-extract <-  xtracto_3D(dataInfo, parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase)
+extract <-  xtracto_3D(dataInfo, parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
 #	extract <- xtracto_3D(xcoord1,ycoord1,tpos1,dtype, verbose)
 str(extract)
 if(length(dim(extract[[1]]))==2){

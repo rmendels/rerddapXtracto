@@ -18,6 +18,7 @@
 #' @param zName - character string with name of the zcoord in the ERDDAP dataset (default "altitude")
 #' @param tName - character string with name of the tcoord in the ERDDAP dataset (default "time")
 #' @param urlbase - base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+#' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @return A dataframe containing:
 #' \itemize{
 #'  \item column 1 = mean of data within search radius
@@ -42,7 +43,7 @@
 #' zcoord <- 0.
 #' xlen <- 0.5
 #' ylen <- 0.5
-#' extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen)
+#' extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen, verbose=FALSE)
 #' 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
@@ -66,7 +67,7 @@
 
 
 
-rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xlen=0., ylen=0., xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap') {
+rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xlen=0., ylen=0., xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
 
   #  check that a valid rerddap info structure is being passed
 if (!(is(dataInfo, "info"))) {
@@ -215,6 +216,10 @@ if("latitude" %in% names(dimargs)){
       }
 
       extract <- list()
+      myCallOpts <- ""
+      if(verbose){
+        myCallOpts <- "callopts = httr::verbose()"
+      }
       griddapCmd <- 'rerddap::griddap(dataInfo,'
       if(!is.null(xcoord)){
         griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapX[1],',',erddapX[2],'),')
@@ -229,7 +234,7 @@ if("latitude" %in% names(dimargs)){
         griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTimes[1],'","',erddapTimes[2],'"),')
       }
 
-      griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE)')
+      griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE',myCallOpts,')')
       extract <- eval(parse(text = griddapCmd))
 
     if (length(extract) == 0) {
