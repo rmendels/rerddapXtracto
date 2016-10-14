@@ -81,7 +81,7 @@ xcoord1 <- c(min(xcoord), max(xcoord))
 ycoord1 <- c(min(ycoord), max(ycoord))
 
 # call xtracto to get data
-extract <-  xtracto_3D(dataInfo, parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
+extract <-  rxtracto_3D(dataInfo, parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
 #	extract <- xtracto_3D(xcoord1,ycoord1,tpos1,dtype, verbose)
 str(extract)
 if(length(dim(extract[[1]]))==2){

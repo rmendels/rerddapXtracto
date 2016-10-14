@@ -17,7 +17,7 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
   coordList <- list()
   for (i in 1:length(dataCoords)) {
     myURL <- paste0(urlbase, '/griddap/', datasetID, '.csv?', dataCoords[i], '[0:1:last]')
-    coordVals <- read.csv(myURL, skip=2, header=FALSE, stringsAsFactors=FALSE)
+    coordVals <- utils::read.csv(myURL, skip=2, header=FALSE, stringsAsFactors=FALSE)
     coordVals <- coordVals[, 1]
     coordList[[i]] <- coordVals
   }
