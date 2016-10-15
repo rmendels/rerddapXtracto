@@ -257,10 +257,11 @@ if (yName == 'latitude'){
       dataYLen <- length(dataY)
 #      param <- param[, rev(seq_len(dataYLen)) ,, drop = FALSE]
       paramLen <- length(names(datafileID$dim))
-      latLoc <- which(names(datafileID$dim) == 'latitude')
-      myComma1 <- paste(rep(',', times = (latLoc-1)), 'rev(seq_len(dataYLen))', sep="", collapse="")
-      myComma2 <- paste(rep(',', times = (paramLen-latLoc+1)),sep="", collapse="")
-      paramCommand <- paste0('param <- param[', myComma1, myComma2, 'drop = FALSE]')
+      latLoc <- which(rev(names(datafileID$dim)) == 'latitude')
+      myComma1 <- paste(rep(',', times = (latLoc-1)),  sep="", collapse="")
+      myComma2 <- paste( 'rev(seq_len(dataYLen))', sep="", collapse="")
+      myComma3 <- paste(rep(',', times = (paramLen-latLoc+1)),sep="", collapse="")
+      paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
       paramReverse <- eval(parse(text = paramCommand))
     }
   }
