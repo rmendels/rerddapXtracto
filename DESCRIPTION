@@ -20,5 +20,6 @@ LazyData: TRUE
 Imports:
     rerddap,
     ncdf4,
-    sp
+    sp,
+    abind
 RoxygenNote: 5.0.1
