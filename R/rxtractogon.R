@@ -33,16 +33,16 @@
 #' tcoord <- c("2016-06-15", "2016-06-15")
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
-#' sanctchl <- rxtractogon (dataInfo, parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
+#' sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
 #' dataInfo <- rerddap::info('etopo180')
 #' parameter = 'altitude'
 #' xName <- 'longitude'
 #' yName <- 'latitude'
-#' bathy <- rxtractogon (dataInfo, parameter, xcoord=xcoord, ycoord=ycoord)
+#' bathy <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord)
 #' @section Details:
-#'  xtractogon extracts the data from the smallest bounding box that contains
+#'  rxtractogon extracts the data from the smallest bounding box that contains
 #'  the polygon, and then uses the function "point.in.polygon" from the "sp"
 #'  package to mask out the areas outside of the polygon.
 
@@ -81,12 +81,15 @@ xcoord1 <- c(min(xcoord), max(xcoord))
 ycoord1 <- c(min(ycoord), max(ycoord))
 
 # call xtracto to get data
-extract <-  rxtracto_3D(dataInfo, parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
+extract <-  rxtracto_3D(dataInfo, parameter=parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
 #	extract <- xtracto_3D(xcoord1,ycoord1,tpos1,dtype, verbose)
 str(extract)
 if(length(dim(extract[[1]]))==2){
    extract[[1]]<-array(extract[[1]],c(dim(extract[[1]]),1))
   }
+if(length(dim(extract[[1]]))==4){
+  extract[[1]]<-abind::adrop(extract[[1]],drop=3)
+}
 
 
 
