@@ -7,7 +7,8 @@
 rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0,
   xName = "longitude", yName = "latitude", zName = "altitude",
-  tName = "time", urlbase = "http://upwell.pfeg.noaa.gov/erddap")
+  tName = "time", urlbase = "http://upwell.pfeg.noaa.gov/erddap",
+  verbose = FALSE)
 }
 \arguments{
 \item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
@@ -37,6 +38,8 @@ decimal degrees N; -90 to 90)}
 \item{tName}{- character string with name of the tcoord in the ERDDAP dataset (default "time")}
 
 \item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
+
+\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 }
 \value{
 A dataframe containing:
@@ -71,7 +74,7 @@ tcoord <- c('2006-01-15','2006-01-20')
 zcoord <- 0.
 xlen <- 0.5
 ylen <- 0.5
-extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen)
+extract <- rxtracto(dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen)
 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'

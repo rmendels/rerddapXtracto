@@ -7,7 +7,7 @@
 rxtractogon(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
   zName = "altitude", tName = "time",
-  urlbase = "http://upwell.pfeg.noaa.gov/erddap")
+  urlbase = "http://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
 }
 \arguments{
 \item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
@@ -23,6 +23,18 @@ degrees N; -90 to 90)of polygon}
 \item{zcoord}{-  a real number with the z-coordinate(usually altitude or depth)}
 
 \item{tcoord}{- 2-array of minimum and maximum times as 'YYYY-MM-DD'}
+
+\item{xName}{- character string with name of the xcoord in the ERDDAP dataset (default "longitude")}
+
+\item{yName}{- character string with name of the ycoord in the ERDDAP dataset (default "latitude")}
+
+\item{zName}{- character string with name of the zcoord in the ERDDAP dataset (default "altitude")}
+
+\item{tName}{- character string with name of the tcoord in the ERDDAP dataset (default "time")}
+
+\item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
+
+\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 }
 \value{
 structure with data and dimensions
@@ -42,7 +54,7 @@ latitudes and longitudes
 }
 \section{Details}{
 
- xtractogon extracts the data from the smallest bounding box that contains
+ rxtractogon extracts the data from the smallest bounding box that contains
  the polygon, and then uses the function "point.in.polygon" from the "sp"
  package to mask out the areas outside of the polygon.
 }
@@ -52,13 +64,13 @@ parameter <- 'chla'
 tcoord <- c("2016-06-15", "2016-06-15")
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
-sanctchl <- rxtractogon (dataInfo, parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
+sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
 dataInfo <- rerddap::info('etopo180')
 parameter = 'altitude'
 xName <- 'longitude'
 yName <- 'latitude'
-bathy <- rxtractogon (dataInfo, parameter, xcoord=xcoord, ycoord=ycoord)
+bathy <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord)
 }
 

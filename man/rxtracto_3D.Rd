@@ -10,7 +10,7 @@ but function is maintained as it is used in the polygon routine.}
 rxtracto_3D(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
   zName = "altitude", tName = "time",
-  urlbase = "http://upwell.pfeg.noaa.gov/erddap")
+  urlbase = "http://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
 }
 \arguments{
 \item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
@@ -36,6 +36,8 @@ decimal degrees N; -90 to 90)}
 \item{tName}{- character string with name of the tcoord in the ERDDAP dataset (default "time")}
 
 \item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
+
+\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 }
 \value{
 structure with data and dimensions:
