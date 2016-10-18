@@ -2,10 +2,7 @@
 % Please edit documentation in R/rxtracto_3D.R
 \name{rxtracto_3D}
 \alias{rxtracto_3D}
-\title{\code{rxtracto_3D} uses the R program rerddap to extract environmental data
-from an ERDDAP server in an (x,y,z, time) bounding box.
-The same call could be made directly in rerddap,
-but function is maintained as it is used in the polygon routine.}
+\title{Extract environmental data in a 3-dimnesional box from an ERDDAP server using rerddap.}
 \usage{
 rxtracto_3D(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
