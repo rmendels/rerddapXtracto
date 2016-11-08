@@ -43,7 +43,7 @@
 #' zcoord <- 0.
 #' xlen <- 0.5
 #' ylen <- 0.5
-#' extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen, verbose=FALSE)
+#' extract <- rxtracto(dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen)
 #' 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
@@ -106,6 +106,11 @@ if (!(is(dataInfo, "info"))) {
     cat("Dataset Parameters: ", allvars[(length(allCoords)+1):length(allvars)])
     stop("execution halted", call. = FALSE)
   }
+  lenURL <- nchar(urlbase)
+  if(substr(urlbase, lenURL, lenURL) == '/'){
+    urlbase <- substr(urlbase,1,(lenURL-1))
+  }
+
   #reconcile longitude grids
   #get dataset longitude range
   xcoord1 <- xcoord
@@ -128,7 +133,7 @@ if (!(is(dataInfo, "info"))) {
 
 
 if(!is.null(tcoord)){
-  udtpos <- as.Date(tcoord, origin='1970-01-01', tz= "GMT")
+  udtpos <- parsedate::parse_date(as.character(tcoord))
   tcoordLim <- c(min(udtpos), max(udtpos))
 }else{
   tcoordLim <- c(NULL, NULL)
@@ -144,7 +149,7 @@ if (length(dataCoordList) == 0) {
 }
  if(tName %in% names(dataCoordList)){
    isotime <- dataCoordList$time
-   udtime <- as.Date(dataCoordList$time, origin='1970-01-01', tz= "GMT")
+   udtime <- parsedate::parse_date(isotime)
  }
 
  dimargs <- list(xcoordLim, ycoordLim, zcoord, tcoordLim)
@@ -217,8 +222,11 @@ if("latitude" %in% names(dimargs)){
 
       extract <- list()
       myCallOpts <- ""
+      if(!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")){
+        myCallOpts <- paste0(", url='", urlbase,"/'")
+      }
       if(verbose){
-        myCallOpts <- "callopts = httr::verbose()"
+        myCallOpts <- paste0(myCallOpts,",callopts = httr::verbose()")
       }
       griddapCmd <- 'rerddap::griddap(dataInfo,'
       if(!is.null(xcoord)){
@@ -234,7 +242,7 @@ if("latitude" %in% names(dimargs)){
         griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTimes[1],'","',erddapTimes[2],'"),')
       }
 
-      griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE',myCallOpts,')')
+      griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE', myCallOpts,')')
       extract <- eval(parse(text = griddapCmd))
 
     if (length(extract) == 0) {
@@ -266,8 +274,8 @@ if("latitude" %in% names(dimargs)){
      paramdata <- ncdf4::ncvar_get(ncFile,parameter)
      ncdf4::nc_close(ncFile)
      out.dataframe[i, 1] <- mean(paramdata, na.rm=T)
-     out.dataframe[i, 2] <- sd(paramdata, na.rm=T)
-     out.dataframe[i, 3] <- length(na.omit(paramdata))
+     out.dataframe[i, 2] <- stats::sd(paramdata, na.rm=T)
+     out.dataframe[i, 3] <- length(stats::na.omit(paramdata))
      if(tName %in% names(dataCoordList)){
        out.dataframe[i, 4] <- requesttime
      }
@@ -278,11 +286,12 @@ if("latitude" %in% names(dimargs)){
      if(tName %in% names(dataCoordList)){
        out.dataframe[i, 9] <- tcoord[i]
      }
-     out.dataframe[i, 10] <- median(paramdata, na.rm=T)
-     out.dataframe[i, 11] <- mad(paramdata, na.rm=T)
+     out.dataframe[i, 10] <- stats::median(paramdata, na.rm=T)
+     out.dataframe[i, 11] <- stats::mad(paramdata, na.rm=T)
 
      remove('paramdata')
-     file.remove(extract$summary$filename)
+#     file.remove(extract$summary$filename)
+     rerddap::cache_delete_all(cache_path = "~/.rerddap", force = TRUE)
    }
    oldyIndex <- newyIndex
    oldxIndex <- newxIndex

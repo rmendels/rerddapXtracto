@@ -1,3 +1,4 @@
+#' Extract environmental data in a 3-dimnesional box from an ERDDAP server using rerddap.
 #'
 #' \code{rxtracto_3D} uses the R program rerddap to extract environmental data
 #' from an ERDDAP server in an (x,y,z, time) bounding box.
@@ -107,6 +108,11 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zc
     stop("execution halted", call. = FALSE)
   }
 
+  lenURL <- nchar(urlbase)
+  if(substr(urlbase, lenURL, lenURL) == '/'){
+    urlbase <- substr(urlbase,1,(lenURL-1))
+  }
+
   #reconcile longitude grids
   #get dataset longitude range
   xcoord1 <- xcoord
@@ -151,7 +157,9 @@ if (length(dataCoordList) == 0) {
 tcoordLim <- NULL
 if(!is.null(tcoord)){
   isotime <- dataCoordList$time
-  udtime <- as.Date(dataCoordList$time, origin='1970-01-01', tz= "GMT")
+  udtime <- parsedate::parse_date(dataCoordList$time)
+  dataCoordList$time <- parsedate::parse_date(dataCoordList$time)
+  udtime <- dataCoordList$time
   lenTime <-length(isotime)
 
   if (grepl("last", tcoord1[1])) {
@@ -169,7 +177,7 @@ if(!is.null(tcoord)){
     tIndex <- eval(parse(text=tempVar))
     tcoord1[2] <- isotime[tIndex]
   }
-  udtpos <- as.Date(tcoord1, origin='1970-01-01', tz= "GMT")
+  udtpos <- parsedate::parse_date(tcoord1)
   tcoordLim <- c(min(udtpos), max(udtpos))
 }
 
@@ -199,12 +207,15 @@ if(yName %in% names(dataCoordList)){
 }
 if (tName %in% names(dataCoordList)) {
     cindex <- which(names(dataCoordList) == tName)
-    erddapTcoord[1] <- isotime[which.min(abs(udtime- tcoordLim[1]))]
+    erddapTcoord[1] <- isotime[which.min(abs(udtime - tcoordLim[1]))]
     erddapTcoord[2] <- isotime[which.min(abs(udtime - tcoordLim[2]))]
 }
 myCallOpts <- ""
+if(!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")){
+  myCallOpts <- paste0(", url='", urlbase,"/'")
+}
 if(verbose){
-  myCallOpts <- "callopts = httr::verbose()"
+  myCallOpts <- paste0(myCallOpts,",callopts = httr::verbose()")
 }
 griddapCmd <- 'rerddap::griddap(dataInfo,'
 if(!is.null(xcoord)){
@@ -285,7 +296,13 @@ if (grepl('etopo',extract[[2]])){
   names(extract) <- c(parameter,"datasetname",xName, yName, zName, "time")
 
 }
-fcopy <- file.copy(griddapExtract$summary$filename, paste0(getwd(),'/',parameter,'.nc'))
+copyFile <- paste0(getwd(),'/',parameter,'.nc')
+iFile <- 1
+while(file.exists(copyFile)){
+  copyFile <- paste0(getwd(),'/',parameter,'_',iFile,'.nc')
+  iFile <- iFile +1
+}
+fcopy <- file.copy(griddapExtract$summary$filename, copyFile)
 if(!fcopy){
   print('copying and renaming downloaded file from default ~/.rerddap failed')
 }

@@ -1,0 +1,364 @@
+getwd()
+fit <- stan(file = '8schools.stan', data = schools_dat, #
+            iter = 1000, chains = 4)
+ls
+getwd()
+fit <- stan(file = '/Users/rmendels/8schools.stan', data = schools_dat, #
+            iter = 1000, chains = 4)
+schools_dat <- list(J = 8, #
+                    y = c(28,  8, -3,  7, -1,  1, 18, 12),#
+                    sigma = c(15, 10, 16, 11,  9, 11, 10, 18))
+fit <- stan(file = '/Users/rmendels/8schools.stan', data = schools_dat,iter = 1000, chains = 4)
+fit <- stan(file = "/Users/rmendels/8schools.stan", data = schools_dat,iter = 1000, chains = 4)
+install.packages("rstan", dependencies = TRUE)
+ginv
+library(mass)
+library(MASS)
+ginv
+crab<-read.csv('http://coastwatch.pfeg.noaa.gov/erddap/tabledap/erdCAMarCatSY.csv?time,landings&fish="Crab, Dungeness"')
+?read.csv
+crab<-read.csv('http://coastwatch.pfeg.noaa.gov/erddap/tabledap/erdCAMarCatSY.csv?time,landings&fish="Crab, Dungeness"')
+crab<-read.csv('http://coastwatch.pfeg.noaa.gov/erddap/tabledap/erdCAMarCatSY.csv?time,landings&fish=%22Crab,%20Dungeness')
+?read.csv
+sum(c(1, 2), na.r=F)
+sum(c(1, 2), na.r=T)
+?sum
+install.packages("rstan", dependencies = TRUE)
+install.packages(“rstanarm”)
+install.packages("rstanarm")
+install.packages('Rserve')#
+install.packages('ggplot2')#
+install.packages('devtools')#
+install.packages('RCurl')#
+install.packages('RJSONIO')#
+install.packages('jpeg')#
+install.packages('png')#
+install.packages('base64enc')
+library(ncdf4)
+library(EDCR)
+test1<-EDC.get()
+ls()
+str(test1)
+264*365*14
+8*365
+200*365
+install.packages("nimble", repos = "http://r-nimble.org", type = "source")
+?oce
+library(oce)
+?oce
+?NA
+junk<-2025 %/% 1001
+str(junk)
+2005 %% 1001
+?numeric
+0.2*25
+(1-0.8)*25
+numeric((1-0.8)*25)
+((1-0.8)*25)
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/2.15/Resources/library"))#
+package_list <- as.character(package_df$Package)
+str(package_list)
+package_df <- as.data.frame(installed.packages("/Library/Frameworks/R.framework/Versions/3.2/Resources/library"))
+package_list <- as.character(package_df$Package)
+str(package_list)
+getwd()
+save(package_list,"package_list.RData")
+save(package_list,file = "package_list.RData")
+x=c(10,11,12,13,14,17,15,16,10,11,41,25,26,14,12,14,15,20,14,22)
+x=matrix(x,ncol=2)
+a=matrix(1,nrow(x),1)
+X=cbind(a,x)
+y=c(12.00, 11.00, 13.00, 12.50, 14.00, 18.50, 15.00, 12.50, 13.75, 15.00)
+str(t(y-X %*% b))
+b=solve(t(X)%*% X)%*% t(X)%*% y
+str(t(y-X %*% b))
+str((y-X %*% b))
+10 - 6/2
+?download.file
+download.file(url="http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst%5B%282016-06-05T00%3A00%3A00Z%29%3A1%3A%282016-06-05T00%3A00%3A00Z%29%5D%5B%2827.5%29%3A1%3A%2837.5%29%5D%5B%28185%29%3A1%3A%28220%29%5D%0D%0A", destfile="testBob.nc")
+download.file(url="http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst[(2016-06-05T00:00:00Z):1:(2016-06-05T00:00:00Z)][(27.5):1:(37.5)][(185):1:(220)]", destfile="test3.nc")
+getwd()
+download.file(url="http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst%5B%282016-06-05T00%3A00%3A00Z%29%3A1%3A%282016-06-05T00%3A00%3A00Z%29%5D%5B%2827.5%29%3A1%3A%2837.5%29%5D%5B%28185%29%3A1%3A%28220%29%5D%0D%0A", destfile="test4.nc")
+download.file(url="http://coastwatch.pfeg.noaa.gov/erddap/griddap/erdBAssta5day.nc?sst[(2014-03-05T12:00:00Z):1:(2014-03-05T12:00:00Z)][(0.0):1:(0.0)][(25):1:(35)][(185):1:(220)]", destfile="test2.nc")
+myURL <- "http%3A%2F%2Fpifsc-oceanwatch.irc.noaa.gov%2Ferddap%2Fgriddap%2FOceanWatch_goes-poes_sst_2day.nc%3Fsst%5B%282016-06-05T00%3A00%3A00Z%29%3A1%3A%282016-06-05T00%3A00%3A00Z%29%5D%5B%2827.5%29%3A1%3A%2837.5%29%5D%5B%28185%29%3A1%3A%28220%29%5D"
+download.file(url=myURL,destfile="test5.nc" )
+myURL <- 'http%3A%2F%2Fpifsc-oceanwatch.irc.noaa.gov%2Ferddap%2Fgriddap%2FOceanWatch_goes-poes_sst_2day.nc%3Fsst%5B%282016-06-05T00%3A00%3A00Z%29%3A1%3%282016-06-05T00%3A00%3A00Z%29%5D%5B%2827.5%29%3A1%3A%2837.5%29%5D%5B%28185%29%3A1%3A%28220%29%5D'
+download.file(url=myURL,destfile="test5.nc" )
+myURL<- "http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst%5B%282016-06-05T00%3A00%3A00Z%29%3A1%3%282016-06-05T00%3A00%3A00Z%29%5D%5B%2827.5%29%3A1%3A%2837.5%29%5D%5B%28185%29%3A1%3A%28220%29%5D"
+download.file(url=myURL,destfile="test5.nc" )
+library(httr)
+?httr
+junk <- GET(myURL)
+str(junk)
+junk <- GET('http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst[(2016-06-05T00:00:00Z):1:(2016-06-05T00:00:00Z)][(27.5):1:(37.5)][(185):1:(220)]')
+str(junk)
+?GET
+junk <- GET('http://pifsc-oceanwatch.irc.noaa.gov/erddap/griddap/OceanWatch_goes-poes_sst_2day.nc?sst[(2016-06-05T00:00:00Z):1:(2016-06-05T00:00:00Z)][(27.5):1:(37.5)][(185):1:(220)]', write_disk("test6.nc"))
+library(ncdf4)
+junk1<- nc_open("test6.nc")
+str(junk1)
+nc_close(junk1)
+library(seas)
+?seas
+library('seasonal')
+data<-Shiller_data[,2]
+library(zoo)
+getshiller <- function(source="http://www.econ.yale.edu/~shiller/data/ie_data.xls",cachefile="shiller.RData") {#
+  library(gdata)#
+  if (file.exists(cachefile)) {#
+    load(cachefile)#
+    return(x)#
+  }#
+  xraw <- read.xls(source, sheet = 1, verbose=FALSE, perl="perl")#
+  xraw[xraw=="#N/A"]  <- NA#
+  rawrows    <- dim(xraw)[1]#
+  rawcols    <- 11#
+  t.x  <- as.Date(sprintf("%4.2f.01",as.numeric(as.vector(xraw[,1]))),"%Y.%m.%d")#
+  ok   <- !is.na(t.x)#
+  x    <- zoo(as.numeric(as.vector(xraw[ok,2])),t.x[ok])#
+  for ( i in seq(3,rawcols) ) {#
+    z    <- zoo(as.numeric(as.vector(xraw[ok,i])),t.x[ok])#
+    x    <- merge.zoo(x,z)#
+  }#
+  colnames(x) <- c("P","D","E","CPI","DateFraction","LongRate","P.real","D.real","E.real","CAPE")#
+  save(x,file=cachefile)#
+  return(x)#
+}#
+shiller <- getshiller()
+myData <- shiller[,2]
+str(myData)
+str(shiller)
+shiller[1,]
+myData <- shiller[,1]
+myData[1:10]
+SP <- seas(myData)
+myData1 <- ts(myData,start=c(1871, 01), end=c(2015, 12), frequency=12)
+SP <- seas(myData1)
+str(myData1)
+?seas
+m <- seas(AirPassengers)
+str(AirPassengers)
+myData1 <- as.arrar(myData)
+myData1 <- as.array(myData)
+str(myData1)
+str(myData)
+myData$Data
+?zoo
+as.vector.zoo(myData[1:10])
+junk <- as.vector(myData)
+str(junk)
+junk1 <- ts(junk,start=c(1871, 01), end=c(2015, 12), frequency=12)
+seas(junk1)
+seas(junk[1:300])
+junk2 <- ts(junk[1:60],start=c(1871, 01), end=c(1875, 12), frequency=12)
+seas(junk2)
+junk2 <- ts(junk[1:60],start=c(1971, 01), end=c(1975, 12), frequency=12)
+seas(junk2)
+str(junk2)
+?seas
+junk2 <- ts(junk[1:60],start=c(1871, 01), end=c(1875, 12), frequency=12)
+seas(junk2,aictest = NULL)
+seas(junk2,regression.aictest = NULL)
+m <- seas(AirPassengers) #
+summary(m)
+m <- seas(junk2, x11 = "")
+seas(junk2,regression.aictest = "", x11 = "")
+seas(junk2,regression.aictest = NULL, x11 = "")
+seas(myData1,regression.aictest = NULL, x11 = "")
+seas(junk,regression.aictest = NULL, x11 = "")
+str(junk)
+junk1 <- ts(junk,start=c(1871, 01), end=c(2015, 12), frequency=12)
+seas(junk1,regression.aictest = NULL, x11 = "")
+library(ncdf4)
+?ncdf4
+?nc_open
+?arma
+?arima
+x = arima.sim(list(order=c(2,0,0), ar=c(1,-.9)), n=100)
+ts.plot(x)
+x = arima.sim(list(order=c(2,0,0), ar=c(1,-.9)), n=100)
+ts.plot(x)
+x = arima.sim(list(order=c(2,0,0), ar=c(1,-.9)), n=2^8)
+ts.plot(x)
+data <- c(9.1999979, 8.7999979, 7.9999979, 3.0999980, 6.1000018, 10.1000017, 10.4000017, 9.2000017)
+round(data, digits = 2)
+round(data, digits = 3)
+library(rerddap)
+?rerddap
+info('noaa_esrl_027d_0fb5_5d38')
+str(info)
+junk<-info('noaa_esrl_027d_0fb5_5d38')
+str(junk)
+60*60*24
+dates<-seq(as.Date("2014/05/12"), as.Date("2016/01/12"), by = "month",format="%Y/%mm/%dd")
+while (i < 3){
+startdate<-dates[i]
+enddate<-dates[i+1]
+filenm<-paste("erdMBchla8day_",startdate,".nc",sep="")
+url<-paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMBchla8day.nc?chlorophyll[(",startdate,"):1:(",enddate,")][(10):1:(60)][(210):1:(260)]",sep="")
+print(url)
+f = CFILE(filenm,mode="wb")
+curlPerform(url=url,writedata=f@ref)
+close(f)
+}
+library(RCurl)
+while (i < 3){#
+  startdate<-dates[i]#
+  enddate<-dates[i+1]#
+  filenm<-paste("erdMBchla8day_",startdate,".nc",sep="")#
+  url<-paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMBchla8day.nc?chlorophyll[(",startdate,"):1:(",enddate,")][(10):1:(60)][(210):1:(260)]",sep="")#
+  print(url)#
+  f = CFILE(filenm,mode="wb")#
+  curlPerform(url=url,writedata=f@ref) #
+  close(f)#
+    i<-i+1#
+}
+i <- 1#
+while (i < 3){#
+  startdate<-dates[i]#
+  enddate<-dates[i+1]#
+  filenm<-paste("erdMBchla8day_",startdate,".nc",sep="")#
+  url<-paste("http://coastwatch.pfeg.noaa.gov/erddap/griddap/erdMBchla8day.nc?chlorophyll[(",startdate,"):1:(",enddate,")][(10):1:(60)][(210):1:(260)]",sep="")#
+  print(url)#
+  f = CFILE(filenm,mode="wb")#
+  curlPerform(url=url,writedata=f@ref) #
+  close(f)#
+    i<-i+1#
+}
+Year <- format(Sys.Date(), "%Y")#
+   Month <- format(Sys.Date(), "%m")#
+   response <- #
+     httr::GET(#
+       paste("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/",#
+           "mbs", #
+           as.character(Month), #
+           as.character(Year),#
+           ".zip", #
+           sep = ""),#
+     httr::write_disk(paste("~/FNMA/mbs/",#
+                      as.character(Month), #
+                      as.character(Year),#
+                      ".zip", #
+                      sep = ""), overwrite = FALSE), httr::progress())#
+ httr::http_status(response)
+Year <- format(Sys.Date(), "%Y")#
+   Month <- format(Sys.Date(), "%m")
+Year
+Month
+response <- #
+     httr::GET(#
+       paste("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/",#
+           "mbs", #
+           as.character(Month), #
+           as.character(Year),#
+           ".zip", #
+           sep = "")
+,#
+     httr::write_disk(paste("~/FNMA/mbs/",#
+                      as.character(Month), #
+                      as.character(Year),#
+                      ".zip", #
+                      sep = ""), overwrite = FALSE), httr::progress())
+response <- #
+     httr::GET(#
+       paste("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/",#
+           "mbs", #
+           as.character(Month), #
+           as.character(Year),#
+           ".zip", #
+           sep = ""))
+junk <- paste("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/",#
+           "mbs", #
+           as.character(Month), #
+           as.character(Year),#
+           ".zip", #
+           sep = "")
+junk
+GET("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/mbs082016.zip")
+library httr
+httr::GET("https://mbsdisclosure.fanniemae.com/disclosure-docs/monthly/mbs082016.zip")
+library(lubridate)
+?lubridat
+?lubridate
+mdy("9/1/40")
+?mdy
+?plot.ts
+plot
+?plot
+y <- arima.sim(list(), 150)
+plot(y, type = 'b', pch = 16)
+plot(y, type = 'b', pch = 16, cex = 0.5)
+plot(y, type = 'b', pch = 16)
+plot.default(y, type = 'b', pch = 16, cex = 0.5)
+plot.ts(y, type = 'b', pch = 16, cex = 0.5)
+?plot.ts
+plot(nhtemp, lag(nhtemp, 1), cex = .8, col = "blue",#
+     main = "Lag plot of New Haven temperatures")
+plot(nhtemp, lag(nhtemp, 1), cex = 2, col = "blue",#
+     main = "Lag plot of New Haven temperatures")
+plot.ts(y, type = 'single', pch = 16, cex = 0.5)
+plot.ts(y, pch = 16, cex = 0.5)
+?maintainer
+upwell<- function(ektrx,ektry,coast_angle){#
+   pi <- 3.1415927#
+   degtorad <- pi/180.#
+   alpha <- (360-coast_angle)*degtorad#
+   s1 <- cos(alpha)#
+   t1 <- sin(alpha)#
+   s2 <- -1*t1#
+   t2 <- s1#
+   perp <- s1*ektrx+t1*ektry#
+   para <- s2*ektrx+t2*ektry#
+return(perp/10)#
+}
+require(xtractomatic)#
+xpos<-c(238,238)#
+ypos<-c(37,37)#
+tpos<-c("2005-01-01","2005-12-31")#
+ektrx<-xtracto_3D(xpos,ypos,tpos,"erdlasFnTran6ektrx")#
+ektry<-xtracto_3D(xpos,ypos,tpos,"erdlasFnTran6ektry")#
+upwelling<-upwell(ektrx$data,ektry$data,152)
+ektrx[1:2]
+str(ektrx)
+ektrx$data[1:2]
+ektry$data[1:2]
+upwelling[1:2]
+gribfile<-"http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground&accept=netcdf"
+download.file(gribfile,basename(gribfile),mode = "wb")
+gribfile<-"http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground&accept=netcdf"
+download.file(gribfile,basename(gribfile),mode = "wb")
+gribfile <-'http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best?var=u-component_of_wind_height_above_ground&disableLLSubset=on&disableProjSubset=on&horizStride=1&time_start=2016-09-17T00%3A00%3A00Z&time_end=2016-09-17T18%3A00%3A00Z&timeStride=1&vertCoord=&accept=netcdf'
+download.file(gribfile,basename(gribfile),mode = "wb")
+gribfile <- 'http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground'
+download.file(gribfile,mode = "wb")
+?download.file
+download.file(gribfile,'junk.nc',mode = "wb")
+library(ncdf4)
+junkFile <- nc_open('junk.nc')
+str(junkFile)
+nc_close(junkFile)
+library(ncdf4)
+junkFile <- nc_open('ifremer.nc')
+temp <- ncvar_get(junkFile, "TEMP")
+latitude <- ncvar_get(junkFile,"latitude")
+longitude <- ncvar_get(junkFile,"longitude")
+nc_close(junkFile)
+str(temp)
+tempData <- array(temp, 61.54)
+ls()
+tempData <- array(temp, 61*54)
+str(tempData)
+tempData[3294-61, 3294]
+tempData[3294-61:3294]
+tempData[(3294-61):3294]
+tempFrame<-expand.grid(x=longitude,y=latitude)
+str(tempFrame)
+tempFrame$x[(3294-61):3294]
+tempFrame$y[(3294-61):3294]
+tempFrame$temp <- tempData
+myplot<-ggplot() +
+geom_raster(data = tempFrame, aes(x = x, y = y, fill = temp), interpolate = FALSE)
+library(ggplot2)
+geom_raster(data = tempFrame, aes(x = x, y = y, fill = temp), interpolate = FALSE)
+myplot<-ggplot() + geom_raster(data = tempFrame, aes(x = x, y = y, fill = temp), interpolate = FALSE)
+myplot

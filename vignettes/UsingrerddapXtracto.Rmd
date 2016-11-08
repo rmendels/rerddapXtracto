@@ -1,0 +1,515 @@
+---
+title: "Using the rerdapXtracto routines"
+author: "Roy Mendelssohn"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rerdapXtracto}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+```{r initialize, echo = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(rerddapXtracto)
+```
+
+## Introduction 
+
+`rerdapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:blue">ERDDAP</span> server using the <span style="color:blue">R</span> package `rerddap` developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:blue">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerdapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude and time points;  and also extracting data within a polygon (through time).  `rerdapXtracto` extends the functionality of the <span style="color:blue">R</span> package `xtractomatic` by being able to work with (hopefully) most gridded datasets available from any <span style="color:blue">ERDDAP</span> server. The disadavantage compared to `xtractomatic` is that the user has to do more work to obtain information about the dataset to be accessed, while in `xtractomatic` that information is built in.
+
+### The Main xtractomatic functions
+
+There are three main data extraction functions in the `rerddapXtracto` package: 
+
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xlen=0., ylen=0., xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE)`
+
+- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE)`
+
+- `rxtractogon <- function(dataInfo, parameter, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE)`
+
+The functions are similar to but not identical to the functions in `xtractomatic`, the main differences being having to obtain information about the dataset first using `rerddap`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
+
+- dataInfo: the return from an rerddap "info" call to an <span style="color:blue">ERDDAP</span> server
+- parameter: character strig containing the name of the parameter to extract
+- xName: character string with name of the xcoord in the <span style="color:blue">ERDDAP</span> dataset (default "longitude")
+- yName: character string with name of the ycoord in the <span style="color:blue">ERDDAP</span> dataset (default "latitude")
+- zName: character string with name of the zcoord in the <span style="color:blue">ERDDAP</span> dataset (default "altitude")
+- tName: character string with name of the tcoord in the <span style="color:blue">ERDDAP</span> dataset (default "time")
+- urlbase: base URL of the <span style="color:blue">ERDDAP</span> server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+- verbose: logical variable (default FALSE) if the the URL request should be verbose
+
+### Time has come today
+
+With all due respect to the [Chambers Brothers](https://www.youtube.com/watch?v=uHfB63ln1Ig), since any <span style="color:blue">ERDDAP</span> served gridded data can be accessed, a lot more care must be used with the values pf "time" passed to `rerddapXtratco` as compared with `xtractomatic`.  This is because datasets can have time increments of less than a day, an example of which is [given below](#hourly). <span style="color:blue">ERDDAP</span> maps all times to "Zulu" time, of the form "2016-11-01T00:00:00Z".  The date-time "2016-11-01" gets mapped to "2016-11-01T00:00:00Z".  When giving time limits of finer resolution than a day, be certain to take into account time offsets, and to give the times in the form above.  Times are parsed using the `parse_date()` function of the `parsedate` package, if in doubt you can use that function to see how the times you are passing will be interpreted.
+
+
+## Setting up 
+
+`rerdapXtracto` uses the `rerddap`, `ncdf4`, `sp` and `parsedate` packages, and these packages (and the packages imported by these packages) must be installed first or `rerdapXtracto` will fail to install.  
+
+```{r install,eval=FALSE}
+install.packages("rerddap", dependencies = TRUE)
+install.packages("ncdf4",dependencies = TRUE) 
+install.packages("sp", dependencies = TRUE)
+install.packages("parsedate", dependencies = TRUE)
+```
+
+The `rerdapXtracto` package is not available through <span style="color:blue">CRAN</span> at the moment, but it is available from [Github](https://github.com/rmendels/rerdapXtracto)
+ 
+To install the `rerdapXtracto` package from <span style="color:blue">Github</span> ,
+
+```{r installGit,eval=FALSE}
+install.packages("devtools")
+devtools::install_github("rmendels/rerdapXtracto")
+```
+
+Once installed, to use `rerdapXtracto` do
+
+```{r load,eval=FALSE}
+library("rerdapXtracto")
+```
+
+If the other libraries  (`rerddap`, `ncdf4`,`sp`, and `parsedate`) have been installed they will be found and do not need to be explicitly loaded.   
+
+
+### Using the R code examples
+
+Besides the `rerdapXtracto` packages, the examples below depend on `akima`, `dplyr`, `ggplot2`, `ggfortify`, `lubridate`, `mapdata`,  `reshape2`,and `xts`.  These can be loaded beforehand (assuming they have been installed):
+
+```{r loadpacks,eval=FALSE}
+library("akima")
+library("dplyr")
+library("ggplot2")
+library("ggfortify") 
+library("lubridate")
+library("mapdata")
+library("reshape2")
+library("xts")
+```
+
+In order that the code snippets can be more stand-alone, the needed libraries are always `required` in the examples.  
+
+It should be emphasized that these other packages are used to manipulate and plot the data in <span style="color:blue">R</span>, other packages could be used as well.  The use of `rerdapXtracto` does not depend on these other packages.
+
+There are also several <span style="color:blue">R</span> functions defined within the document that are used in other code examples.  These include `mapFrame`, and `plotFrame`.
+
+
+
+## Getting Started
+
+The first several examples reproduce some of the examples in the `xtractomatic` vignette, hopefully to make clear how the two sets of functions relate. One change is the plots use the `cmocean` colormaps designed by Kristen Thyng (see http://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean).  These colormaps were initally developed for Python, but a version of the colormaps is used in the `oce` package by Dan Kelley and Clark Richards and that is what is used here.
+ 
+The first step is to find the necessary information from the <span style="color:blue">ERDDAP</span> server being used.  These include the
+
+- base URL of the <span style="color:blue">ERDDAP</span> server (the default is http://upwell.pfeg.noaa.gov/erddap)
+- the dataset ID of the data to be accessed (for example the 1-day composite of chloropyhll from MODIS Aqua has a dataset ID of 'erdMBchla1day' - see http://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html)
+- the parameter name (in this case "chlorophyll")
+
+The information about the then must be obtained by making a call to the `rerddap` function `info()`:
+
+```{r info}
+require(rerddap)
+## base URL does not need to given because it is the default one
+dataInfo <- info('erdMBchla1day')
+dataInfo
+```
+
+The `info()` function returns most of the information needed to make a function call in `rerddapXtracto`, to wit the coordinate variables and their limits, as well as the parameters available from the selected dataset.
+
+### An rxtracto example 
+
+In this section we extract data along a trackline found in the <span style="color:red">Marlintag38606</span> dataset, which is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC), and show some simple plots of the extracted data.  
+
+
+
+```{r getMarlinChl}
+require(rerddapXtracto)
+require(rerddap)
+
+# First we will copy the Marlintag38606 data into a variable 
+# called tagData  so that subsequent code will be more generic.  
+
+tagData <- Marlintag38606
+xpos<-tagData$lon
+ypos<-tagData$lat
+tpos<-tagData$date
+zpos <- 0.
+urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+swchlInfo <- rerddap::info('erdSWchla8day')
+swchl <- rxtracto(swchlInfo, parameter='chlorophyll', xcoord=xpos, ycoord=ypos, tcoord=tpos, zcoord=zpos, xlen=.2, ylen=.2)
+```
+
+Note the differences from the `xtractomatic` example.
+
+- the user has to find the datasetID from the given <span style="color:blue">ERDDAP</span> server, in this case 'erdSWchla8day' (from http://upwell.pfeg.noaa.gov/erddap/griddap/erdSWchla8day.html)
+- the user has to call `rerddap::info('erdSWchla8day')` to obtain information about that dataset
+- the user has to know the parameter name desired for that datasetID, in this case 'chlorophyll'
+- the zcoord has to be explictily given,  because 'erdSWchla8day' is a 4-D dataset
+
+### Plotting the results
+
+We plot the track line with the locations colored according to the mean of the satellite <span style="color:blue">chlorophyll</span> around that point. Positions where there was a tag location but no <span style="color:blue">chlorophyll</span> values are also shown.
+
+```{r meantrackPlot, fig.align='center',fig.width=6,fig.height = 3}
+require(ggplot2)
+require(mapdata)
+# First combine the two dataframes (the input and the output) into one, 
+# so it will be easy to take into account the locations that didn’t 
+# retrieve a value.
+
+alldata <- cbind(tagData, swchl)
+
+# adjust the longitudes to be (-180,180)
+alldata$lon <- alldata$lon-360
+# Create a variable that shows if chla is missing
+alldata$missing <- is.na(alldata$'mean chlorophyll')*1
+alldata$mean <- as.array(alldata$'mean chlorophyll')
+# set limits of the map
+ylim <- c(15, 30)
+xlim <- c(-160, -105)
+myColor <- colors$chlorophyll
+# get outline data for map
+w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+# plot using ggplot
+z <- ggplot(alldata,aes(x=lon,y=lat)) + 
+   geom_point(aes(colour=mean, shape=factor(missing)), size=2.) + 
+   scale_shape_manual(values=c(19, 1))
+z + geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") + 
+  theme_bw() + 
+  scale_colour_gradientn(colours= myColor,limits=c(0., 0.32),"Chla") + 
+  coord_fixed(1.3, xlim = xlim, ylim = ylim) + ggtitle("Mean chla values at marlin tag locations")
+```
+
+
+### Topography data
+
+The second example from the  `xtractomatic`  vignette is accessing topographic data along the Marlin track. 
+
+```{r topotag, fig.align='center',fig.width=6,fig.height = 4, warning = FALSE}
+require("rerddapXtracto")
+require("rerddap")
+require("ggplot2")
+require(mapdata)
+ylim<-c(15,30)
+xlim<-c(-160,-105)
+topoInfo <- rerddap::info('etopo360')
+topo <- rxtracto(topoInfo, parameter='altitude', xcoord=xpos, ycoord=ypos, xlen=.1, ylen=.1)
+alldata <- cbind(tagData, topo)
+alldata$lon<-alldata$lon-360
+alldata$mean <- as.array(alldata$'mean altitude')
+# get outline data for map
+w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+z<-ggplot(alldata,aes(x=lon,y=lat)) + 
+   geom_point(aes(colour=mean),size=2.) + 
+   scale_shape_manual(values=c(19,1))
+z + geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") + 
+  theme_bw() + 
+  scale_colour_gradient( name = "Depth") + 
+  coord_fixed(1.3,xlim = xlim, ylim = ylim) + ggtitle("Bathymetry at marlin tag locations")
+
+```
+
+Again, note the differences from the `xtractomatic` example:
+
+- the user has to find the datasetID from the given <span style="color:blue">ERDDAP</span> server, in this case 'etopo360' (from http://upwell.pfeg.noaa.gov/erddap/griddap/etopo360.html)
+- the user has to call `rerddap::info('etopo360')` to obtain information about that dataset
+- the user has to know the parameter name desired for that datasetID, in this case 'altitude'
+- only the xcoord and ycoord values need to be given, as 'etopo360' is a 2-D dataset, and this is handled more gracefully then in `xtractomatic`.
+
+
+## Using `rxtracto_3D` 
+
+The function `rxtracto_3D()` adds no new capabilites to `rerddap`, but it does return the data in a structure consistent with the `xtractomatic` function `xtracto_3D()`, is used in the function `rxtractogon()`, and provides a consistent parallel to the functions in the `xtractomatic` package. It also changes latitudes and longitudes to agree with those of the source dataset, and returns a structure where these are mapped back to the request.
+
+### Obtaining VIIRS chlorophyll data
+
+
+```{r VIIRSchla}
+require("rerddapXtracto")
+require("rerddap")
+#require("lubridate")
+xpos<-c(235,240)
+ypos<-c(36,39)
+tpos<-c("2012-01-15","last")
+VIIRSInfo <- rerddap::info('erdVH2chlamday')
+VIIRS <- rxtracto_3D(VIIRSInfo, parameter='chla', xcoord=xpos, ycoord=ypos, tcoord=tpos)
+VIIRS$time <- as.Date(VIIRS$time)
+```
+
+`rxtracto_3d()` returns a list of the form:
+
+ * VIIRS$chla       : num [xcoord, ycoord, tcoord] 
+ * VIIRS$datasetname: character string of the ERDDAP dataset ID
+ * VIIRS$longitude  : num [xcoord] longitude of extact
+ * VIIRS$latitude   : num [ycoord] latitudes of extract
+ * VIIRS$altitude   : num zcoord of extract
+ * VIIRS$time       : POSIXlt[tcoord] times of extract
+
+The coordinate names of the structure are based on the names given in the `rxtracto_3d()` call, so may differ between datasets. A similar call to `rerddap::griddap()` will either return the data "pre-melted" (that is long-form) or only get the netcdf file and have the user read in the data.  There are tradeoffs to having the data "pre-melted", for consistency we maintain a structure similar to that in  `xtracto_3D()`, plus this works even if the xcoord and ycoord are not longitude and latitude.
+
+We can map the results using a "helper" function that "melts" the data into "longform."
+
+
+```{r mapFrame}
+mapFrame<- function(longitude,latitude,chla){
+  dims<-dim(chla)
+  chla<-array(chla,dims[1]*dims[2])
+#  longitude[longitude > 180] <- longitude[longitude > 180] - 360
+  chlaFrame<-expand.grid(x=longitude,y=latitude)
+  chlaFrame$chla <- chla
+  return(chlaFrame)
+}
+```
+
+and also define a helper function `plotFrame` to plot the data:
+
+```{r plotFrame}
+plotFrame<-function(chlaFrame, xlim, ylim,title,logplot=TRUE){
+  require(mapdata)
+  require(ggplot2)
+  w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+  myplot<-ggplot(data = chlaFrame, aes(x = x, y = y, fill = chla)) +
+    geom_raster(interpolate = FALSE) +
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim)
+  if(logplot){
+    my.col <- colors$chlorophyll
+    myplot<-myplot + scale_fill_gradientn(colours = my.col, na.value = NA,limits=c(-2,4)) +
+      ggtitle(title)
+    }else{
+     myplot<-myplot + scale_fill_gradientn(colours = my.col, na.value = NA) +
+       ggtitle(title)
+  }
+  return(myplot)
+}
+```
+
+We examine <span style="color:blue">chlorophyll</span> in June 2012:
+
+
+```{r VIIRSLogPlot, fig.width=5,fig.height = 5, fig.align='center', warning=FALSE}
+xlim<-c(235,240)-360
+ylim<-c(36,39)
+ttext<-VIIRS$time[month(VIIRS$time) == 6 & year(VIIRS$time) == 2012]
+chlalogFrame<-mapFrame(VIIRS$longitude-360,VIIRS$latitude,
+                       log(VIIRS$chla[,,month(VIIRS$time) == 6 & year(VIIRS$time) == 2012]))
+chlalogPlot<-plotFrame(chlalogFrame,xlim,ylim,paste("VIIRS log(chla)",ttext))
+chlalogPlot
+```
+
+
+
+
+
+
+## Using `rxtractogon` 
+
+The `rxtractogon` function extracts a time-series of satellite data that are within a user supplied polygon. We repeat here two of the examples in the `xtractomatic` vignette.  The first gets chlorophyll within the boundary points of the  Monterey Bay National Marine Sanctuary, which are available in the `mbnms` dataset which are loaded with the `rerddapXtracto` package.  
+
+```{r mbnmsChla}
+#require(rerddapXtracto)
+dataInfo <- rerddap::info('erdVH2chlamday')
+parameter = 'chla'
+tpos<-c("2014-09-01","2014-10-01")
+#tpos <-as.Date(tpos)
+xpos<-mbnms$Longitude
+ypos<-mbnms$Latitude
+sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord=xpos, ycoord=ypos,  tcoord=tpos)
+str(sanctchl)
+```
+
+The extract (see`str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  A plot of the the second time period: 
+
+```{r mbnmsChlaPlot, fig.width=5,fig.height = 5, fig.align='center', warning = FALSE}
+require(ggplot2)
+require(mapdata)
+xlim = c(-123.5,-121.)
+ylim = c(35,38)
+mbnmsFrame<-mapFrame(sanctchl$longitude,sanctchl$latitude,log(sanctchl$chla[,,2]))
+my.col <- colors$chlorophyll
+w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+myplot<-ggplot() + geom_path(data=mbnms,aes(x=Longitude,y=Latitude),colour="black")   
+myplot<-myplot + 
+    geom_raster(data = mbnmsFrame, aes(x = x, y = y, fill = chla),interpolate = FALSE) + 
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA,limits=c(-1,3)) +
+    ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim) + 
+    ggtitle(paste("log(Chla) in MBNMS",sanctchl$time[2]))
+myplot
+```
+
+
+The MBNMS is famous for containing the Monterey Canyon, which reaches depths of up to 3,600 m (11,800 ft) below surface level at its deepest. `xtractogon` can extract the bathymetry data for the MBNMS from the <span style="color:red">ETOPO</span> dataset:
+
+```{r mbnmsBathy}
+#require(xtractomatic)
+dataInfo <- rerddap::info('etopo180')
+xpos<-mbnms$Longitude
+ypos<-mbnms$Latitude
+bathy <- rxtractogon(dataInfo, parameter='altitude', xcoord=xpos, ycoord=ypos)
+str(bathy)
+```
+
+Mapping the data to show the canyon:
+
+```{r mbnmsBathyPlot, fig.width=5,fig.height = 5, fig.align='center', warning=FALSE}
+require(ggplot2)
+require(mapdata)
+xlim = c(-123.5,-121.)
+ylim = c(35,38)
+mbnmsFrame<-mapFrame(bathy$longitude,bathy$latitude,bathy$depth[,,1])
+w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+myplot<-ggplot() + geom_path(data=mbnms,aes(x=Longitude,y=Latitude),colour="black")   
+myplot<-myplot + geom_raster(data = mbnmsFrame, aes(x = x, y = y, fill = chla),interpolate = FALSE) +
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + scale_fill_gradient(na.value = NA, name ="Depth") +
+    ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim) + ggtitle("MBNMS Bathymetry")
+myplot
+```
+
+
+## Temperature at 70m in the north Pacific from the SODA model output
+
+This is an example of an extract from a 4-D dataset (results from the "Simple Ocean Data Assimilation (SODA)" model), and illustrate the case where the z-coordinate does not have the default name "altitude".  Water temperature at 70m depth is extracted for the North Pacific Ocean.
+
+
+```{r soda70}
+#require(xtractomatic)
+dataInfo <- rerddap::info('hawaii_d90f_20ee_c4cb')
+xpos <- c(135.25, 240.25)
+ypos <- c(20.25, 60.25)
+zpos <- c(70.02, 70.02)
+tpos <- c('2010-12-15', '2010-12-15')
+soda70 <- rxtracto_3D(dataInfo, parameter='temp', xcoord=xpos, ycoord=ypos, tcoord=tpos, zcoord=zpos, zName='depth')
+str(soda70)
+```
+
+SInce the data cross the dateline, it is necessary to use the new "world2Hires" in the package "mapdata" which is Pacific Ocean centered.  Unfortunatley there is a smal problem where the outlines from certain countries wrap and mistakenly appear in plots, and those countries must be removed,  see code below.
+
+
+```{r soda70Plot, fig.width=6,fig.height = 3, fig.align='center', warning = FALSE}
+require(ggplot2)
+require(mapdata)
+xlim <- c(135,240)
+ylim <- c(20,60)
+soda70Frame<-mapFrame(soda70$longitude,soda70$latitude,soda70$temp[,,1,1])
+my.col <- colors$temperature
+## Must do a kludge to remove countries that wrap and mess up the plot
+w1 <- map("world2Hires", xlim=c(135, 240), ylim=c(20, 60), fill=TRUE, plot=FALSE)
+remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
+w <- map_data("world2Hires", regions=w1$names[!(w1$names %in% remove)], ylim = ylim, xlim = xlim)
+myplot<-ggplot() + 
+    geom_raster(data = soda70Frame, aes(x = x, y = y, fill = chla),interpolate = FALSE) + 
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits=c(-3,30), name="temperature") +
+    ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim) + 
+    ggtitle(paste("temperature at 70 meters depth from SODA for",soda70$time[1]))
+myplot
+```
+
+
+## Using a different ERDDAP server 
+
+### Irish Marine Institute {#hourly}
+
+The Irish Marine Institute has an ERDDAP server at http://erddap.marine.ie/erddap.  Among other datasets, they have hourly output from a model of the North Altantic ocean, with a variety of ocean related parameters, see http://erddap.marine.ie/erddap/griddap/IMI_NEATL.html.  To obtain sea surface salinity at 2016-11-03 for the domain of the model:
+
+```{r NAtlSSS}
+urlBase <- "http://erddap.marine.ie/erddap/"
+parameter <- "sea_surface_salinity"
+sssTimes <- c("2016-11-02T23:00:00Z","2016-11-02T23:00:00Z")
+sssLats <- c(48.00625, 57.50625)
+sssLons <- c(-17.99375, -1.00625)
+dataInfo <- rerddap::info("IMI_NEATL",url=urlBase)
+NAtlSSS <- rxtracto_3D(dataInfo, parameter=parameter, xcoord=sssLons, ycoord=sssLats, tcoord=sssTimes, urlbase=urlBase)
+str(NAtlSSS)
+```
+
+```{r NAtlSSSplot, fig.width=6,fig.height = 3, fig.align='center', warning = FALSE}
+require(ggplot2)
+require(mapdata)
+xlim <- c(-17.99375, -1.00625)
+ylim <- c(48.00625, 57.50625)
+NAtlSSSFrame<-mapFrame(NAtlSSS$longitude,NAtlSSS$latitude,NAtlSSS$sea_surface_salinity[,,1])
+my.col <- colors$salinity
+w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+myplot<-ggplot() + 
+    geom_raster(data = NAtlSSSFrame, aes(x = x, y = y, fill = chla),interpolate = FALSE) + 
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits=c(34,36), name="salinity") +
+    ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim) + 
+    ggtitle(paste("salinity", NAtlSSS$time[1]))
+myplot
+```
+
+### IFREMER
+
+The French agency IFREMER also has an <span style="color:blue">ERDDAP</span> server. We obtain salinity data at 75 meters from Global Ocean, Coriolis Observation Re-Analysis CORA4.1 model off the west coast of the United States.
+
+```{r IFREMER}
+urlBase <- "http://www.ifremer.fr/erddap/"
+parameter <- "PSAL"
+ifrTimes <- c("2013-05-15","2013-05-15")
+ifrLats <- c(30., 50.)
+ifrLons <- c(-140., -110.)
+ifrDepth <- 75.
+dataInfo <- rerddap::info("ifremer_tds0_6080_109e_ed80",url=urlBase)
+ifrPSAL <- rxtracto_3D(dataInfo, parameter=parameter, xcoord=ifrLons, ycoord=ifrLats, tcoord=ifrTimes, zcoord=ifrDepth, zName='depth', urlbase=urlBase)
+str(ifrPSAL)
+```
+
+The `ggplot2` function `geom_raster()` is not designed for unevenly spaced coordinates, as are the latitudes from this model.  The function `interp()` from the package `akima` is used to interpolate the data which are then plotted.
+
+
+```{r ifrPSALplot, fig.width=6, fig.height = 3, fig.align='center', warning = FALSE}
+## ggplot2 has trouble with unequal y's
+ require(mapdata)
+ require(ggplot2)
+ require(akima)
+ require(dplyr)
+  xlim <- c(-140, -110)
+  ylim <- c(30, 51)
+## ggplot2 has trouble with unequal y's
+  my.col <- colors$temperature
+  tempData1 <- ifrPSAL$PSAL[,,1,1]
+  tempData<-array(tempData1 ,61*54)
+  tempFrame<-expand.grid(x=ifrPSAL$longitude,y=ifrPSAL$latitude)
+  tempFrame$temp <- tempData
+  tempFrame1 <- dplyr::filter(tempFrame, !is.nan(temp))
+  myinterp <- akima::interp(tempFrame1$x, tempFrame1$y, tempFrame1$temp,xo=seq(min(tempFrame1$x), max(tempFrame1$x), length = 61),
+       yo=seq(min(tempFrame1$y), max(tempFrame1$y), length = 54))
+  myinterp1 <- expand.grid(x=myinterp$x,y=myinterp$y)
+  myinterp1$temp <- array(myinterp$z, 61*54)
+  w <- map_data("worldHires", ylim = ylim, xlim = xlim)
+ myplot<-ggplot() +
+    geom_raster(data = myinterp1, aes(x = x, y = y, fill = temp), interpolate = FALSE) +
+    geom_polygon(data = w, aes(x=long, y = lat, group = group), fill = "grey80") +
+    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits=c(32,35), name="salinity") +
+    ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3,xlim = xlim, ylim = ylim) + ggtitle(paste("salinity at 75 meters",ifrPSAL$time[1] ))
+ myplot
+```
+
+
+## What happens when you request an extract
+
+When you make an `rerddapXtracto` request, particularly for track data using the `rxtracto` function, it is important to understand what is extracted, because the remote dataset requested likely will have a different temporal and spatial resolution then the local dataset.
+
+Specifically, let `longitude`, `latitude` and `time` be the coordinate system of the remote <span style="color:blue">ERDDAP</span> dataset, and let `xpos`, `ypos` and `tpos` be the bounds of a request.  Then the <span style="color:blue">ERDDAP</span> request is based on the nearest grid point of the <span style="color:blue">ERDDAP</span> dataset:
+
+```{r nearGrid,eval=FALSE}
+latitude[which.min(abs(latitude - ypos[1]))]  # minimum latitude
+latitude[which.min(abs(latitude - ypos[2]))]  # maximum latitude
+longitude[which.min(abs(longitude- xpos[1]))] # minimum longitude
+longitude[which.min(abs(longitude - xpos[2]))] # maximum longitude
+isotime[which.min(abs(time- tpos[1]))] # minimum time
+isotime[which.min(abs(time - tpos[2]))] # maximum time
+```
+
+where  `tpos` and `time` have been converted to an <span style="color:blue">R</span> date format so that it is a number rather than a string. For example, the FNMOC 6-hourly Ekman transports are on a 1-degree grid. A request for the data at a longitude of 220.2 and a latitude of 38.7 will return the result at a longtiude of 220 and a latitude of 39.  These values are then used in a call to `rerddap::griddap()`, with `parameter` being the variable of interest.
+
