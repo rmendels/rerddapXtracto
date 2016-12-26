@@ -30,46 +30,54 @@
 #'   }
 #' @examples
 #' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
-#' dataInfo <- rerddap::info('erdPHssta8day')
+#' dataInfo <- rerddap::info('erdMBsstd8day')
 #' parameter <- 'sst'
-#' xcoord <- c(230,235)
-#' ycoord <- c(40,45)
-#' tcoord <- c('2006-01-15','2006-01-20')
+#' xcoord <- c(230, 235)
+#' ycoord <- c(40, 45)
+#' tcoord <- c('2006-01-15', '2006-01-20')
 #' zcoord <- 0.
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord)
-#' 2-D example getting bathymetry
+#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                        tcoord = tcoord, zcoord = zcoord)
+#'
+#' # 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
-#' extract <- xtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord)
-#' Example where grid is not latitude-longitude
+#' extract <- xtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
+#'
+#' # Example where grid is not latitude-longitude
 #' dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
 #' parameter = 'temp'
 #' xName <- 'nx'
 #' yName <- 'ny'
 #' zName <- 'nsigma'
-#' xcoord <- c(10,11)
-#' ycoord <- c(10,11)
-#' zcoord <- c(1,1)
-#' tcoord <- c('2016-09-02','2016-09-03')
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xName=xName, yName=yName, zName=zName)
-#' Dataset that has depth also
-#' 3 months of subsurface temperature at 70m depth from SODA 2.2.4
+#' xcoord <- c(10, 11)
+#' ycoord <- c(10, 11)
+#' zcoord <- c(1, 1)
+#' tcoord <- c('2016-09-02', '2016-09-03')
+#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                        zcoord = zcoord, tcoord = tcoord, xName = xName,
+#'                        yName = yName, zName = zName)
+#'
+#' # Dataset that has depth also
+#' # 3 months of subsurface temperature at 70m depth from SODA 2.2.4
 #' dataInfo <- rerddap::info('hawaii_d90f_20ee_c4cb')
 #' parameter = 'temp'
 #' xName <- 'longitude'
 #' yName <- 'latitude'
 #' zName <- 'depth'
-#' xcoord <- c(230.25,250.25)
-#' ycoord <- c(30.25,43.25)
-#' zcoord <- c(70.02,70.02)
-#' tcoord <- c('2010-10-15','2010-12-15')
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xName=xName, yName=yName, zName=zName)
+#' xcoord <- c(230.25, 250.25)
+#' ycoord <- c(30.25, 43.25)
+#' zcoord <- c(70.02, 70.02)
+#' tcoord <- c('2010-10-15', '2010-12-15')
+#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                        zcoord = zcoord, tcoord = tcoord, xName = xName,
+#'                        yName = yName, zName = zName)
 #'
 
-rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
+rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
 
   #  check that a valid rerddap info structure is being passed
-  if (!(is(dataInfo, "info"))) {
+  if (!(methods::is(dataInfo, "info"))) {
     print("error - dataInfo is not a valid info structure from rerddap")
     return()
   }
@@ -104,19 +112,19 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zc
   if (!(parameter %in% allvars)) {
     cat("Parameter given is not in dataset")
     cat("Parameter given: ", parameter)
-    cat("Dataset Parameters: ", allvars[(length(allCoords)+1):length(allvars)])
+    cat("Dataset Parameters: ", allvars[(length(allCoords) + 1):length(allvars)])
     stop("execution halted", call. = FALSE)
   }
 
   lenURL <- nchar(urlbase)
-  if(substr(urlbase, lenURL, lenURL) == '/'){
-    urlbase <- substr(urlbase,1,(lenURL-1))
+  if (substr(urlbase, lenURL, lenURL) == '/') {
+    urlbase <- substr(urlbase, 1, (lenURL - 1))
   }
 
   #reconcile longitude grids
   #get dataset longitude range
   xcoord1 <- xcoord
-  if (xName == 'longitude'){
+  if (xName == 'longitude') {
     lonVal <- dataInfo$alldata$longitude[dataInfo$alldata$longitude$attribute_name == "actual_range", "value"]
     lonVal2 <- as.numeric(strtrim1(strsplit(lonVal, ",")[[1]]))
     #grid is -180, 180
@@ -136,7 +144,7 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zc
     latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
     latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
     #north-south  datasets
-    if(latVal2[1] > latVal2[2]) {ycoord1<-rev(ycoord1)}
+    if (latVal2[1] > latVal2[2]) {ycoord1 <- rev(ycoord1)}
   }
 
   ### If tcoord is not empty, check for value "last" and convert, and make time an R date
@@ -155,18 +163,18 @@ if (length(dataCoordList) == 0) {
   stop("Error retrieving coordinate variable")
 }
 tcoordLim <- NULL
-if(!is.null(tcoord)){
+if (!is.null(tcoord)) {
   isotime <- dataCoordList$time
   udtime <- parsedate::parse_date(dataCoordList$time)
   dataCoordList$time <- parsedate::parse_date(dataCoordList$time)
   udtime <- dataCoordList$time
-  lenTime <-length(isotime)
+  lenTime <- length(isotime)
 
   if (grepl("last", tcoord1[1])) {
     tlen <- nchar(tcoord1[1])
     arith <- substr(tcoord1[1], 5, tlen)
     tempVar <- paste0(as.character(lenTime), arith)
-    tIndex <- eval(parse(text=tempVar))
+    tIndex <- eval(parse(text = tempVar))
     tcoord1[1] <- isotime[tIndex]
   }
 
@@ -174,7 +182,7 @@ if(!is.null(tcoord)){
     tlen <- nchar(tcoord1[2])
     arith <- substr(tcoord1[2], 5, tlen)
     tempVar <- paste0(as.character(lenTime), arith)
-    tIndex <- eval(parse(text=tempVar))
+    tIndex <- eval(parse(text = tempVar))
     tcoord1[2] <- isotime[tIndex]
   }
   udtpos <- parsedate::parse_date(tcoord1)
@@ -194,14 +202,14 @@ erddapYcoord <- rep(NA_real_, 2)
 erddapTcoord <- rep(NA_real_, 2)
 erddapZcoord <- zcoord1
 
-if(xName %in% names(dataCoordList)){
+if (xName %in% names(dataCoordList)) {
   cindex <- which(names(dataCoordList) == xName)
   erddapXcoord[1] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - xcoordLim[1]))]
   erddapXcoord[2] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - xcoordLim[2]))]
 }
-if(yName %in% names(dataCoordList)){
+if (yName %in% names(dataCoordList)) {
   cindex <- which(names(dataCoordList) == yName)
-  erddapYcoord[1] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]]- ycoordLim[1]))]
+  erddapYcoord[1] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - ycoordLim[1]))]
   erddapYcoord[2] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - ycoordLim[2]))]
 
 }
@@ -211,23 +219,23 @@ if (tName %in% names(dataCoordList)) {
     erddapTcoord[2] <- isotime[which.min(abs(udtime - tcoordLim[2]))]
 }
 myCallOpts <- ""
-if(!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")){
+if (!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")) {
   myCallOpts <- paste0(", url='", urlbase,"/'")
 }
-if(verbose){
+if (verbose) {
   myCallOpts <- paste0(myCallOpts,",callopts = httr::verbose()")
 }
 griddapCmd <- 'rerddap::griddap(dataInfo,'
-if(!is.null(xcoord)){
+if (!is.null(xcoord)) {
   griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapXcoord[1],',',erddapXcoord[2],'),')
 }
-if(!is.null(ycoord)){
+if (!is.null(ycoord)) {
   griddapCmd <- paste0(griddapCmd, yName,'=c(',erddapYcoord[1],',',erddapYcoord[2],'),')
 }
-if(!is.null(zcoord)){
+if (!is.null(zcoord)) {
   griddapCmd <- paste0(griddapCmd, zName,'=c(',zcoord[1],',',zcoord[1],'),')
 }
-if(!is.null(tcoord)){
+if (!is.null(tcoord)) {
   griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTcoord[1],'","',erddapTcoord[2],'"),')
 }
 griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE',myCallOpts,')')
@@ -235,23 +243,23 @@ griddapExtract <- eval(parse(text = griddapCmd))
 
 datafileID <- ncdf4::nc_open(griddapExtract$summary$filename)
 
-dataX <- ncdf4::ncvar_get(datafileID, varid=xName)
-dataY <- ncdf4::ncvar_get(datafileID, varid=yName)
+dataX <- ncdf4::ncvar_get(datafileID, varid = xName)
+dataY <- ncdf4::ncvar_get(datafileID, varid = yName)
 if (!is.null(zcoord)) {
-  dataZ <- ncdf4::ncvar_get(datafileID, varid=zName)
+  dataZ <- ncdf4::ncvar_get(datafileID, varid = zName)
 }
 
 if (!is.null(tcoord)) {
-  datatime <- ncdf4::ncvar_get(datafileID, varid="time")
-  datatime <- as.POSIXlt(datatime, origin='1970-01-01', tz= "GMT")
+  datatime <- ncdf4::ncvar_get(datafileID, varid = "time")
+  datatime <- as.POSIXlt(datatime, origin = '1970-01-01', tz = "GMT")
 }
 
-param <- ncdf4::ncvar_get(datafileID, varid=parameter, collapse_degen=FALSE)
+param <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
 
 ncdf4::nc_close(datafileID)
 #  put longitudes back on the requestors scale
 #  reqeust is on (0,360), data is not
-if (xName == 'longitude'){
+if (xName == 'longitude') {
   if (max(xcoord) > 180.) {
     dataX <- make360(dataX)
   }
@@ -261,7 +269,7 @@ if (xName == 'longitude'){
   }
 }
 
-if (yName == 'latitude'){
+if (yName == 'latitude') {
   if (length(dataY) > 1) {
     if (dataY[1] > dataY[2]) {
       dataY <- rev(dataY)
@@ -269,9 +277,9 @@ if (yName == 'latitude'){
 #      param <- param[, rev(seq_len(dataYLen)) ,, drop = FALSE]
       paramLen <- length(names(datafileID$dim))
       latLoc <- which(rev(names(datafileID$dim)) == 'latitude')
-      myComma1 <- paste(rep(',', times = (latLoc-1)),  sep="", collapse="")
-      myComma2 <- paste( 'rev(seq_len(dataYLen))', sep="", collapse="")
-      myComma3 <- paste(rep(',', times = (paramLen-latLoc+1)),sep="", collapse="")
+      myComma1 <- paste(rep(',', times = (latLoc - 1)),  sep = "", collapse = "")
+      myComma2 <- paste( 'rev(seq_len(dataYLen))', sep = "", collapse = "")
+      myComma3 <- paste(rep(',', times = (paramLen - latLoc + 1)), sep = "", collapse = "")
       paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
       paramReverse <- eval(parse(text = paramCommand))
     }
@@ -289,25 +297,25 @@ if (!is.null(zcoord)) {
 if (!is.null(tcoord)) {
   extract[[6]] <- datatime
 }
-if (grepl('etopo',extract[[2]])){
-  names(extract) <- c('depth',"datasetname",xName, yName, zName, "time")
+if (grepl('etopo',extract[[2]])) {
+  names(extract) <- c('depth', "datasetname", xName, yName, zName, "time")
 
 }else{
-  names(extract) <- c(parameter,"datasetname",xName, yName, zName, "time")
+  names(extract) <- c(parameter, "datasetname", xName, yName, zName, "time")
 
 }
-copyFile <- paste0(getwd(),'/',parameter,'.nc')
+copyFile <- paste0(getwd(), '/', parameter, '.nc')
 iFile <- 1
-while(file.exists(copyFile)){
-  copyFile <- paste0(getwd(),'/',parameter,'_',iFile,'.nc')
-  iFile <- iFile +1
+while (file.exists(copyFile)) {
+  copyFile <- paste0(getwd(), '/', parameter, '_', iFile, '.nc')
+  iFile <- iFile + 1
 }
 fcopy <- file.copy(griddapExtract$summary$filename, copyFile)
-if(!fcopy){
+if (!fcopy) {
   print('copying and renaming downloaded file from default ~/.rerddap failed')
 }
 fremove <- file.remove(griddapExtract$summary$filename)
-if(!fremove){
+if (!fremove) {
   print('removing cached file from ~/.rerddap failed')
   print('check that directory as files can pile up and use up space')
 }

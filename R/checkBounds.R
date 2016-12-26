@@ -18,9 +18,9 @@
 checkBounds <- function(dataCoordList, dimargs) {
   returnCode <- 0
   dimLen <- length(names(dataCoordList))
-  for(i in (1:dimLen)) {
+  for (i in (1:dimLen)) {
     cIndex <- which(names(dataCoordList)[i] == names(dimargs))
-    if((min(dimargs[[cIndex]]) < min(dataCoordList[[i]])) |  (max(dimargs[[cIndex]]) > max(dataCoordList[[i]]))){
+    if ((min(dimargs[[cIndex]]) < min(dataCoordList[[i]])) |  (max(dimargs[[cIndex]]) > max(dataCoordList[[i]]))) {
       print('dimension coordinate out of bounds')
       print(paste0('dimension name: ', names(dimargs)[cIndex]))
       print(paste('given coordinate bounds', dimargs[cIndex]))

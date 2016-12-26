@@ -64,13 +64,15 @@ parameter <- 'chla'
 tcoord <- c("2016-06-15", "2016-06-15")
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
-sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
+sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
+                         ycoord = ycoord,  tcoord= tcoord)
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
 dataInfo <- rerddap::info('etopo180')
 parameter = 'altitude'
 xName <- 'longitude'
 yName <- 'latitude'
-bathy <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord)
+bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord,
+                      ycoord = ycoord)
 }
 

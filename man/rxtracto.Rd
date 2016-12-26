@@ -39,7 +39,8 @@ decimal degrees N; -90 to 90)}
 
 \item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
 
-\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
+\item{verbose}{- logical variable (default FALSE) if the the URL request
+should be verbose}
 }
 \value{
 A dataframe containing:
@@ -66,31 +67,38 @@ data from an ERDDAP server along a (x,y,z, time) trajectory.
 }
 \examples{
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
-dataInfo <- rerddap::info('erdPHssta8day')
+dataInfo <- rerddap::info('erdMBsstd8day')
 parameter <- 'sst'
-xcoord <- c(230,231)
-ycoord <- c(40,41)
-tcoord <- c('2006-01-15','2006-01-20')
+xcoord <- c(230, 231)
+ycoord <- c(40, 41)
+tcoord <- c('2006-01-15', '2006-01-20')
 zcoord <- 0.
 xlen <- 0.5
 ylen <- 0.5
-extract <- rxtracto(dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord, xlen=xlen, ylen=ylen)
-2-D example getting bathymetry
+extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
+                    ycoord = ycoord, tcoord= tcoord, zcoord = zcoord,
+                    xlen = xlen, ylen = ylen)
+
+# 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
-extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, xlen=xlen, ylen=ylen)
-Example where grid is not latitude-longitude
+extract <- rxtracto(dataInfo, parameter, xcoord = xcoord,
+           ycoord = ycoord, xlen = xlen, ylen = ylen)
+
+# Example where grid is not latitude-longitude
 dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
-parameter = 'temp'
+parameter <- 'temp'
 xName <- 'nx'
 yName <- 'ny'
 zName <- 'nsigma'
-xcoord <- c(10,11)
-ycoord <- c(10,11)
-zcoord <- c(1,1)
-tcoord <- c('2016-09-02','2016-09-03')
+xcoord <- c(10, 11)
+ycoord <- c(10, 11)
+zcoord <- c(1, 1)
+tcoord <- c('2016-09-02', '2016-09-03')
 xlen <- 0
 ylen <- 0
-extract <- rxtracto(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xlen= xlen, ylen=ylen, xName=xName, yName=yName, zName=zName)
+extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                    zcoord = zcoord, tcoord = tcoord, xlen = xlen, ylen = ylen,
+                    xName = xName, yName = yName, zName = zName)
 }
 

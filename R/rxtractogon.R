@@ -33,28 +33,31 @@
 #' tcoord <- c("2016-06-15", "2016-06-15")
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
-#' sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord,  tcoord=tcoord)
+#' sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
+#'                          ycoord = ycoord,  tcoord= tcoord)
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
 #' dataInfo <- rerddap::info('etopo180')
 #' parameter = 'altitude'
 #' xName <- 'longitude'
 #' yName <- 'latitude'
-#' bathy <- rxtractogon (dataInfo, parameter=parameter, xcoord=xcoord, ycoord=ycoord)
+#' bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord,
+#'                       ycoord = ycoord)
 #' @section Details:
 #'  rxtractogon extracts the data from the smallest bounding box that contains
 #'  the polygon, and then uses the function "point.in.polygon" from the "sp"
-#'  package to mask out the areas outside of the polygon.
+#'  package to mask out the areas outside of the polygon. rxtractogon only works with
+#'  datasets defined on a latitude and longitude grid.
 
 
 
 
 
-rxtractogon <- function(dataInfo, parameter, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
+rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
 
 
   #  check that a valid rerddap info structure is being passed
-  if (!(is(dataInfo, "info"))) {
+  if (!(methods::is(dataInfo, "info"))) {
     print("error - dataInfo is not a valid info structure from rerddap")
     return()
   }
@@ -81,13 +84,13 @@ xcoord1 <- c(min(xcoord), max(xcoord))
 ycoord1 <- c(min(ycoord), max(ycoord))
 
 # call xtracto to get data
-extract <-  rxtracto_3D(dataInfo, parameter=parameter, xcoord=xcoord1, ycoord=ycoord1, zcoord=zcoord, tcoord=tcoord1, xName=xName, yName=yName, zName=zName, urlbase=urlbase, verbose=verbose)
+extract <-  rxtracto_3D(dataInfo, parameter = parameter, xcoord = xcoord1, ycoord = ycoord1, zcoord = zcoord, tcoord = tcoord1, xName = xName, yName = yName, zName = zName, urlbase = urlbase, verbose = verbose)
 #	extract <- xtracto_3D(xcoord1,ycoord1,tpos1,dtype, verbose)
-if(length(dim(extract[[1]]))==2){
-   extract[[1]]<-array(extract[[1]],c(dim(extract[[1]]),1))
+if (length(dim(extract[[1]])) == 2) {
+   extract[[1]] <- array(extract[[1]], c(dim(extract[[1]]), 1))
   }
-if(length(dim(extract[[1]]))==4){
-  extract[[1]]<-abind::adrop(extract[[1]],drop=3)
+if (length(dim(extract[[1]])) == 4) {
+  extract[[1]] <- abind::adrop(extract[[1]], drop = 3)
 }
 
 
@@ -100,13 +103,13 @@ if(length(dim(extract[[1]]))==4){
 #Parse grid lats and longs
 #    x.vals <- matrix(rep(as.numeric(substr(dimnames(extract)[[1]], 1, nchar(dimnames(extract)[[1]])-1)),length(dimnames(extract)[[2]])), ncol = length(dimnames(extract)[[2]]))
 #    y.vals <- matrix(sort(rep(as.numeric(substr(dimnames(extract)[[2]], 1, nchar(dimnames(extract)[[2]])-1)),length(dimnames(extract)[[1]]))), ncol = length(dimnames(extract)[[1]]))
-x.vals <- matrix(rep(extract$longitude, length(extract$latitude)), ncol=length(extract$latitude))
+x.vals <- matrix(rep(extract$longitude, length(extract$latitude)), ncol = length(extract$latitude))
 y.vals <- sort(rep(extract$latitude, length(extract$longitude)))
-y.vals <- matrix(y.vals, nrow=length(extract$latitude), ncol=length(extract$longitude))
+y.vals <- matrix(y.vals, nrow = length(extract$latitude), ncol = length(extract$longitude))
 # deal with polygon crossing 180
 ew.sign <- sign(mypoly$x)
 if (length(unique(ew.sign)) > 1) {
-  mypoly$x[mypoly$x < 0] <- mypoly$x[poly$x < 0] + 360
+  mypoly$x[mypoly$x < 0] <- mypoly$x[mypoly$x < 0] + 360
   x.vals[x.vals < 0] <- x.vals[x.vals < 0] + 360
   print("Polygon data cross 180. Converted to E longitudes")
 }
@@ -116,10 +119,10 @@ if (length(unique(ew.sign)) > 1) {
 in.poly <- matrix(sp::point.in.polygon(x.vals, y.vals, mypoly$x, mypoly$y), ncol = length(extract$longitude))
 in.poly[in.poly > 1] <- 1
 in.poly[in.poly == 0] <- NA
-dim(in.poly) <- dim(extract[[1]][,,1])
+dim(in.poly) <- dim(extract[[1]][, , 1])
 extract.in.poly <- apply(extract[[1]], 3, "*", in.poly)
 dim(extract.in.poly) <- dim(extract[[1]])
-extract[[1]]<-extract.in.poly
+extract[[1]] <- extract.in.poly
 
 return(extract)
 }

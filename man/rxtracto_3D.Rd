@@ -55,40 +55,48 @@ but function is maintained as it is used in the polygon routine.
 }
 \examples{
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
-dataInfo <- rerddap::info('erdPHssta8day')
+dataInfo <- rerddap::info('erdMBsstd8day')
 parameter <- 'sst'
-xcoord <- c(230,235)
-ycoord <- c(40,45)
-tcoord <- c('2006-01-15','2006-01-20')
+xcoord <- c(230, 235)
+ycoord <- c(40, 45)
+tcoord <- c('2006-01-15', '2006-01-20')
 zcoord <- 0.
-extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, tcoord=tcoord, zcoord=zcoord)
-2-D example getting bathymetry
+extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                       tcoord = tcoord, zcoord = zcoord)
+
+# 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
-extract <- xtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord)
-Example where grid is not latitude-longitude
+extract <- xtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
+
+# Example where grid is not latitude-longitude
 dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
 parameter = 'temp'
 xName <- 'nx'
 yName <- 'ny'
 zName <- 'nsigma'
-xcoord <- c(10,11)
-ycoord <- c(10,11)
-zcoord <- c(1,1)
-tcoord <- c('2016-09-02','2016-09-03')
-extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xName=xName, yName=yName, zName=zName)
-Dataset that has depth also
-3 months of subsurface temperature at 70m depth from SODA 2.2.4
+xcoord <- c(10, 11)
+ycoord <- c(10, 11)
+zcoord <- c(1, 1)
+tcoord <- c('2016-09-02', '2016-09-03')
+extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                       zcoord = zcoord, tcoord = tcoord, xName = xName,
+                       yName = yName, zName = zName)
+
+# Dataset that has depth also
+# 3 months of subsurface temperature at 70m depth from SODA 2.2.4
 dataInfo <- rerddap::info('hawaii_d90f_20ee_c4cb')
 parameter = 'temp'
 xName <- 'longitude'
 yName <- 'latitude'
 zName <- 'depth'
-xcoord <- c(230.25,250.25)
-ycoord <- c(30.25,43.25)
-zcoord <- c(70.02,70.02)
-tcoord <- c('2010-10-15','2010-12-15')
-extract <- rxtracto_3D(dataInfo, parameter, xcoord=xcoord, ycoord=ycoord, zcoord=zcoord, tcoord=tcoord, xName=xName, yName=yName, zName=zName)
+xcoord <- c(230.25, 250.25)
+ycoord <- c(30.25, 43.25)
+zcoord <- c(70.02, 70.02)
+tcoord <- c('2010-10-15', '2010-12-15')
+extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                       zcoord = zcoord, tcoord = tcoord, xName = xName,
+                       yName = yName, zName = zName)
 
 }
 

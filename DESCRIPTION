@@ -15,11 +15,23 @@ Description: The xtractomatic package contains three functions that access
     to be extracted.
 URL: https://github.com/rmendels/rerddapXtracto
 BugReports: https://github.com/rmendels/rerddapXtracto/issues
-License: CC0 + file LICENSE
+License: CC0
 LazyData: TRUE
 Imports:
-    rerddap,
+    abind,
+    methods,
     ncdf4,
+    parsedate,
+    rerddap,
     sp,
-    abind
+    stats
+Suggests:
+    akima,
+    dplyr,
+    ggfortify,
+    ggplot2,
+    knitr,
+    lubridate,
+    mapdata,
+    xts
 RoxygenNote: 5.0.1
