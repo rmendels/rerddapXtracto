@@ -39,8 +39,7 @@ decimal degrees N; -90 to 90)}
 
 \item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
 
-\item{verbose}{- logical variable (default FALSE) if the the URL request
-should be verbose}
+\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 }
 \value{
 A dataframe containing:
@@ -62,9 +61,6 @@ A dataframe containing:
 \code{rxtracto} uses the R program rerddap to extract environmental
 data from an ERDDAP server along a (x,y,z, time) trajectory.
 }
-\section{History}{
-
-}
 \examples{
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 dataInfo <- rerddap::info('erdMBsstd8day')
@@ -78,12 +74,11 @@ ylen <- 0.5
 extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
                     ycoord = ycoord, tcoord= tcoord, zcoord = zcoord,
                     xlen = xlen, ylen = ylen)
-
 # 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
-extract <- rxtracto(dataInfo, parameter, xcoord = xcoord,
-           ycoord = ycoord, xlen = xlen, ylen = ylen)
+extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                    xlen = xlen, ylen = ylen)
 
 # Example where grid is not latitude-longitude
 dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
@@ -93,12 +88,12 @@ yName <- 'ny'
 zName <- 'nsigma'
 xcoord <- c(10, 11)
 ycoord <- c(10, 11)
-zcoord <- c(1, 1)
+zcoord <- 1
 tcoord <- c('2016-09-02', '2016-09-03')
 xlen <- 0
 ylen <- 0
 extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-                    zcoord = zcoord, tcoord = tcoord, xlen = xlen, ylen = ylen,
-                    xName = xName, yName = yName, zName = zName)
+                    zcoord = zcoord, tcoord = tcoord, xlen = xlen,
+                    ylen = ylen, xName = xName, yName = yName, zName = zName)
 }
 

@@ -42,7 +42,7 @@
 #' # 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
-#' extract <- xtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
+#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 #'
 #' # Example where grid is not latitude-longitude
 #' dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')

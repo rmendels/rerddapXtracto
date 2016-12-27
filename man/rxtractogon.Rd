@@ -56,7 +56,8 @@ latitudes and longitudes
 
  rxtractogon extracts the data from the smallest bounding box that contains
  the polygon, and then uses the function "point.in.polygon" from the "sp"
- package to mask out the areas outside of the polygon.
+ package to mask out the areas outside of the polygon. rxtractogon only works with
+ datasets defined on a latitude and longitude grid.
 }
 \examples{
 dataInfo <- rerddap::info('erdVH3chlamday')

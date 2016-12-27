@@ -35,7 +35,7 @@
 #'  }
 #' @examples
 #' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
-#' dataInfo <- rerddap::info('erdPHssta8day')
+#' dataInfo <- rerddap::info('erdMBsstd8day')
 #' parameter <- 'sst'
 #' xcoord <- c(230, 231)
 #' ycoord <- c(40, 41)
@@ -43,12 +43,16 @@
 #' zcoord <- 0.
 #' xlen <- 0.5
 #' ylen <- 0.5
-#' extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord, ycoord = ycoord, tcoord= tcoord, zcoord = zcoord, xlen = xlen, ylen = ylen)
-#' 2-D example getting bathymetry
+#' extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
+#'                     ycoord = ycoord, tcoord= tcoord, zcoord = zcoord,
+#'                     xlen = xlen, ylen = ylen)
+#' # 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
-#' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord, xlen = xlen, ylen = ylen)
-#' Example where grid is not latitude-longitude
+#' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                     xlen = xlen, ylen = ylen)
+#'
+#' # Example where grid is not latitude-longitude
 #' dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
 #' parameter <- 'temp'
 #' xName <- 'nx'
@@ -60,9 +64,9 @@
 #' tcoord <- c('2016-09-02', '2016-09-03')
 #' xlen <- 0
 #' ylen <- 0
-#' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord, zcoord = zcoord, tcoord = tcoord, xlen = xlen, ylen = ylen, xName = xName, yName = yName, zName = zName)
-#' @section History
-#'
+#' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                     zcoord = zcoord, tcoord = tcoord, xlen = xlen,
+#'                     ylen = ylen, xName = xName, yName = yName, zName = zName)
 
 
 
@@ -70,7 +74,7 @@
 rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
 
   #  check that a valid rerddap info structure is being passed
-if (!(is(dataInfo, "info"))) {
+if (!(methods::is(dataInfo, "info"))) {
     print("error - dataInfo is not a valid info structure from rerddap")
     return()
 }
