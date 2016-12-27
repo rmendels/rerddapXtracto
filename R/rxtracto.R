@@ -56,7 +56,7 @@
 #' zName <- 'nsigma'
 #' xcoord <- c(10, 11)
 #' ycoord <- c(10, 11)
-#' zcoord <- c(1, 1)
+#' zcoord <- 1
 #' tcoord <- c('2016-09-02', '2016-09-03')
 #' xlen <- 0
 #' ylen <- 0
@@ -87,7 +87,6 @@ if (!(is(dataInfo, "info"))) {
 # 1) checking that given corrdinates are in dataset
 # 2) the correct number of coordinates are given
   allvars <- getallvars(dataInfo)
-  numparms <- dim(dataInfo$variables)[1]
   allCoords <- dimvars(dataInfo)
   callDims <- list(xcoord, ycoord, zcoord, tcoord)
   names(callDims) <- c(xName, yName, zName, tName)
@@ -160,9 +159,7 @@ if (length(dataCoordList) == 0) {
 
  if (tName %in% names(dataCoordList)) {
    tNameIndex <- which(names(dataCoordList) == tName)
-}
- if (tName %in% names(dataCoordList)) {
-   isotime <- dataCoordList$time
+   isotime <- dataCoordList[[tNameIndex]]
    udtime <- parsedate::parse_date(isotime)
  }
 
@@ -188,7 +185,13 @@ newyIndex <-  rep(NA_integer_, 2)
 newTimeIndex <-  rep(NA_integer_, 2)
 oldDataFrame <- as.data.frame(matrix(ncol = 11, nrow = 1))
 
-  latSouth <- (dataCoordList[[yNameIndex]][2] > dataCoordList[[yNameIndex]][1] )
+latSouth <- (dataCoordList[[yNameIndex]][2] > dataCoordList[[yNameIndex]][1] )
+if (zName %in% names(dataCoordList)) {
+  newzIndex <-  which.min(abs(dataCoordList[[zNameIndex]] - zcoord))
+  erddapZ <- rep(NA_real_, 2)
+  erddapZ[1] <- dataCoordList[[zNameIndex]][newzIndex]
+  erddapZ[2] <- erddapZ[1]
+}
 
  for (i in 1:length(xcoord1)) {
 
@@ -224,16 +227,11 @@ oldDataFrame <- as.data.frame(matrix(ncol = 11, nrow = 1))
    } else {
      erddapY <- rep(NA_real_, 2)
      erddapX <- rep(NA_real_, 2)
-     erddapZ <- rep(NA_real_, 2)
      erddapTimes <- rep(NA_real_, 2)
      erddapY[1] <- dataCoordList[[yNameIndex]][newyIndex[1]]
      erddapY[2] <- dataCoordList[[yNameIndex]][newyIndex[2]]
      erddapX[1] <- dataCoordList[[xNameIndex]][newxIndex[1]]
      erddapX[2] <- dataCoordList[[xNameIndex]][newxIndex[2]]
-     if (zName %in% names(dataCoordList)) {
-       erddapZ[1] <- dataCoordList[[zNameIndex]][newzIndex]
-       erddapZ[2] <- erddapZ[1]
-     }
      if (tName %in% names(dataCoordList)) {
        requesttime <- isotime[newTimeIndex[1]]
        erddapTimes[1] <- requesttime

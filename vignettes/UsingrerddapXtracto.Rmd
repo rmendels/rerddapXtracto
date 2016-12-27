@@ -232,7 +232,7 @@ ypos <- c(36, 39)
 tpos <- c("last", "last")
 VIIRSInfo <- rerddap::info('erdVH2chlamday')
 VIIRS <- rxtracto_3D(VIIRSInfo, parameter = 'chla', xcoord = xpos, ycoord = ypos, tcoord = tpos)
-VIIRS$time <- lubridate::as.Date(VIIRS$time)
+VIIRS$time <- lubridate::as_date(VIIRS$time)
 ```
 
 `rxtracto_3d()` returns a list of the form:
