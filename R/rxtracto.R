@@ -312,8 +312,7 @@ if (zName %in% names(dataCoordList)) {
      out.dataframe[i, 11] <- stats::mad(paramdata, na.rm = T)
 
      remove('paramdata')
-#     file.remove(extract$summary$filename)
-     rerddap::cache_delete_all(cache_path = "~/.rerddap", force = TRUE)
+     rerddap::cache_delete(extract)force = TRUE)
    }
    oldyIndex <- newyIndex
    oldxIndex <- newxIndex

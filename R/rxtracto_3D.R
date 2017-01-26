@@ -314,11 +314,7 @@ fcopy <- file.copy(griddapExtract$summary$filename, copyFile)
 if (!fcopy) {
   print('copying and renaming downloaded file from default ~/.rerddap failed')
 }
-fremove <- file.remove(griddapExtract$summary$filename)
-if (!fremove) {
-  print('removing cached file from ~/.rerddap failed')
-  print('check that directory as files can pile up and use up space')
-}
+rerddap::cache_delete(griddapExtract)
 return(extract)
 }
 
