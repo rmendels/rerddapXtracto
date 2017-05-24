@@ -55,6 +55,7 @@
 
 rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
 
+  rerddap::cache_setup(temp_dir = TRUE)
 
   #  check that a valid rerddap info structure is being passed
   if (!(methods::is(dataInfo, "info"))) {

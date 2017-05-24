@@ -1,0 +1,36 @@
+readjustCoords <- function(param, dataX, dataY, xcoord, datafileID, callDims) {
+  #  put longitudes back on the requestors scale
+  #  reqeust is on (0,360), data is not
+  if ('longitude' %in% names(callDims)) {
+    if (max(xcoord) > 180.) {
+      dataX <- make360(dataX)
+    }
+    #request is on (-180,180)
+    if (min(xcoord) < 0.) {
+      dataX <- make180(dataX)
+    }
+  }
+
+  # some data have latitude go north to south.  Return all data with latitude
+  # going south to north.  Do this by flipping latitudes, finding
+  # the positon of latitude in the array, and flipping the date in
+  # that dimension
+  if ('latitude' %in% names(callDims)) {
+    if (length(dataY) > 1) {
+      if (dataY[1] > dataY[2]) {
+        dataY <- rev(dataY)
+        dataYLen <- length(dataY)
+        #      param <- param[, rev(seq_len(dataYLen)) ,, drop = FALSE]
+        paramLen <- length(names(datafileID$dim))
+        latLoc <- which(rev(names(datafileID$dim)) == 'latitude')
+        myComma1 <- paste(rep(',', times = (latLoc - 1)),  sep = "", collapse = "")
+        myComma2 <- paste( 'rev(seq_len(dataYLen))', sep = "", collapse = "")
+        myComma3 <- paste(rep(',', times = (paramLen - latLoc + 1)), sep = "", collapse = "")
+        paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
+        paramReverse <- eval(parse(text = paramCommand))
+      }
+    }
+  }
+
+return(list(dataX = dataX, dataY = dataY, param = param))
+}

@@ -73,57 +73,17 @@
 
 rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
 
-  #  check that a valid rerddap info structure is being passed
-if (!(methods::is(dataInfo, "info"))) {
-    print("error - dataInfo is not a valid info structure from rerddap")
-    return()
-}
-
-  #  check that the dataset is a grid
-  if (!("Grid" %in% dataInfo$alldata$NC_GLOBAL$value)) {
-    print("error - dataset is not a Grid")
-    return()
-}
-
-
-# check that there are the correct number of coordinates given
-# and the correct coordinates  by
-# 1) checking that given corrdinates are in dataset
-# 2) the correct number of coordinates are given
-  allvars <- getallvars(dataInfo)
-  allCoords <- dimvars(dataInfo)
+  # Check Passed Info -------------------------------------------------------
+  rerddap::cache_setup(temp_dir = TRUE)
   callDims <- list(xcoord, ycoord, zcoord, tcoord)
   names(callDims) <- c(xName, yName, zName, tName)
-  callDims <- callDims[!sapply(callDims, is.null)]
-  if (!(length(callDims) == length(allCoords))) {
-    cat("You must give bounds for all of the coordinates of the grid")
-    cat("Coordinates given: ", names(callDims))
-    cat("Dataset Coordinates: ", dimvars(dataInfo))
-    stop("execution halted", call. = FALSE)
-  }
+  urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
 
-# check that the field given part of the dataset
-  if (!(parameter %in% allvars)) {
-    cat("Parameter given is not in dataset")
-    cat("Parameter given: ", parameter)
-    cat("Dataset Parameters: ", allvars[(length(allCoords) + 1):length(allvars)])
-    stop("execution halted", call. = FALSE)
-  }
-  lenURL <- nchar(urlbase)
-  if (substr(urlbase, lenURL, lenURL) == '/') {
-    urlbase <- substr(urlbase, 1, (lenURL - 1))
-  }
+  # Check and readjust coordinate variables ---------------------------------
 
-  #reconcile longitude grids
-  #get dataset longitude range
-  xcoord1 <- xcoord
-  if (xName == 'longitude') {
-    lonVal <- dataInfo$alldata$longitude[dataInfo$alldata$longitude$attribute_name == "actual_range", "value"]
-    lonVal2 <- as.numeric(strtrim1(strsplit(lonVal, ",")[[1]]))
-    #grid is -180, 180
-    if (min(lonVal2) < 0.) {xcoord1 <- make180(xcoord1)}
-    if (max(lonVal2) > 180.) {xcoord1 <- make360(xcoord1)}
-  }
+  coordLims <- remapCoords(dataInfo, callDims, urlbase)
+  newTime <- coordLims$newTime
+
 
   # deal with xlen = constant v. vector
   if (length(xlen) == 1) {
@@ -135,192 +95,116 @@ if (!(methods::is(dataInfo, "info"))) {
   }
 
 
-if (!is.null(tcoord)) {
-  udtpos <- parsedate::parse_date(as.character(tcoord))
-  tcoordLim <- c(min(udtpos), max(udtpos))
-}else{
-  tcoordLim <- c(NULL, NULL)
-}
- xcoordLim <- c(min(xcoord1 - (xrad/2)), max(xcoord1 + (xrad/2)))
- ycoordLim <- c(min(ycoord - (yrad/2)), max(ycoord + (yrad/2)))
+
+# correct xcoord and ycoord by given "radius"
+ xcoordLim <- c(min(coordLims$xcoord1 - (xrad/2)), max(coordLims$xcoord1 + (xrad/2)))
+ ycoordLim <- c(min(coordLims$ycoord1 - (yrad/2)), max(coordLims$ycoord1 + (yrad/2)))
 
 
-#get dimension info
- dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
-if (length(dataCoordList) == 0) {
-  stop("Error retrieving coordinate variable")
-}
 
- if (xName %in% names(dataCoordList)) {
-   xNameIndex <- which(names(dataCoordList) == xName)
- }
- if (yName %in% names(dataCoordList)) {
-   yNameIndex <- which(names(dataCoordList) == yName)
-  }
- if (zName %in% names(dataCoordList)) {
-   zNameIndex <- which(names(dataCoordList) == zName)
- }
 
- if (tName %in% names(dataCoordList)) {
-   tNameIndex <- which(names(dataCoordList) == tName)
-   isotime <- dataCoordList[[tNameIndex]]
-   udtime <- parsedate::parse_date(isotime)
- }
+ # Check request is within dataset bounds ----------------------------------
 
- dimargs <- list(xcoordLim, ycoordLim, zcoord, tcoordLim)
+ # create list with requested coordinate limits, check that all are in bounds
+ dimargs <- list(xcoordLim, ycoordLim, coordLims$zcoordLim, coordLims$tcoordLim)
  names(dimargs) <- c(xName, yName, zName, tName)
- checkBounds(dataCoordList, dimargs)
- # if (result != 0) {
- # stop("Coordinates out of dataset bounds - see messages above")
- # }
+ dimargs <- Filter(Negate(is.null), dimargs)
+ #check that coordinate bounds are contained in the dataset
+ checkBounds(coordLims$dataCoordList, dimargs)
 
-#create structures to store last request in case it is the same
-  out.dataframe <- as.data.frame(matrix(ncol = 11,nrow = length(xcoord)))
+
+# create structures to store request --------------------------------------
+
+
+  out_dataframe <- as.data.frame(matrix(ncol = 11,nrow = length(xcoord)))
  if (("latitude" %in% names(dimargs))  & ("longitude" %in% names(dimargs))) {
-  dimnames(out.dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested lon min',      'requested lon max', 'requested lat min', 'requested lat max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
+  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested lon min',      'requested lon max', 'requested lat min', 'requested lat max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
 } else{
-  dimnames(out.dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested x min',  'requested x max', 'requested y min', 'requested y max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
-}
-oldxIndex <-  rep(NA_integer_, 2)
-oldyIndex <-  rep(NA_integer_, 2)
-oldTimeIndex <-  rep(NA_integer_, 2)
-newxIndex <-  rep(NA_integer_, 2)
-newyIndex <-  rep(NA_integer_, 2)
-newTimeIndex <-  rep(NA_integer_, 2)
-oldDataFrame <- as.data.frame(matrix(ncol = 11, nrow = 1))
-
-latSouth <- (dataCoordList[[yNameIndex]][2] > dataCoordList[[yNameIndex]][1] )
-if (zName %in% names(dataCoordList)) {
-  newzIndex <-  which.min(abs(dataCoordList[[zNameIndex]] - zcoord))
-  erddapZ <- rep(NA_real_, 2)
-  erddapZ[1] <- dataCoordList[[zNameIndex]][newzIndex]
-  erddapZ[2] <- erddapZ[1]
+  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested x min',  'requested x max', 'requested y min', 'requested y max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
 }
 
- for (i in 1:length(xcoord1)) {
+# Will calculate actual index of each coordinate requested to compare old and new request
+# store in oldIndex, as well as dataframe to store create dataframe
+oldIndex <- list(xIndex = rep(NA_integer_, 2), yIndex = rep(NA_integer_, 2), TimeIndex = rep(NA_integer_, 2))
+newIndex <- oldIndex
+oldDataFrame <- out_dataframe[1, ]
+
+# logical variable if the latitude coordinate goes south to north
+latSouth <- (coordLims$dataCoordList[[yName]][2] > coordLims$dataCoordList[[yName]][1] )
+
+# loop over the track positions
+ for (i in 1:length(xcoord)) {
 
 
 # define bounding box
-  xmax <- xcoord1[i] + (xrad[i]/2)
-  xmin <- xcoord1[i] - (xrad[i]/2)
+  xmax <- coordLims$xcoord1[i] + (xrad[i]/2)
+  xmin <- coordLims$xcoord1[i] - (xrad[i]/2)
   if (latSouth) {
-     ymax <- ycoord[i] + (yrad[i]/2)
-     ymin <- ycoord[i] - (yrad[i]/2)
+     ymax <- coordLims$ycoord1[i] + (yrad[i]/2)
+     ymin <- coordLims$ycoord1[i] - (yrad[i]/2)
   } else {
-     ymin <- ycoord[i] + (yrad[i]/2)
-     ymax <- ycoord[i] - (yrad[i]/2)
+     ymin <- coordLims$ycoord1[i] + (yrad[i]/2)
+     ymax <- coordLims$ycoord1[i] - (yrad[i]/2)
   }
 
+  erddapList <- findERDDAPcoord(coordLims$dataCoordList, newTime$isotime, newTime$udtime,
+                                c(xmin, xmax), c(ymin, ymax),
+                                c(newTime$udtpos[i], newTime$udtpos[i]), coordLims$zcoord1,
+                                xName, yName, tName, zName)
+  newIndex <- erddapList$newIndex
+  erddapCoords <- erddapList$erddapCoords
+  requesttime <- erddapCoords$erddapTcoord[1]
 
-# find closest time of available data
-#map request limits to nearest ERDDAP coordinates
-   newyIndex[1] <- which.min(abs(dataCoordList[[yNameIndex]] - ymin))
-   newyIndex[2] <- which.min(abs(dataCoordList[[yNameIndex]] - ymax))
-   newxIndex[1] <- which.min(abs(dataCoordList[[xNameIndex]] - xmin))
-   newxIndex[2] <- which.min(abs(dataCoordList[[xNameIndex]] - xmax))
-   if (zName %in% names(dataCoordList)) {
-       newzIndex <-  which.min(abs(dataCoordList[[zNameIndex]] - zcoord[i]))
-   }
-   if (tName %in% names(dataCoordList)) {
-     newTimeIndex[1] <- which.min(abs(udtime - udtpos[i]))
-    }
-
-   if (identical(newyIndex, oldyIndex) && identical(newxIndex, oldxIndex) && identical(newTimeIndex[1], oldTimeIndex[1])) {
+# test if the indices of the new request are the same as the previous request
+# if the same just copy the old dataframe
+   if (identical(newIndex, oldIndex)) {
      # the call will be the same as last time, so no need to repeat
-     out.dataframe[i,] <- oldDataFrame
+     out_dataframe[i,] <- oldDataFrame
    } else {
-     erddapY <- rep(NA_real_, 2)
-     erddapX <- rep(NA_real_, 2)
-     erddapTimes <- rep(NA_real_, 2)
-     erddapY[1] <- dataCoordList[[yNameIndex]][newyIndex[1]]
-     erddapY[2] <- dataCoordList[[yNameIndex]][newyIndex[2]]
-     erddapX[1] <- dataCoordList[[xNameIndex]][newxIndex[1]]
-     erddapX[2] <- dataCoordList[[xNameIndex]][newxIndex[2]]
-     if (tName %in% names(dataCoordList)) {
-       requesttime <- isotime[newTimeIndex[1]]
-       erddapTimes[1] <- requesttime
-       erddapTimes[2] <- requesttime
-      }
+     griddapCmd <- makeCmd(urlbase, xName, yName, zName, tName, parameter,
+                           erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
+                           erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                           verbose )
 
-      extract <- list()
-      myCallOpts <- ""
-      if (!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")) {
-        myCallOpts <- paste0(", url='", urlbase,"/'")
-      }
-      if (verbose) {
-        myCallOpts <- paste0(myCallOpts,",callopts = httr::verbose()")
-      }
-      griddapCmd <- 'rerddap::griddap(dataInfo,'
-      if (!is.null(xcoord)) {
-        griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapX[1],',',erddapX[2],'),')
-      }
-      if (!is.null(ycoord)) {
-        griddapCmd <- paste0(griddapCmd, yName,'=c(',erddapY[1],',',erddapY[2],'),')
-      }
-      if (!is.null(zcoord)) {
-        griddapCmd <- paste0(griddapCmd, zName,'=c(',erddapZ[1],',',erddapZ[2],'),')
-      }
-      if (!is.null(tcoord)) {
-        griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTimes[1],'","',erddapTimes[2],'"),')
-      }
-
-      griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE', myCallOpts,')')
-      extract <- eval(parse(text = griddapCmd))
+     extract <- eval(parse(text = griddapCmd))
 
     if (length(extract) == 0) {
        print(griddapCmd)
        stop("There was an error in the url call.  See message on screen and URL called")
         }
+    # read in netcdf file
+     datafileID <- ncdf4::nc_open(extract$summary$filename)
+     paramdata <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
+     ncdf4::nc_close(datafileID)
 
+     # adjust coordiantes back to original scale,  latitudes always go south-north
+     # tempCoords <- readjustCoords(dataX, dataY, xcoord, datafileID, callDims)
 
-
-    #  put xmin, xmax on requesting scale
-      if (xName == 'longitude') {
-       if (max(xcoord) > 180.) {
-         xmin <- make360(xmin)
-         xmax <- make360(xmax)
-       }
-       #request is on (-180, 180)
-       if (min(xcoord) < 0.) {
-         xmin <- make180(xmin)
-         xmax <- make180(xmax)
-       }
+    # populate the dataframe
+     out_dataframe[i, 1] <- mean(paramdata, na.rm = T)
+     out_dataframe[i, 2] <- stats::sd(paramdata, na.rm = T)
+     out_dataframe[i, 3] <- length(stats::na.omit(paramdata))
+     if (tName %in% names(coordLims$dataCoordList)) {
+       out_dataframe[i, 4] <- requesttime
      }
-
-    if ((yName == 'latitude') & !latSouth) {
-      tempY <- c(ymin, ymax)
-      ymin <- min(tempY)
-      ymax <- max(tempY)
-    }
-     ncFile <- ncdf4::nc_open(extract$summary$filename)
-     paramdata <- ncdf4::ncvar_get(ncFile,parameter)
-     ncdf4::nc_close(ncFile)
-     out.dataframe[i, 1] <- mean(paramdata, na.rm = T)
-     out.dataframe[i, 2] <- stats::sd(paramdata, na.rm = T)
-     out.dataframe[i, 3] <- length(stats::na.omit(paramdata))
-     if (tName %in% names(dataCoordList)) {
-       out.dataframe[i, 4] <- requesttime
+     out_dataframe[i, 5] <- xmin
+     out_dataframe[i, 6] <- xmax
+     out_dataframe[i, 7] <- ymin
+     out_dataframe[i, 8] <- ymax
+     if (tName %in% names(coordLims$dataCoordList)) {
+       out_dataframe[i, 9] <- tcoord[i]
      }
-     out.dataframe[i, 5] <- xmin
-     out.dataframe[i, 6] <- xmax
-     out.dataframe[i, 7] <- ymin
-     out.dataframe[i, 8] <- ymax
-     if (tName %in% names(dataCoordList)) {
-       out.dataframe[i, 9] <- tcoord[i]
-     }
-     out.dataframe[i, 10] <- stats::median(paramdata, na.rm = T)
-     out.dataframe[i, 11] <- stats::mad(paramdata, na.rm = T)
+     out_dataframe[i, 10] <- stats::median(paramdata, na.rm = T)
+     out_dataframe[i, 11] <- stats::mad(paramdata, na.rm = T)
 
      remove('paramdata')
      rerddap::cache_delete(extract)
-   }
-   oldyIndex <- newyIndex
-   oldxIndex <- newxIndex
-   oldTimeIndex <- newTimeIndex
-   oldDataFrame <- out.dataframe[i,]
+     }
+   oldIndex <- newIndex
+   oldDataFrame <- out_dataframe[i,]
 
 }
-return(out.dataframe)
+return(out_dataframe)
 }
 
 

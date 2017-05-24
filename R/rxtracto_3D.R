@@ -74,172 +74,63 @@
 #'                        yName = yName, zName = zName)
 #'
 
-rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
-
-  #  check that a valid rerddap info structure is being passed
-  if (!(methods::is(dataInfo, "info"))) {
-    print("error - dataInfo is not a valid info structure from rerddap")
-    return()
-  }
-
-  #  check that the dataset is a grid
-  if (!("Grid" %in% dataInfo$alldata$NC_GLOBAL$value)) {
-    print("error - dataset is not a Grid")
-    return()
-  }
+rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'https://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
 
 
-  # check that there are the correct number of coordinates given
-  # and the correct coordinates  by
-  # 1) checking that given corrdinates are in dataset
-  # 2) the correct number of coordinates are given
-  allvars <- getallvars(dataInfo)
-  numparms <- dim(dataInfo$variables)[1]
-  allCoords <- dimvars(dataInfo)
-  callDims <- list(xcoord, ycoord, zcoord, tcoord)
-  names(callDims) <- c(xName, yName, zName, tName)
-  callDims <- callDims[!sapply(callDims,is.null)]
-  if (!(length(callDims) == length(allCoords))) {
-    print("Ranges not given for all of the dataset dimensions")
-    print("Coordinates given: ")
-    print(names(callDims))
-    print("Dataset Coordinates: ")
-    print(allCoords)
-    stop(sprintf("Execution halted"), call. = FALSE)
-  }
-
-  # check that the field given part of the dataset
-  if (!(parameter %in% allvars)) {
-    cat("Parameter given is not in dataset")
-    cat("Parameter given: ", parameter)
-    cat("Dataset Parameters: ", allvars[(length(allCoords) + 1):length(allvars)])
-    stop("execution halted", call. = FALSE)
-  }
-
-  lenURL <- nchar(urlbase)
-  if (substr(urlbase, lenURL, lenURL) == '/') {
-    urlbase <- substr(urlbase, 1, (lenURL - 1))
-  }
-
-  #reconcile longitude grids
-  #get dataset longitude range
-  xcoord1 <- xcoord
-  if (xName == 'longitude') {
-    lonVal <- dataInfo$alldata$longitude[dataInfo$alldata$longitude$attribute_name == "actual_range", "value"]
-    lonVal2 <- as.numeric(strtrim1(strsplit(lonVal, ",")[[1]]))
-    #grid is -180, 180
-    if (min(lonVal2) < 0.) {xcoord1 <- make180(xcoord1)}
-    if (max(lonVal2) > 180.) {xcoord1 <- make360(xcoord1)}
-  }
-
-
-### now that corrdiantes are okay, let's make copies so we can manipulate if needed
-  ycoord1 <- ycoord
-  zcoord1 <- zcoord
-  tcoord1 <- tcoord
-
-
-### If ycoord is latitude, check for dataset going north-south, convert request
-  if (yName == 'latitude') {
-    latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
-    latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
-    #north-south  datasets
-    if (latVal2[1] > latVal2[2]) {ycoord1 <- rev(ycoord1)}
-  }
-
-  ### If tcoord is not empty, check for value "last" and convert, and make time an R date
-   xcoordLim <- c(min(xcoord1), max(xcoord1))
-  ycoordLim <- c(min(ycoord1), max(ycoord1))
-  if (!is.null(zcoord)) {
-    zcoordLim <- c(zcoord, zcoord)
-  }
-#  dimargs <- dimargs[dimargs != "NULL"]
+# Check Passed Info -------------------------------------------------------
+ rerddap::cache_setup(temp_dir = TRUE)
+ callDims <- list(xcoord, ycoord, zcoord, tcoord)
+ names(callDims) <- c(xName, yName, zName, tName)
+ urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
 
 
 
+# Check and readjust coordinate variables ---------------------------------
 
-dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
-if (length(dataCoordList) == 0) {
-  stop("Error retrieving coordinate variable")
-}
-tcoordLim <- NULL
-if (!is.null(tcoord)) {
-  isotime <- dataCoordList$time
-  udtime <- parsedate::parse_date(dataCoordList$time)
-  dataCoordList$time <- parsedate::parse_date(dataCoordList$time)
-  udtime <- dataCoordList$time
-  lenTime <- length(isotime)
+coordLims <- remapCoords(dataInfo, callDims, urlbase)
+newTime <- coordLims$newTime
 
-  if (grepl("last", tcoord1[1])) {
-    tlen <- nchar(tcoord1[1])
-    arith <- substr(tcoord1[1], 5, tlen)
-    tempVar <- paste0(as.character(lenTime), arith)
-    tIndex <- eval(parse(text = tempVar))
-    tcoord1[1] <- isotime[tIndex]
-  }
 
-  if (grepl("last", tcoord1[2])) {
-    tlen <- nchar(tcoord1[2])
-    arith <- substr(tcoord1[2], 5, tlen)
-    tempVar <- paste0(as.character(lenTime), arith)
-    tIndex <- eval(parse(text = tempVar))
-    tcoord1[2] <- isotime[tIndex]
-  }
-  udtpos <- parsedate::parse_date(tcoord1)
-  tcoordLim <- c(min(udtpos), max(udtpos))
-}
+# Check request is within dataset bounds ----------------------------------
 
-dimargs <- list(xcoordLim, ycoordLim, zcoord, tcoordLim)
+
+dimargs <- list(coordLims$xcoordLim, coordLims$ycoordLim, coordLims$zcoordLim, coordLims$tcoordLim)
 names(dimargs) <- c(xName, yName, zName, tName)
 dimargs <- Filter(Negate(is.null), dimargs)
 
 #check that coordinate bounds are contained in the dataset
-checkBounds(dataCoordList, dimargs)
+checkBounds(coordLims$dataCoordList, dimargs)
 
-#map request limits to nearest ERDDAP coordinates
-erddapXcoord <- rep(NA_real_, 2)
-erddapYcoord <- rep(NA_real_, 2)
-erddapTcoord <- rep(NA_real_, 2)
-erddapZcoord <- zcoord1
 
-if (xName %in% names(dataCoordList)) {
-  cindex <- which(names(dataCoordList) == xName)
-  erddapXcoord[1] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - xcoordLim[1]))]
-  erddapXcoord[2] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - xcoordLim[2]))]
-}
-if (yName %in% names(dataCoordList)) {
-  cindex <- which(names(dataCoordList) == yName)
-  erddapYcoord[1] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - ycoordLim[1]))]
-  erddapYcoord[2] <- dataCoordList[[cindex]][which.min(abs(dataCoordList[[cindex]] - ycoordLim[2]))]
+# Find dataset coordinates closest to requested coordinates ---------------
 
-}
-if (tName %in% names(dataCoordList)) {
-    cindex <- which(names(dataCoordList) == tName)
-    erddapTcoord[1] <- isotime[which.min(abs(udtime - tcoordLim[1]))]
-    erddapTcoord[2] <- isotime[which.min(abs(udtime - tcoordLim[2]))]
-}
-myCallOpts <- ""
-if (!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")) {
-  myCallOpts <- paste0(", url='", urlbase,"/'")
-}
-if (verbose) {
-  myCallOpts <- paste0(myCallOpts,",callopts = httr::verbose()")
-}
-griddapCmd <- 'rerddap::griddap(dataInfo,'
-if (!is.null(xcoord)) {
-  griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapXcoord[1],',',erddapXcoord[2],'),')
-}
-if (!is.null(ycoord)) {
-  griddapCmd <- paste0(griddapCmd, yName,'=c(',erddapYcoord[1],',',erddapYcoord[2],'),')
-}
-if (!is.null(zcoord)) {
-  griddapCmd <- paste0(griddapCmd, zName,'=c(',zcoord[1],',',zcoord[1],'),')
-}
-if (!is.null(tcoord)) {
-  griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTcoord[1],'","',erddapTcoord[2],'"),')
-}
-griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE',myCallOpts,')')
+
+erddapList <- findERDDAPcoord(coordLims$dataCoordList, newTime$isotime, newTime$udtime,
+                              coordLims$xcoordLim, coordLims$ycoordLim,
+                              coordLims$tcoordLim, coordLims$zcoordLim,
+                              xName, yName, tName, zName)
+erddapCoords <- erddapList$erddapCoords
+
+
+# Construct the griddap() command from the input --------------------------
+
+
+
+griddapCmd <- makeCmd(urlbase, xName, yName, zName, tName, parameter,
+                    erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
+                    erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                    verbose )
+
+
+# Get the data ------------------------------------------------------------
+
+
 griddapExtract <- eval(parse(text = griddapCmd))
+
+
+
+# read in the downloaded netcdf file --------------------------------------
+
 
 datafileID <- ncdf4::nc_open(griddapExtract$summary$filename)
 
@@ -257,37 +148,19 @@ if (!is.null(tcoord)) {
 param <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
 
 ncdf4::nc_close(datafileID)
-#  put longitudes back on the requestors scale
-#  reqeust is on (0,360), data is not
-if (xName == 'longitude') {
-  if (max(xcoord) > 180.) {
-    dataX <- make360(dataX)
-  }
-  #request is on (-180,180)
-  if (min(xcoord) < 0.) {
-    dataX <- make180(dataX)
-  }
-}
 
-if (yName == 'latitude') {
-  if (length(dataY) > 1) {
-    if (dataY[1] > dataY[2]) {
-      dataY <- rev(dataY)
-      dataYLen <- length(dataY)
-#      param <- param[, rev(seq_len(dataYLen)) ,, drop = FALSE]
-      paramLen <- length(names(datafileID$dim))
-      latLoc <- which(rev(names(datafileID$dim)) == 'latitude')
-      myComma1 <- paste(rep(',', times = (latLoc - 1)),  sep = "", collapse = "")
-      myComma2 <- paste( 'rev(seq_len(dataYLen))', sep = "", collapse = "")
-      myComma3 <- paste(rep(',', times = (paramLen - latLoc + 1)), sep = "", collapse = "")
-      paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
-      paramReverse <- eval(parse(text = paramCommand))
-    }
-  }
-}
+
+# Readjust lat-lon coordinates --------------------------------------------
+
+tempCoords <- readjustCoords(param, dataX, dataY, xcoord, datafileID, callDims)
+dataX <- tempCoords$dataX
+dataY <- tempCoords$dataY
+
+# create output list ------------------------------------------------------
+
 
 extract <- list(NA, NA, NA, NA, NA, NA)
-extract[[1]] <- param
+extract[[1]] <- tempCoords$param
 extract[[2]] <- attributes(dataInfo)$datasetid
 extract[[3]] <- dataX
 extract[[4]] <- dataY
@@ -304,6 +177,8 @@ if (grepl('etopo',extract[[2]])) {
   names(extract) <- c(parameter, "datasetname", xName, yName, zName, "time")
 
 }
+
+# copy netcdf file from cache to the present directory and rename
 copyFile <- paste0(getwd(), '/', parameter, '.nc')
 iFile <- 1
 while (file.exists(copyFile)) {
@@ -314,6 +189,7 @@ fcopy <- file.copy(griddapExtract$summary$filename, copyFile)
 if (!fcopy) {
   print('copying and renaming downloaded file from default ~/.rerddap failed')
 }
+# remove netcdf file from cache
 rerddap::cache_delete(griddapExtract)
 return(extract)
 }

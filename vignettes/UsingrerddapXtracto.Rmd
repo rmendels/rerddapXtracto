@@ -10,12 +10,12 @@ vignette: >
 ---
 ```{r initialize, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-# library(rerddapXtracto)
+library(rerddapXtracto)
 ```
 
 ## Introduction 
 
-`rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:blue">ERDDAP</span> server using the <span style="color:blue">R</span> package [rerddap](https://cran.r-project.org/web/packages/rerddap/index.html) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:blue">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude and time points;  and also extracting data within a polygon (through time).  `rerddapXtracto` extends the functionality of the <span style="color:blue">R</span> package [xtractomatic](https://cran.r-project.org/web/packages/xtractomatic/index.html) by being able to work with (hopefully) most gridded datasets available from any <span style="color:blue">ERDDAP</span> server. The disadavantage compared to `xtractomatic` is that the user has to do more work to obtain information about the dataset to be accessed, while in `xtractomatic` that information is built in.
+`rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/web/packages/rerddap/index.html) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude and time points;  and also extracting data within a polygon (through time).  `rerddapXtracto` extends the functionality of the <span style="color:red">R</span> package [xtractomatic](https://cran.r-project.org/web/packages/xtractomatic/index.html) by being able to work with (hopefully) most gridded datasets available from any <span style="color:red">ERDDAP</span> server. The disadavantage compared to `xtractomatic` is that the user has to do more work to obtain information about the dataset to be accessed, while in `xtractomatic` that information is built in.
 
 ### The Main xtractomatic functions
 
@@ -29,23 +29,23 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 The functions are similar to but not identical to the functions in `xtractomatic`. The main differences are having to obtain information about the dataset first using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
-- dataInfo: the return from an `rerddap::info()` call to a dataset on an <span style="color:blue">ERDDAP</span> server
+- dataInfo: the return from an `rerddap::info()` call to a dataset on an <span style="color:red">ERDDAP</span> server
 - parameter: character string containing the name of the parameter to extract
-- xName: character string with name of the xcoord in the <span style="color:blue">ERDDAP</span> dataset (default "longitude")
-- yName: character string with name of the ycoord in the <span style="color:blue">ERDDAP</span> dataset (default "latitude")
-- zName: character string with name of the zcoord in the <span style="color:blue">ERDDAP</span> dataset (default "altitude")
-- tName: character string with name of the tcoord in the <span style="color:blue">ERDDAP</span> dataset (default "time")
-- urlbase: base URL of the <span style="color:blue">ERDDAP</span> server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+- xName: character string with name of the xcoord in the <span style="color:red">ERDDAP</span> dataset (default "longitude")
+- yName: character string with name of the ycoord in the <span style="color:red">ERDDAP</span> dataset (default "latitude")
+- zName: character string with name of the zcoord in the <span style="color:red">ERDDAP</span> dataset (default "altitude")
+- tName: character string with name of the tcoord in the <span style="color:red">ERDDAP</span> dataset (default "time")
+- urlbase: base URL of the <span style="color:red">ERDDAP</span> server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
 - verbose: logical variable (default FALSE) if the the URL request should be verbose
 
 ### Time has come today
 
-With all due respect to the [Chambers Brothers](https://www.youtube.com/watch?v=uHfB63ln1Ig), since any <span style="color:blue">ERDDAP</span> served gridded data can be accessed, a lot more care must be used with the values of "time" passed to `rerddapXtracto` as compared with `xtractomatic`.  This is because datasets can have time increments of less than a day, an example of which is [given below](#hourly). <span style="color:blue">ERDDAP</span> maps all times to "Zulu" time, of the form "2016-11-01T00:00:00Z".  The date-time "2016-11-01" gets mapped to "2016-11-01T00:00:00Z".  When passing time limits of resolution finer than a day, be certain to take into account time offsets, and to pass the times in the form above.  Times are parsed using the `parse_date()` function of the [parsedate](https://cran.r-project.org/web/packages/parsedate/index.html) package, if in doubt you can use that function to see how the times you are passing will be interpreted.
+With all due respect to the [Chambers Brothers](https://www.youtube.com/watch?v=uHfB63ln1Ig), since any <span style="color:red">ERDDAP</span> served gridded data can be accessed, a lot more care must be used with the values of "time" passed to `rerddapXtracto` as compared with `xtractomatic`.  This is because datasets can have time increments of less than a day, an example of which is [given below](#hourly). <span style="color:red">ERDDAP</span> maps all times to "Zulu" time, of the form "2016-11-01T00:00:00Z".  The date-time "2016-11-01" gets mapped to "2016-11-01T00:00:00Z".  When passing time limits of resolution finer than a day, be certain to take into account time offsets, and to pass the times in the form above.  Times are parsed using the `parse_date()` function of the [parsedate](https://cran.r-project.org/web/packages/parsedate/index.html) package, if in doubt you can use that function to see how the times you are passing will be interpreted.
 
 
 ## Setting up 
 
-`rerddapXtracto` uses the <span style="color:blue">R</span> packages `rerddap`, `ncdf4`, `sp` and `parsedate`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
+`rerddapXtracto` uses the <span style="color:red">R</span> packages `rerddap`, `ncdf4`, `sp` and `parsedate`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
 
 ```{r install, eval = FALSE}
 install.packages("rerddap", dependencies = TRUE)
@@ -69,17 +69,16 @@ Once installed, to use `rerddapXtracto`:
 library("rerddapXtracto")
 ```
 
-If the other <span style="color:blue">R</span> libraries  (`rerddap`, `ncdf4`,`sp`, and `parsedate`) have been installed they will be found and do not need to be explicitly loaded.   
+If the other <span style="color:red">R</span> libraries  (`rerddap`, `ncdf4`,`sp`, and `parsedate`) have been installed they will be found and do not need to be explicitly loaded.   
 
 
 ### Using the R code examples
 
-Besides the `rerddapXtracto` package, the examples below depend on the <span style="color:blue">R</span> packages `akima`, `dplyr`, `ggplot2`, `ggfortify`, `lubridate`, `mapdata`,  and `xts`.  These can be loaded beforehand (assuming they have been installed):
+Besides the `rerddapXtracto` package, the examples below depend on the <span style="color:red">R</span> packages `akima`, `dplyr`, `ggplot2`,  `lubridate`, `mapdata`,  and `xts`.  These can be loaded beforehand (assuming they have been installed):
 
 ```{r loadpacks, eval = FALSE}
 library("akima")
 library("dplyr")
-library("ggfortify") 
 library("ggplot2")
 library("lubridate")
 library("mapdata")
@@ -88,9 +87,9 @@ library("xts")
 
 In order that the code snippets be more stand-alone, the needed libraries are always `required()` in the examples.  
 
-It should be emphasized that these other packages are used to manipulate and plot the data in <span style="color:blue">R</span>, other packages could be used as well.  The use of `rerddapXtracto` does not depend on these other packages.
+It should be emphasized that these other packages are used to manipulate and plot the data in <span style="color:red">R</span>, other packages could be used as well.  The use of `rerddapXtracto` does not depend on these other packages.
 
-There are also several <span style="color:blue">R</span> functions defined within the document that are used in other code examples.  These include `mapFrame()`, and `plotFrame()`.
+There are also several <span style="color:red">R</span> functions defined within the document that are used in other code examples.  These include `mapFrame()`, and `plotFrame()`.
 
 
 
@@ -98,9 +97,9 @@ There are also several <span style="color:blue">R</span> functions defined withi
 
 The first several examples reproduce some of the examples in the `xtractomatic` vignette, hopefully to make clear how the functions in the two packages relate. One change from the `xtractomatic` vignette is that the plots use the `cmocean` colormaps designed by Kristen Thyng (see http://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean).  These colormaps were initally developed for Python, but a version of the colormaps is used in the `oce` package by Dan Kelley and Clark Richards and that is what is used here.
  
-The first step is to find the necessary information from the <span style="color:blue">ERDDAP</span> server being used.  These include the
+The first step is to find the necessary information from the <span style="color:red">ERDDAP</span> server being used.  These include the
 
-- baseURL of the <span style="color:blue">ERDDAP</span> server (the default is http://upwell.pfeg.noaa.gov/erddap)
+- baseURL of the <span style="color:red">ERDDAP</span> server (the default is http://upwell.pfeg.noaa.gov/erddap)
 - the datasetID of the data to be accessed (for example the 1-day composite of chloropyhll from MODIS Aqua has a datasetID of 'erdMBchla1day' - see http://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html)
 - the parameter name (in this case "chlorophyll")
 
@@ -139,7 +138,7 @@ swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = 
 
 Note the differences from the `xtractomatic` example.
 
-- the user has to find the datasetID from the given <span style="color:blue">ERDDAP</span> server, in this case 'erdSWchla8day' (from http://upwell.pfeg.noaa.gov/erddap/griddap/erdSWchla8day.html)
+- the user has to find the datasetID from the given <span style="color:red">ERDDAP</span> server, in this case 'erdSWchla8day' (from http://upwell.pfeg.noaa.gov/erddap/griddap/erdSWchla8day.html)
 - the user has to call `rerddap::info('erdSWchla8day')` to obtain information about that dataset
 - the user has to know the parameter name desired for that datasetID, in this case 'chlorophyll'
 - the zcoord has to be explictily given,  because 'erdSWchla8day' is a 4-D dataset
@@ -209,7 +208,7 @@ z + geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80
 
 Again, note the differences from the `xtractomatic` example:
 
-- the user has to find the datasetID from the given <span style="color:blue">ERDDAP</span> server, in this case 'etopo360' (from http://upwell.pfeg.noaa.gov/erddap/griddap/etopo360.html)
+- the user has to find the datasetID from the given <span style="color:red">ERDDAP</span> server, in this case 'etopo360' (from http://upwell.pfeg.noaa.gov/erddap/griddap/etopo360.html)
 - the user has to call `rerddap::info('etopo360')` to obtain information about that dataset
 - the user has to know the parameter name desired for that datasetID, in this case 'altitude'
 - only the xcoord and ycoord values need to be given, as 'etopo360' is a 2-D dataset, and this is handled more gracefully then in `xtractomatic`.
@@ -227,10 +226,11 @@ require("lubridate")
 require("rerddap")
 require("rerddapXtracto")
 
-xpos <- c(235, 240)
-ypos <- c(36, 39)
+xpos <- c(-125, -120) 
+ypos <- c(39, 36)
 tpos <- c("last", "last")
-VIIRSInfo <- rerddap::info('erdVH2chlamday')
+tpos <- c("2017-04-15", "2017-04-15")
+VIIRSInfo <- rerddap::info('erdVH3chlamday')
 VIIRS <- rxtracto_3D(VIIRSInfo, parameter = 'chla', xcoord = xpos, ycoord = ypos, tcoord = tpos)
 VIIRS$time <- lubridate::as_date(VIIRS$time)
 ```
@@ -283,17 +283,15 @@ plotFrame <- function(chlaFrame, xlim, ylim, title, logplot = TRUE) {
 }
 ```
 
-We examine <span style="color:blue">chlorophyll</span> in June 2012:
+We examine <span style="color:blue">chlorophyll</span> the "latest" data as of when the vignette was generated:
 
 
 ```{r VIIRSLogPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
-require("lubridate")
-xlim <- c(235, 240) - 360
+xlim <- c(-125, -120) 
 ylim <- c(36, 39)
-ttext <- VIIRS$time[lubridate::month(VIIRS$time) == 6 & lubridate::year(VIIRS$time) == 2012]
-chlalogFrame <- mapFrame(VIIRS$longitude - 360,VIIRS$latitude,
+chlalogFrame <- mapFrame(VIIRS$longitude, VIIRS$latitude,
                        log(VIIRS$chla[, , 1]))
-chlalogPlot <- plotFrame(chlalogFrame, xlim, ylim, paste("VIIRS log(chla)", ttext))
+chlalogPlot <- plotFrame(chlalogFrame, xlim, ylim, "log(VIIRS chla)")
 chlalogPlot
 ```
 
@@ -308,7 +306,7 @@ The function `rxtractogon()` extracts a time-series of satellite data that are w
 
 ```{r mbnmsChla}
 require("rerddapXtracto")
-dataInfo <- rerddap::info('erdVH2chlamday')
+dataInfo <- rerddap::info('erdVH3chlamday')
 parameter = 'chla'
 tpos <- c("2014-09-01", "2014-10-01")
 #tpos <-as.Date(tpos)
@@ -415,7 +413,7 @@ myplot
 
 ### Irish Marine Institute {#hourly}
 
-The Irish Marine Institute has an <span style="color:blue">ERDDAP</span> server at http://erddap.marine.ie/erddap.  Among other datasets, there is hourly output from a model of the North Altantic ocean, with a variety of ocean related parameters, see http://erddap.marine.ie/erddap/griddap/IMI_NEATL.html.  To obtain sea surface salinity at latest time available for the domain of the model:
+The Irish Marine Institute has an <span style="color:red">ERDDAP</span> server at http://erddap.marine.ie/erddap.  Among other datasets, there is hourly output from a model of the North Altantic ocean, with a variety of ocean related parameters, see http://erddap.marine.ie/erddap/griddap/IMI_NEATL.html.  To obtain sea surface salinity at latest time available for the domain of the model:
 
 ```{r NAtlSSS}
 require("rerddap")
@@ -449,7 +447,7 @@ myplot
 
 ### IFREMER
 
-The French agency IFREMER also has an <span style="color:blue">ERDDAP</span> server. We obtain salinity data at 75 meters from the Global Ocean, Coriolis Observation Re-Analysis CORA4.1 model off the west coast of the United States.
+The French agency IFREMER also has an <span style="color:red">ERDDAP</span> server. We obtain salinity data at 75 meters from the Global Ocean, Coriolis Observation Re-Analysis CORA4.1 model off the west coast of the United States.
 
 ```{r IFREMER}
 require("rerddap")
@@ -500,7 +498,7 @@ The `ggplot2` function `geom_raster()` is not designed for unevenly spaced coord
 
 When you make an `rerddapXtracto` request, particularly for track data using the  function `rxtracto()` , it is important to understand what is extracted, because the remote dataset requested likely will have a different temporal and spatial resolution then the local dataset.
 
-Specifically, let `longitude`, `latitude` and `time` be the coordinate system of the remote <span style="color:blue">ERDDAP</span> dataset, and let `xpos`, `ypos` and `tpos` be the bounds of a request.  Then the <span style="color:blue">ERDDAP</span> request is based on the nearest grid point of the <span style="color:blue">ERDDAP</span> dataset:
+Specifically, let `longitude`, `latitude` and `time` be the coordinate system of the remote <span style="color:red">ERDDAP</span> dataset, and let `xpos`, `ypos` and `tpos` be the bounds of a request.  Then the <span style="color:red">ERDDAP</span> request is based on the nearest grid point of the <span style="color:red">ERDDAP</span> dataset:
 
 ```{r nearGrid, eval = FALSE}
 latitude[which.min(abs(latitude - ypos[1]))]  # minimum latitude
@@ -511,7 +509,7 @@ isotime[which.min(abs(time - tpos[1]))] # minimum time
 isotime[which.min(abs(time - tpos[2]))] # maximum time
 ```
 
-where  `tpos` and `time` have been converted to an <span style="color:blue">R</span> date format so that it is a number rather than a string. For example, the FNMOC 6-hourly Ekman transports are on a 1-degree grid. A request for the data at a longitude of 220.2 and a latitude of 38.7 will return the result at a longtiude of 220 and a latitude of 39.  These values are then used in a call to `rerddap::griddap()`, with `parameter` being the variable of interest.
+where  `tpos` and `time` have been converted to an <span style="color:red">R</span> date format so that it is a number rather than a string. For example, the FNMOC 6-hourly Ekman transports are on a 1-degree grid. A request for the data at a longitude of 220.2 and a latitude of 38.7 will return the result at a longtiude of 220 and a latitude of 39.  These values are then used in a call to `rerddap::griddap()`, with `parameter` being the variable of interest.
 
 ## Cacheing
 
