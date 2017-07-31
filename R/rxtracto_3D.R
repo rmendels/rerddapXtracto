@@ -86,8 +86,8 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL
 
 
 # Check and readjust coordinate variables ---------------------------------
-
-coordLims <- remapCoords(dataInfo, callDims, urlbase)
+is3D <- TRUE
+coordLims <- remapCoords(dataInfo, callDims, is3D, urlbase)
 newTime <- coordLims$newTime
 
 

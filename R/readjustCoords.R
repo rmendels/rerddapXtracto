@@ -23,14 +23,27 @@ readjustCoords <- function(param, dataX, dataY, xcoord, datafileID, callDims) {
         #      param <- param[, rev(seq_len(dataYLen)) ,, drop = FALSE]
         paramLen <- length(names(datafileID$dim))
         latLoc <- which(rev(names(datafileID$dim)) == 'latitude')
-        myComma1 <- paste(rep(',', times = (latLoc - 1)),  sep = "", collapse = "")
-        myComma2 <- paste( 'rev(seq_len(dataYLen))', sep = "", collapse = "")
-        myComma3 <- paste(rep(',', times = (paramLen - latLoc + 1)), sep = "", collapse = "")
-        paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
-        paramReverse <- eval(parse(text = paramCommand))
+#        myComma1 <- paste(rep(',', times = (latLoc - 1)),  sep = "", collapse = "")
+#        myComma2 <- paste( 'rev(seq_len(dataYLen))', sep = "", collapse = "")
+#        myComma3 <- paste(rep(',', times = (paramLen - latLoc + 1)), sep = "", collapse = "")
+#        paramCommand <- paste0('param <- param[', myComma1, myComma2, myComma3, 'drop = FALSE]')
+#        paramReverse <- eval(parse(text = paramCommand))
+         param <- flip2(param, latLoc)
       }
     }
   }
 
 return(list(dataX = dataX, dataY = dataY, param = param))
+}
+
+flip <- function(a,wh){ ## a is the array; wh is the index to be reversed
+  l<- lapply(dim(a),seq_len)
+  l[[wh]]<- rev(l[[wh]])
+  do.call(`[`,c(list(a),l, drop = FALSE))
+}
+flip2 <-function(a, i){
+  d <- dim(a)
+  l <- as.list(rep(TRUE, length(d))) ## instead of lapply() loop
+  l[[i]] <- seq.int(d[i],1)  ## used rev() in prior version
+  do.call("[", c(list(a), l, drop = FALSE))
 }

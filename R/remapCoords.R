@@ -1,4 +1,4 @@
-remapCoords <- function(dataInfo, callDims, urlbase) {
+remapCoords <- function(dataInfo, callDims, is3D, urlbase) {
   #
   # make requested longtiudes be on same limits as data longitudes (0,360) or
   # (-180, 180)
@@ -20,15 +20,17 @@ remapCoords <- function(dataInfo, callDims, urlbase) {
 
 
   ### If ycoord is latitude, check for dataset going north-south, convert request
-  if ('latitude' %in% names(callDims)) {
-    latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
-    latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
-    #north-south  datasets
-    if (latVal2[1] > latVal2[2]) {ycoord1 <- rev(ycoord1)}
+   ycoordLim <- c(min(ycoord1), max(ycoord1))
+   if ('latitude' %in% names(callDims)) {
+    if (is3D){
+      latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
+      latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
+      #north-south  datasets
+      if (latVal2[1] > latVal2[2]) {ycoordLim <- c(max(ycoord1), min(ycoord1))}
+    }
   }
 
   xcoordLim <- c(min(xcoord1), max(xcoord1))
-  ycoordLim <- c(min(ycoord1), max(ycoord1))
   zcoordLim <- NULL
   if (!is.null(zcoord1)) {
     zcoordLim <- c(zcoord1, zcoord1)

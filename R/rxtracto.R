@@ -80,8 +80,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zco
   urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
 
   # Check and readjust coordinate variables ---------------------------------
-
-  coordLims <- remapCoords(dataInfo, callDims, urlbase)
+  is3D <- FALSE
+  coordLims <- remapCoords(dataInfo, callDims, is3D, urlbase)
   newTime <- coordLims$newTime
 
 
@@ -192,7 +192,7 @@ latSouth <- (coordLims$dataCoordList[[yName]][2] > coordLims$dataCoordList[[yNam
      out_dataframe[i, 7] <- ymin
      out_dataframe[i, 8] <- ymax
      if (tName %in% names(coordLims$dataCoordList)) {
-       out_dataframe[i, 9] <- tcoord[i]
+       out_dataframe[i, 9] <- as.character.Date(tcoord[i])
      }
      out_dataframe[i, 10] <- stats::median(paramdata, na.rm = T)
      out_dataframe[i, 11] <- stats::mad(paramdata, na.rm = T)
