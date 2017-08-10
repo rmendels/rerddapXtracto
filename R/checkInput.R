@@ -19,9 +19,18 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   # 2) the correct number of coordinates are given
 
   allvars <- getallvars(dataInfo)
-  numparms <- dim(dataInfo$variables)[1]
+  # numparms <- dim(dataInfo$variables)[1]
   allCoords <- dimvars(dataInfo)
   callDims <- callDims[!sapply(callDims,is.null)]
+
+  # test coordinate names
+  namesTest <- names(callDims) %in% allCoords
+  if (any(namesTest == FALSE, na.rm = TRUE)) {
+    print('Requested coordinate names do no match dataset coordinate names')
+    print(paste('Requested coordinate names:', names(callDims)))
+    print(paste('Dataset coordinate names:', allCoords))
+    stop(sprintf("Execution halted"), call. = FALSE)
+  }
   if (!(length(callDims) == length(allCoords))) {
     print("Ranges not given for all of the dataset dimensions")
     print("Coordinates given: ")
@@ -47,7 +56,7 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   # check that urlbase connects to an ERDDAP
   myHTTP <- httr::HEAD(urlbase)
   if (!(myHTTP$status_code == 200)) {
-    stop("urlbase did not resolve to a valid server")
+    stop("urlbase did not resolve to a valid server", call. = FALSE)
   }
 
 

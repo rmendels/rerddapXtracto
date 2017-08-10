@@ -5,7 +5,7 @@
 \title{Extract environmental data along a trajectory from an ERDDAP server using rerddap.}
 \usage{
 rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
-  zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0,
+  zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0, zlen = 0,
   xName = "longitude", yName = "latitude", zName = "altitude",
   tName = "time", urlbase = "http://upwell.pfeg.noaa.gov/erddap",
   verbose = FALSE)
@@ -20,14 +20,16 @@ rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
 \item{ycoord}{-  a real array with the y-coordinate of the trajectory (if latitude in
 decimal degrees N; -90 to 90)}
 
-\item{zcoord}{-  a real number with the z-coordinate of the trajectory (usually altitude or depth)}
+\item{zcoord}{-  a real array with the z-coordinate of the trajectory (usually altitude or depth)}
 
 \item{tcoord}{- a character array with the times of the trajectory in
 "YYYY-MM-DD" - for now restricted to be time.}
 
 \item{xlen}{- real array defining the longitude box around the given point (xlen/2 around the point)}
 
-\item{ylen}{- real array defining the latitude box around the given point (tlen/2 around the point)}
+\item{ylen}{- real array defining the latitude box around the given point (ylen/2 around the point)}
+
+\item{zlen}{- real array defining the depth or altitude box around the given point (zlen/2 around the point)}
 
 \item{xName}{- character string with name of the xcoord in the ERDDAP dataset (default "longitude")}
 
@@ -68,7 +70,7 @@ parameter <- 'sst'
 xcoord <- c(230, 231)
 ycoord <- c(40, 41)
 tcoord <- c('2006-01-15', '2006-01-20')
-zcoord <- 0.
+zcoord <- c(0., 0.)
 xlen <- 0.5
 ylen <- 0.5
 extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
@@ -88,7 +90,7 @@ yName <- 'ny'
 zName <- 'nsigma'
 xcoord <- c(10, 11)
 ycoord <- c(10, 11)
-zcoord <- 1
+zcoord <- c(1, 1)
 tcoord <- c('2016-09-02', '2016-09-03')
 xlen <- 0
 ylen <- 0
@@ -96,4 +98,3 @@ extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                     zcoord = zcoord, tcoord = tcoord, xlen = xlen,
                     ylen = ylen, xName = xName, yName = yName, zName = zName)
 }
-

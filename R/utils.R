@@ -29,7 +29,7 @@ strextract1 <- function(str, pattern) regmatches(str, regexpr(pattern, str))
 strtrim1 <- function(str) gsub("^\\s+|\\s+$", "", str)
 
 findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim,
-                            tcoordLim, zcoord1, xName, yName, tName, zName) {
+                            tcoordLim, zcoordLim, xName, yName, tName, zName) {
   newxIndex <-  rep(NA_integer_, 2)
   newyIndex <-  rep(NA_integer_, 2)
   newTimeIndex <-  rep(NA_integer_, 2)
@@ -39,13 +39,13 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim
   erddapTcoord <- rep(NA_real_, 2)
   erddapZcoord <- rep(NA_real_, 2)
   if (xName %in% names(dataCoordList)) {
-     newxIndex[1] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[1]))
+    newxIndex[1] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[1]))
     newxIndex[2] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[2]))
     erddapXcoord[1] <- dataCoordList[[xName]][newxIndex[1]]
     erddapXcoord[2] <- dataCoordList[[xName]][newxIndex[2]]
   }
   if (yName %in% names(dataCoordList)) {
-     newyIndex[1] <- which.min(abs(dataCoordList[[yName]] - ycoordLim[1]))
+    newyIndex[1] <- which.min(abs(dataCoordList[[yName]] - ycoordLim[1]))
     newyIndex[2] <- which.min(abs(dataCoordList[[yName]] - ycoordLim[2]))
     erddapYcoord[1] <- dataCoordList[[yName]][newyIndex[1]]
     erddapYcoord[2] <- dataCoordList[[yName]][newyIndex[2]]
@@ -59,9 +59,10 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim
   }
 
   if (zName %in% names(dataCoordList)) {
-    newzIndex <-  which.min(abs(dataCoordList[[zName]] - zcoord1))
-    erddapZcoord[1] <- dataCoordList[[zName]][newzIndex]
-    erddapZcoord[2] <- dataCoordList[[zName]][newzIndex]
+    newzIndex[1] <- which.min(abs(dataCoordList[[zName]] - zcoordLim[1]))
+    newzIndex[2] <- which.min(abs(dataCoordList[[zName]] - zcoordLim[2]))
+    erddapZcoord[1] <- dataCoordList[[zName]][newzIndex[1]]
+    erddapZcoord[2] <- dataCoordList[[zName]][newzIndex[2]]
   }
 
   erddapCoords <- list(erddapXcoord = erddapXcoord, erddapYcoord = erddapYcoord,
@@ -100,11 +101,10 @@ makeCmd <- function(urlbase, xName, yName, zName, tName, parameter,
   return(griddapCmd)
 }
 
-timeClean <- function(isotime, tcoord1) {
+removeLast <- function(isotime, tcoord1) {
   # looks for "last" in the time bound
   # calculates actual date, including arithmetic on "last"
   # calculates the bounds as R dates
-  udtime <- parsedate::parse_date(isotime)
   lenTime <- length(isotime)
 
   if (grepl("last", tcoord1[1])) {
@@ -122,9 +122,9 @@ timeClean <- function(isotime, tcoord1) {
     tIndex <- eval(parse(text = tempVar))
     tcoord1[2] <- isotime[tIndex]
   }
-  udtpos <- parsedate::parse_date(tcoord1)
-  tcoordLim <- c(min(udtpos), max(udtpos))
-  return(list(isotime = isotime, udtime = udtime, udtpos = udtpos, tcoord1 = tcoord1, tcoordLim = tcoordLim))
+  #udtpos <- parsedate::parse_date(tcoord1)
+  #tcoordLim <- c(min(udtpos), max(udtpos))
+  return(tcoord1)
 }
 
 

@@ -59,6 +59,7 @@ latitudes and longitudes
  package to mask out the areas outside of the polygon. rxtractogon only works with
  datasets defined on a latitude and longitude grid.
 }
+
 \examples{
 dataInfo <- rerddap::info('erdVH3chlamday')
 parameter <- 'chla'
@@ -76,4 +77,3 @@ yName <- 'latitude'
 bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord,
                       ycoord = ycoord)
 }
-

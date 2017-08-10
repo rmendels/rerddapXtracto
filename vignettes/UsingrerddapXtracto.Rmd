@@ -10,18 +10,22 @@ vignette: >
 ---
 ```{r initialize, echo = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+#library(rerddapXtracto, lib.loc = '/Users/rmendels/WorkFiles/rerddapMatic/rerddapXtracto/')
 library(rerddapXtracto)
+
 ```
 
 ## Introduction 
 
 `rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/web/packages/rerddap/index.html) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude and time points;  and also extracting data within a polygon (through time).  `rerddapXtracto` extends the functionality of the <span style="color:red">R</span> package [xtractomatic](https://cran.r-project.org/web/packages/xtractomatic/index.html) by being able to work with (hopefully) most gridded datasets available from any <span style="color:red">ERDDAP</span> server. The disadavantage compared to `xtractomatic` is that the user has to do more work to obtain information about the dataset to be accessed, while in `xtractomatic` that information is built in.
 
+This version has one main change - that is  in both `rxtracto()` and `rxtracto_3D()` the zcoord is not limited to be at a set location.  That means for `rxtracto_3D()` that if the zCoord needs to be given for any reason, then it must be of length two,  and for `rxtracto()` if the zCoord needs to be given for any reason,  it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to mkae extracts moving in (x, y, z, t) space.
+
 ### The Main xtractomatic functions
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
 
 - `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
 
@@ -130,7 +134,7 @@ tagData <- Marlintag38606
 xpos <- tagData$lon
 ypos <- tagData$lat
 tpos <- tagData$date
-zpos <- 0.
+zpos <- rep(0., length(xpos))
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 swchlInfo <- rerddap::info('erdSWchla8day')
 swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
@@ -375,10 +379,10 @@ This is an example of an extract from a 4-D dataset (results from the "Simple Oc
 
 ```{r soda70}
 require("rerddap")
-dataInfo <- rerddap::info('hawaii_d90f_20ee_c4cb')
+dataInfo <- rerddap::info('erdSoda331oceanmday')
 xpos <- c(135.25, 240.25)
 ypos <- c(20.25, 60.25)
-zpos <- c(70.02, 70.02)
+zpos <- c(76.80285, 76.80285)
 tpos <- c('2010-12-15', '2010-12-15')
 soda70 <- rxtracto_3D(dataInfo, parameter = 'temp', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, zName = 'depth')
 str(soda70)
@@ -456,7 +460,7 @@ parameter <- "PSAL"
 ifrTimes <- c("2013-05-15", "2013-05-15")
 ifrLats <- c(30., 50.)
 ifrLons <- c(-140., -110.)
-ifrDepth <- 75.
+ifrDepth <- c(75., 75.)
 dataInfo <- rerddap::info("ifremer_tds0_6080_109e_ed80", url = urlBase)
 ifrPSAL <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = ifrLons, ycoord = ifrLats, tcoord = ifrTimes, zcoord = ifrDepth, zName = 'depth', urlbase = urlBase)
 str(ifrPSAL)

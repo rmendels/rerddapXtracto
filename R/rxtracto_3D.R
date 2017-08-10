@@ -10,7 +10,7 @@
 #' @param xcoord - a real array with the x-coordinates of the trajectory (if longitude in #'   decimal degrees East, either 0-360 or -180 to 180)
 #' @param ycoord -  a real array with the y-coordinate of the trajectory (if latitude in
 #'   decimal degrees N; -90 to 90)
-#' @param zcoord -  a real number with the z-coordinate (usually altitude or depth)
+#' @param zcoord -  a real array with the z-coordinate (usually altitude or depth)
 #' @param tcoord - a character array with the times of the trajectory in
 #'   "YYYY-MM-DD" - for now restricted to be time.
 #' @param xName - character string with name of the xcoord in the ERDDAP dataset (default "longitude")
@@ -35,7 +35,7 @@
 #' xcoord <- c(230, 235)
 #' ycoord <- c(40, 45)
 #' tcoord <- c('2006-01-15', '2006-01-20')
-#' zcoord <- 0.
+#' zcoord <- c(0., 0.)
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        tcoord = tcoord, zcoord = zcoord)
 #'
@@ -60,14 +60,14 @@
 #'
 #' # Dataset that has depth also
 #' # 3 months of subsurface temperature at 70m depth from SODA 2.2.4
-#' dataInfo <- rerddap::info('hawaii_d90f_20ee_c4cb')
+#' dataInfo <- rerddap::info('erdSoda331oceanmday')
 #' parameter = 'temp'
 #' xName <- 'longitude'
 #' yName <- 'latitude'
 #' zName <- 'depth'
 #' xcoord <- c(230.25, 250.25)
 #' ycoord <- c(30.25, 43.25)
-#' zcoord <- c(70.02, 70.02)
+#' zcoord <- c(5.03355, 15.10065)
 #' tcoord <- c('2010-10-15', '2010-12-15')
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        zcoord = zcoord, tcoord = tcoord, xName = xName,
@@ -86,29 +86,58 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL
 
 
 # Check and readjust coordinate variables ---------------------------------
-is3D <- TRUE
-coordLims <- remapCoords(dataInfo, callDims, is3D, urlbase)
-newTime <- coordLims$newTime
+# get the actual coordinate values for the dataset
+allCoords <- dimvars(dataInfo)
+dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
+if (length(dataCoordList) == 0) {
+   stop("Error retrieving coordinate variable")
+}
+
+
+working_coords <- remapCoords(dataInfo, callDims, dataCoordList,  urlbase)
 
 
 # Check request is within dataset bounds ----------------------------------
+#get limits over new coordinates
+xcoordLim <- working_coords$xcoord1
+if (working_coords$latSouth) {
+    ycoordLim <- c(min(working_coords$ycoord1), max(working_coords$ycoord1))
+} else {
+    ycoordLim <- c(max(working_coords$ycoord1), min(working_coords$ycoord1))
+}
 
+zcoordLim <- NULL
+if (!is.null(working_coords$zcoord1)) {
+  zcoordLim <- working_coords$zcoord1
+  if (length(zcoordLim) == 1) {
+    zcoordLim <- c(zcoordLim, zcoordLim)
+    }
+}
 
-dimargs <- list(coordLims$xcoordLim, coordLims$ycoordLim, coordLims$zcoordLim, coordLims$tcoordLim)
+tcoordLim <- NULL
+if (!is.null(working_coords$tcoord1)) {
+  # check for last in time,  and convert
+  isoTime <- dataCoordList$time
+  udtTime <- parsedate::parse_date(isoTime)
+  tcoord1 <- removeLast(isoTime, working_coords$tcoord1)
+  tcoord1 <- parsedate::parse_date(tcoord1)
+  tcoordLim <- c(min(tcoord1), max(tcoord1))
+}
+
+dimargs <- list(xcoordLim, ycoordLim, zcoordLim, tcoordLim)
 names(dimargs) <- c(xName, yName, zName, tName)
 dimargs <- Filter(Negate(is.null), dimargs)
 
 #check that coordinate bounds are contained in the dataset
-checkBounds(coordLims$dataCoordList, dimargs)
+checkBounds(dataCoordList, dimargs)
 
 
 # Find dataset coordinates closest to requested coordinates ---------------
 
 
-erddapList <- findERDDAPcoord(coordLims$dataCoordList, newTime$isotime, newTime$udtime,
-                              coordLims$xcoordLim, coordLims$ycoordLim,
-                              coordLims$tcoordLim, coordLims$zcoordLim,
-                              xName, yName, tName, zName)
+erddapList <- findERDDAPcoord(dataCoordList, isoTime, udtTime,
+xcoordLim,  ycoordLim, tcoordLim,  zcoordLim,
+xName, yName, tName, zName)
 erddapCoords <- erddapList$erddapCoords
 
 
