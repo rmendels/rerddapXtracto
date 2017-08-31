@@ -35,7 +35,7 @@
 #'  \item column 11 = median absolute deviation of data within search radius
 #'  }
 #' @examples
-#' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+#' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
 #' dataInfo <- rerddap::info('erdMBsstd8day')
 #' parameter <- 'sst'
 #' xcoord <- c(230, 231)
@@ -72,7 +72,7 @@
 
 
 
-rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
+rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'https://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
 
   # Check Passed Info -------------------------------------------------------
   rerddap::cache_setup(temp_dir = TRUE)
@@ -127,8 +127,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zco
  tcoordLim <- NULL
  if (!is.null(working_coords$tcoord1)) {
    isoTime <- dataCoordList$time
-   udtTime <- parsedate::parse_date(isoTime)
-   tcoord1 <- parsedate::parse_date(working_coords$tcoord1)
+   udtTime <- parsedate::parse_iso_8601(isoTime)
+   tcoord1 <- parsedate::parse_iso_8601(working_coords$tcoord1)
    tcoordLim <- c(min(tcoord1), max(tcoord1))
  }
 
@@ -199,12 +199,12 @@ latSouth <- working_coords$latSouth
      # the call will be the same as last time, so no need to repeat
      out_dataframe[i,] <- oldDataFrame
    } else {
-     griddapCmd <- makeCmd(urlbase, xName, yName, zName, tName, parameter,
+     griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                            erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                            erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                            verbose )
 
-     extract <- eval(parse(text = griddapCmd))
+     extract <- do.call(rerddap::griddap, griddapCmd )
 
     if (length(extract) == 0) {
        print(griddapCmd)

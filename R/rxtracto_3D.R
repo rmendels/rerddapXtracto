@@ -29,7 +29,7 @@
 #'   \item extract$time - the times of the extracts
 #'   }
 #' @examples
-#' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+#' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
 #' dataInfo <- rerddap::info('erdMBsstd8day')
 #' parameter <- 'sst'
 #' xcoord <- c(230, 235)
@@ -74,7 +74,7 @@
 #'                        yName = yName, zName = zName)
 #'
 
-rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'https://upwell.pfeg.noaa.gov/erddap', verbose=FALSE) {
+rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'https://upwell.pfeg.noaa.gov/erddap/', verbose=FALSE) {
 
 
 # Check Passed Info -------------------------------------------------------
@@ -120,8 +120,8 @@ if (!is.null(working_coords$tcoord1)) {
   isoTime <- dataCoordList$time
   udtTime <- parsedate::parse_date(isoTime)
   tcoord1 <- removeLast(isoTime, working_coords$tcoord1)
-  tcoord1 <- parsedate::parse_date(tcoord1)
-  tcoordLim <- c(min(tcoord1), max(tcoord1))
+  tcoord1 <- parsedate::parse_iso_8601(tcoord1)
+  tcoordLim <- tcoord1
 }
 
 dimargs <- list(xcoordLim, ycoordLim, zcoordLim, tcoordLim)
@@ -145,7 +145,7 @@ erddapCoords <- erddapList$erddapCoords
 
 
 
-griddapCmd <- makeCmd(urlbase, xName, yName, zName, tName, parameter,
+griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                     erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                     erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                     verbose )
@@ -154,7 +154,7 @@ griddapCmd <- makeCmd(urlbase, xName, yName, zName, tName, parameter,
 # Get the data ------------------------------------------------------------
 
 
-griddapExtract <- eval(parse(text = griddapCmd))
+griddapExtract <- do.call(rerddap::griddap, griddapCmd )
 
 
 

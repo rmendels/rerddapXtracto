@@ -16,7 +16,7 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
 # to start do brute force way with for loop
   coordList <- list()
   for (i in 1:length(dataCoords)) {
-    myURL <- paste0(urlbase, '/griddap/', datasetID, '.csv?', dataCoords[i], '[0:1:last]')
+    myURL <- paste0(urlbase, 'griddap/', datasetID, '.csv?', dataCoords[i], '[0:1:last]')
     coordVals <- utils::read.csv(myURL, skip = 2, header = FALSE, stringsAsFactors = FALSE)
     coordVals <- coordVals[, 1]
     coordList[[i]] <- coordVals

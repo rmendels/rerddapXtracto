@@ -1,38 +1,53 @@
-# rerddapXtracto
+# rerddapXtracto (Version 0.3.0)
 rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
 
-** Version.  Still for testing purposes only **
-** For real work - use at own risk **
-** Suggest doing small tests on any extract **
-** For rxtracto(), do say the first 3 points with "verbose = TRUE" **
-** Make certain the URL calls amke sense **
-** In final output,  make certain data limits **
-** and limits requested from dataset make sense **
+- ** Version.  Still for testing purposes only **
+- ** For real work - use at own risk **
+- ** Suggest doing small tests on any extract **
+- ** For rxtracto(), do say the first 3 points with "verbose = TRUE" **
+- ** Make certain the URL calls amke sense **
+- ** In final output,  make certain data limits **
+- ** and limits requested from dataset make sense **
 
-`rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude and time points; in a 3D bounding box; or within a polygon (through time).  
+`rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude, time and depth  (new in thos version) points; in a 3D bounding box; or within a polygon (through time). 
 
-These functions differ from those in the xtractomatic package in that they use the `rerddap` package to access gridded data on any ERDDAP server, but they require the user to provide initial information about the data to be extracted.
-
-
-There are three main data extraction functions in the `xtractomatic` package: 
-
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xlen=0., ylen=0., xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap')`
-
-- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap')`
-
-- `rxtractogon <- function(dataInfo, parameter, xcoord=NULL, ycoord=NULL, zcoord = NULL, tcoord=NULL, xName='longitude', yName='latitude', zName='altitude', tName='time', urlbase='http://upwell.pfeg.noaa.gov/erddap')`
+New in this version is that a track can now move in (x, y, z, t) space if appropriae for the dataset being accessed.  And two plotting functions have been added,  `plotTrack()` and `plotBox()` that make use of the `plotdap` package.  See the new [rerdapXtracto vignette](https://rmendels.github.io/UsingrerddapXtracto.nb.html).  A lot of the code has been reworked, in particular the handling of time,  and in the formation of the requests to `rerddap`.
 
 
 
-`rerddapXtracto` uses the `rerddap`, `ncdf4` and `sp` packages , and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.   
+There are three main data extraction functions in the `rerddapXtracto` package: 
+
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+
+- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+
+- `rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+
+and two functions for producing maps:
+
+- `plotTrack <- function(xcoord, ycoord, resp, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
+
+- `plotBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
+
+
+
+`rerddapXtracto` uses the `rerddap`, `ncdf4` , `parsedata`, `plotdap` and `sp` packages , and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.   
 
 ```{r install,eval=FALSE}
 install.packages("rerddap", dependencies = TRUE)
 install.packages("ncdf4") 
+install.packages("parsedata") 
 install.packages("sp")
 ```
 
-The `xtractomatic` package at the moment can be installed from Github using the devtools package:
+To install the plotdap package from <span style="color:blue">Github</span>:
+
+```{r plotdap, eval = FALSE}
+install.packages("devtools")
+devtools::install_github('ropensci/plotdap')
+```
+
+The `rerddapXtracto` package at the moment can be installed from Github using the devtools package:
 
 ```{r install,eval=FALSE}
 install.packages("devtools")

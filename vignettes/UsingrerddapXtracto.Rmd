@@ -19,7 +19,9 @@ library(rerddapXtracto)
 
 `rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/web/packages/rerddap/index.html) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude and time points;  and also extracting data within a polygon (through time).  `rerddapXtracto` extends the functionality of the <span style="color:red">R</span> package [xtractomatic](https://cran.r-project.org/web/packages/xtractomatic/index.html) by being able to work with (hopefully) most gridded datasets available from any <span style="color:red">ERDDAP</span> server. The disadavantage compared to `xtractomatic` is that the user has to do more work to obtain information about the dataset to be accessed, while in `xtractomatic` that information is built in.
 
-This version has one main change - that is  in both `rxtracto()` and `rxtracto_3D()` the zcoord is not limited to be at a set location.  That means for `rxtracto_3D()` that if the zCoord needs to be given for any reason, then it must be of length two,  and for `rxtracto()` if the zCoord needs to be given for any reason,  it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to mkae extracts moving in (x, y, z, t) space.
+This version has several major changes. In both `rxtracto()` and `rxtracto_3D()` the zcoord is not limited to be at a set location.  That means for `rxtracto_3D()` that if the zCoord needs to be given for any reason, then it must be of length two,  and for `rxtracto()` if the zCoord needs to be given for any reason,  it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to make extracts moving in (x, y, z, t) space.
+
+Second there are now two functions,  `plotTrack()` for tracks and `plotBox()` for grids,  that produce quick maps of the output using the <span style="color:red">R</span> package `plotdap`.  All of the examples have been changed to use these functions.  Bounding box extracts, as in `rxtracto_3D()`, can be done just using `rerddap`, but the `rerddap` function `griddap()` returns a "melted" version of the data, while `rxtracto_3D()` retains the grid structure. Also,  `rxtractogon()` uses `rxtracto_3D()` and therefore `plotBox()` can be used to plot the the results from `rxtractogon()`.  These functions should also work with the output from the <span style="color:red">R</span> package `xtractomatic`.
 
 ### The Main xtractomatic functions
 
@@ -31,7 +33,13 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 - `rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
 
-The functions are similar to but not identical to the functions in `xtractomatic`. The main differences are having to obtain information about the dataset first using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
+and two functions for producing maps:
+
+- `plotTrack <- function(xcoord, ycoord, resp, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
+
+- `plotBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
+
+The data extraction functions are similar to but not identical to the functions in `xtractomatic`. The main differences are having to obtain information about the dataset first using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
 - dataInfo: the return from an `rerddap::info()` call to a dataset on an <span style="color:red">ERDDAP</span> server
 - parameter: character string containing the name of the parameter to extract
@@ -52,10 +60,10 @@ With all due respect to the [Chambers Brothers](https://www.youtube.com/watch?v=
 `rerddapXtracto` uses the <span style="color:red">R</span> packages `rerddap`, `ncdf4`, `sp` and `parsedate`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
 
 ```{r install, eval = FALSE}
-install.packages("rerddap", dependencies = TRUE)
 install.packages("ncdf4", dependencies = TRUE) 
-install.packages("sp", dependencies = TRUE)
 install.packages("parsedate", dependencies = TRUE)
+install.packages("rerddap", dependencies = TRUE)
+install.packages("sp", dependencies = TRUE)
 ```
 
 The `rerddapXtracto` package is not available through <span style="color:blue">CRAN</span> at the moment, but it is available from [Github](https://github.com/rmendels/rerddapXtracto)
@@ -73,31 +81,53 @@ Once installed, to use `rerddapXtracto`:
 library("rerddapXtracto")
 ```
 
+To install the plotdap package from <span style="color:blue">Github</span>:
+
+```{r plotdap, eval = FALSE}
+install.packages("devtools")
+devtools::install_github('ropensci/plotdap')
+```
+
+Note that plotdap depends on a number of packages that must be installed. These include the packages ggplot2, raster and sf. To use the animation features, `gganimate` must be installed, see [gganimate](https://github.com/dgrtwo/gganimate). `gganimate` requires a version of ImageMagick to be installed on your computer.
+
 If the other <span style="color:red">R</span> libraries  (`rerddap`, `ncdf4`,`sp`, and `parsedate`) have been installed they will be found and do not need to be explicitly loaded.   
 
 
 ### Using the R code examples
 
-Besides the `rerddapXtracto` package, the examples below depend on the <span style="color:red">R</span> packages `akima`, `dplyr`, `ggplot2`,  `lubridate`, `mapdata`,  and `xts`.  These can be loaded beforehand (assuming they have been installed):
+Once installed, to use rerddapXtracto:
 
-```{r loadpacks, eval = FALSE}
-library("akima")
-library("dplyr")
-library("ggplot2")
-library("lubridate")
-library("mapdata")
-library("xts")
+```{r, eval = FALSE}
+library("rerddapXtracto")
 ```
 
-In order that the code snippets be more stand-alone, the needed libraries are always `required()` in the examples.  
+and to use the plotting functions:
 
-It should be emphasized that these other packages are used to manipulate and plot the data in <span style="color:red">R</span>, other packages could be used as well.  The use of `rerddapXtracto` does not depend on these other packages.
-
-There are also several <span style="color:red">R</span> functions defined within the document that are used in other code examples.  These include `mapFrame()`, and `plotFrame()`.
-
+```{r, eval = FALSE}
+library("ggplot2")
+library("plotdap")
+library("sf")
+```
 
 
 ## Getting Started
+
+The plotting functions are new, and there are some fine points that neeed to be understood if they are to be used properly, in particular `plotBox()`. Both plotTrack() and `plotBox()` rearrange the output so that the plotdap functions add_tabledap() and `add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that is passed to `add_griddap()` has mutiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. The function `plotBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
+
+- [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the rerddap color pallete. These colors are based on the cmocean colormaps designed by Kristen Thyng (see http://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initally developed for Python, but a version of the colormaps is used in the oce package by Dan Kelley and Clark Richards and that is also what is used in rerddap.
+
+- [Plot one time period](#plot1) example shows how to manipulate an existing output from `rxtracto_3D()` or `rextractogon()` to plot just one time period.
+
+- [Transform the data](#transform) example shows how to use the “myFunc” option to transform the data before plotting. The function has to be a function of a single argument. This example also shows how to use the “name” option to chnage the name displayed on the color bar. In this example, we want depth to go downwards in the colorbar, and the name given changed from “altitude”, which is the name on ERDDAP, to the name “Depth”.
+
+- [Name](#name) example shows how to change the name on the colorbar.
+
+- [Modify the graph](#modify) shows how to use the `plotdap` functon `add_ggplot()` to modify a graph once it has been generated.
+
+- [Animate](#animate) shows how to animate a grid with multiple time periods.
+
+
+
 
 The first several examples reproduce some of the examples in the `xtractomatic` vignette, hopefully to make clear how the functions in the two packages relate. One change from the `xtractomatic` vignette is that the plots use the `cmocean` colormaps designed by Kristen Thyng (see http://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean).  These colormaps were initally developed for Python, but a version of the colormaps is used in the `oce` package by Dan Kelley and Clark Richards and that is what is used here.
  
@@ -123,7 +153,7 @@ In this section we extract data along a trackline found in the <span style="colo
 
 
 
-```{r getMarlinChl}
+```{r getMarlinChl, message = FALSE}
 require("rerddap")
 require("rerddapXtracto")
 
@@ -149,65 +179,37 @@ Note the differences from the `xtractomatic` example.
 
 ### Plotting the results
 
-We plot the track line with the locations colored according to the mean of the satellite <span style="color:blue">chlorophyll</span> around that point. Positions where there was a tag location but no <span style="color:blue">chlorophyll</span> values are also shown.
+We plot the track line with the locations colored according to the mean of the satellite `chlorophyll` around that point. Positions where there was a tag location but no `chlorophyll` values are also shown. This example shows the use of the “plotColor” parameter to use the “chlorophyll” color palette.
 
-```{r meantrackPlot, fig.align = 'center', fig.width = 6, fig.height = 3}
+<span id="colorPalette"></span>
+```{r meantrackPlot, fig.align = 'center', fig.width = 6, fig.height = 5, message = FALSE}
 require("ggplot2")
-require("mapdata")
-# First combine the two dataframes (the input and the output) into one, 
-# so it will be easy to take into account the locations that didn’t 
-# retrieve a value.
+require("plotdap")
+require("sf")
 
-alldata <- cbind(tagData, swchl)
-
-# adjust the longitudes to be (-180, 180)
-alldata$lon <- alldata$lon - 360
-# Create a variable that shows if chla is missing
-alldata$missing <- is.na(alldata$'mean chlorophyll') * 1
-alldata$mean <- as.array(alldata$'mean chlorophyll')
-# set limits of the map
-ylim <- c(15, 30)
-xlim <- c(-160, -105)
-myColor <- colors$chlorophyll
-# get outline data for map
-w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-# plot using ggplot
-z <- ggplot(alldata,aes(x = lon, y = lat)) + 
-   geom_point(aes(colour = mean, shape = factor(missing)), size = 2.) + 
-   scale_shape_manual(values = c(19, 1))
-z + geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") + 
-  theme_bw() + 
-  scale_colour_gradientn(colours = myColor,limits = c(0., 0.32), "Chla") + 
-  coord_fixed(1.3, xlim = xlim, ylim = ylim) + ggtitle("Mean chla values at marlin tag locations")
+myPlot <- plotTrack(xpos, ypos, swchl, plotColor = 'chlorophyll')
+myPlot
 ```
 
 
 ### Topography data
 
-The second example from the  `xtractomatic`  vignette is accessing topographic data along the Marlin track. 
+The second example from the  `xtractomatic`  vignette is accessing topographic data along the Marlin track. This example alos shows how to pass a function to `plotTrack` to transform the data before plotting,  and to change the name shown on the colorbar. 
 
-```{r topotag, fig.align = 'center', fig.width = 6, fig.height = 4, warning = FALSE}
+<span id="name"></span>
+```{r topotag, fig.align = 'center', fig.width = 6, fig.height = 5, warning = FALSE}
 require("ggplot2")
-require("mapdata")
+require("plotdap")
 require("rerddap")
 require("rerddapXtracto")
+require("sf")
 ylim <- c(15, 30)
 xlim <- c(-160, -105)
 topoInfo <- rerddap::info('etopo360')
 topo <- rxtracto(topoInfo, parameter = 'altitude', xcoord = xpos, ycoord = ypos, xlen = .1, ylen = .1)
-alldata <- cbind(tagData, topo)
-alldata$lon <- alldata$lon - 360
-alldata$mean <- as.array(alldata$'mean altitude')
-# get outline data for map
-w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-z <- ggplot(alldata,aes(x = lon, y = lat)) + 
-   geom_point(aes(colour = mean), size = 2.) + 
-   scale_shape_manual(values = c(19, 1))
-z + geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") + 
-  theme_bw() + 
-  scale_colour_gradient( name = "Depth") + 
-  coord_fixed(1.3, xlim = xlim, ylim = ylim) + ggtitle("Bathymetry at marlin tag locations")
-
+myFunc = function(x) -x
+topoPlot <- plotTrack(xpos, ypos, topo, plotColor = 'density', name = 'Depth', myFunc = myFunc)
+topoPlot
 ```
 
 Again, note the differences from the `xtractomatic` example:
@@ -217,6 +219,23 @@ Again, note the differences from the `xtractomatic` example:
 - the user has to know the parameter name desired for that datasetID, in this case 'altitude'
 - only the xcoord and ycoord values need to be given, as 'etopo360' is a 2-D dataset, and this is handled more gracefully then in `xtractomatic`.
 
+The following is an artificial example showing a track moving in (x, y, z, t) space. Since the times of the model output change, the actual times are retrieved, and the last three times used in the example.
+
+```{r extract3D}
+require("rerddap")
+urlBase <- "http://erddap.marine.ie/erddap/"
+parameter <- "Sea_water_temperature"
+dataInfo <- rerddap::info("IMI_CONN_3D", url = urlBase)
+#get the actual last 3 times,  and extract from data frame
+dataInfo1 <- read.csv("https://erddap.marine.ie/erddap/griddap/IMI_CONN_3D.csv0?time[last-2:1:last]",stringsAsFactors = FALSE, header = FALSE, row.names = NULL)
+sstTimes <- dataInfo1[[1]]
+sstLats <- c(53.505758092414446, 53.509303546859805, 53.51284900130517)
+sstLons <- c(-10.25975390624996, -10.247847656249961, -10.23594140624996)
+sstDepths <- c(2, 6, 10)
+sstTrack <- rxtracto(dataInfo, parameter = parameter, xcoord = sstLons, ycoord = sstLats, tcoord = sstTimes, zcoord = sstDepths, xlen = .05, ylen = .05, zlen = 0., zName = 'altitude', urlbase = urlBase)
+str(sstTrack)
+```
+
 
 ## Using `rxtracto_3D` 
 
@@ -224,9 +243,9 @@ The function `rxtracto_3D()` adds no new capabilites to `rerddap`, but it does r
 
 ### Obtaining VIIRS chlorophyll data
 
+We examine VIIRS chlorophyll for the “latest” data as of when the vignette was generated:
 
-```{r VIIRSchla}
-require("lubridate")
+```{r VIIRSchla, warning = FALSE,  message = FALSE}
 require("rerddap")
 require("rerddapXtracto")
 
@@ -236,7 +255,6 @@ tpos <- c("last", "last")
 tpos <- c("2017-04-15", "2017-04-15")
 VIIRSInfo <- rerddap::info('erdVH3chlamday')
 VIIRS <- rxtracto_3D(VIIRSInfo, parameter = 'chla', xcoord = xpos, ycoord = ypos, tcoord = tpos)
-VIIRS$time <- lubridate::as_date(VIIRS$time)
 ```
 
 `rxtracto_3d()` returns a list of the form:
@@ -250,52 +268,18 @@ VIIRS$time <- lubridate::as_date(VIIRS$time)
 
 The coordinate names of the structure are based on the names given in the `rxtracto_3d()` call, so may differ between datasets. A similar call to `rerddap::griddap()` will either return the data "pre-melted" (that is long-form) or only get the netcdf file and have the user read in the data.  There are tradeoffs to having the data "pre-melted", for consistency we maintain a structure similar to that in  `xtracto_3D()`, plus this works even if the xcoord and ycoord are not longitude and latitude, where the "pre-melting" in `rerddap::griddap()` fails.
 
-We can map the results using a "helper" function `mapFrame()` that "melts" the data into "longform":
 
 
-```{r mapFrame}
-mapFrame <- function(longitude, latitude, chla) {
-  dims <- dim(chla)
-  chla <- array(chla, dims[1] * dims[2])
-  chlaFrame <- expand.grid(x = longitude, y = latitude)
-  chlaFrame$chla <- chla
-  return(chlaFrame)
-}
-```
 
-and also define a helper function `plotFrame()` to plot the data:
+We can map the data using `plotBox()`:
 
-```{r plotFrame}
-plotFrame <- function(chlaFrame, xlim, ylim, title, logplot = TRUE) {
-  require("ggplot2")
-  require("mapdata")
-  w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-  myplot <- ggplot(data = chlaFrame, aes(x = x, y = y, fill = chla)) +
-    geom_raster(interpolate = FALSE) +
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim)
-  if (logplot) {
-    my.col <- colors$chlorophyll
-    myplot <- myplot + scale_fill_gradientn(colours = my.col, na.value = NA, limits = c(-2, 4)) +
-      ggtitle(title)
-    }else{
-     myplot < -myplot + scale_fill_gradientn(colours = my.col, na.value = NA) +
-       ggtitle(title)
-  }
-  return(myplot)
-}
-```
-
-We examine <span style="color:blue">chlorophyll</span> the "latest" data as of when the vignette was generated:
-
-
+<span id="transform"></span>
 ```{r VIIRSLogPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
-xlim <- c(-125, -120) 
-ylim <- c(36, 39)
-chlalogFrame <- mapFrame(VIIRS$longitude, VIIRS$latitude,
-                       log(VIIRS$chla[, , 1]))
-chlalogPlot <- plotFrame(chlalogFrame, xlim, ylim, "log(VIIRS chla)")
+require("ggplot2")
+require("plotdap")
+require("sf")
+myFunc <- function(x) log(x)
+chlalogPlot <- plotBox(VIIRS, plotColor = 'chlorophyll', myFunc = myFunc)
 chlalogPlot
 ```
 
@@ -320,31 +304,40 @@ sanctchl <- rxtractogon(dataInfo, parameter = parameter, xcoord = xpos, ycoord =
 str(sanctchl)
 ```
 
-The extract (see `str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  A plot of the the second time period: 
+The extract (see `str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  This example shows how to pull out only a single time period to be used in `plotBox()`. 
 
-```{r mbnmsChlaPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
+<span id="plot1"></span>
+```{r mbnmsChlaPlot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
-require("mapdata")
-xlim <- c(-123.5, -121.)
-ylim <- c(35, 38)
-mbnmsFrame <- mapFrame(sanctchl$longitude,sanctchl$latitude, log(sanctchl$chla[, , 2]))
-my.col <- colors$chlorophyll
-w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-myplot <- ggplot() + geom_path(data = mbnms,aes(x = Longitude, y = Latitude), colour = "black")   
-myplot <- myplot + 
-    geom_raster(data = mbnmsFrame, aes(x = x, y = y, fill = chla), interpolate = FALSE) + 
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits = c(-1, 3)) +
-    ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim) + 
-    ggtitle(paste("log(Chla) in MBNMS", sanctchl$time[2]))
-myplot
+require("plotdap")
+require("sf")
+myFunc <- function(x) log(x)
+sanctchl1 <- sanctchl
+sanctchl1$chla <- sanctchl1$chla[, , 2]
+sanctchl1$time <- sanctchl1$time[2]
+sanctchlPlot <- plotBox(sanctchl1, plotColor = 'chlorophyll', myFunc = myFunc)
+sanctchlPlot
 ```
+
+This extract can be used to show the ability to animate the output through time:
+
+<span id="animate"></span>
+```{r animate, eval = FALSE}
+require("gganimate")
+#> Loading required package: gganimate
+require("ggplot2")
+require("plotdap")
+require("sf")
+myFunc <- function(x) log(x)
+sanctchlPlot <- plotBox(sanctchl, plotColor = 'chlorophyll', myFunc = myFunc, time = identity, animate = TRUE)
+```
+
+![Sanctuary Animation](ani.gif)
 
 
 The MBNMS is famous for containing the Monterey Canyon, which reaches depths of up to 3,600 m (11,800 ft) below surface level at its deepest. `rxtractogon()` can extract the bathymetry data for the MBNMS from the <span style="color:red">ETOPO</span> dataset:
 
-```{r mbnmsBathy}
+```{r mbnmsBathy, warning = FALSE}
 require("rerddap")
 dataInfo <- rerddap::info('etopo180')
 xpos <- mbnms$Longitude
@@ -355,32 +348,24 @@ str(bathy)
 
 Mapping the data to show the canyon:
 
-```{r mbnmsBathyPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
+```{r mbnmsBathyPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE, message = FALSE}
 require("ggplot2")
 require("mapdata")
-xlim <- c(-123.5, -121.)
-ylim <- c(35, 38)
-mbnmsFrame <- mapFrame(bathy$longitude, bathy$latitude, bathy$depth[, , 1])
-w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-myplot <- ggplot() + geom_path(data = mbnms, aes(x = Longitude, y = Latitude), colour = "black")   
-myplot <- myplot + geom_raster(data = mbnmsFrame, aes(x = x, y = y, fill = chla),interpolate = FALSE) +
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + scale_fill_gradient(na.value = NA, name = "Depth") +
-    ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim) + ggtitle("MBNMS Bathymetry")
-myplot
+myFunc = function(x) -x
+bathyPlot <- plotBox(bathy, plotColor = 'density', myFunc = myFunc, name = 'Depth')
+bathyPlot
 ```
 
 
 ## Temperature at 70m in the north Pacific from the SODA model output
 
-This is an example of an extract from a 4-D dataset (results from the "Simple Ocean Data Assimilation (SODA)" model), and illustrate the case where the z-coordinate does not have the default name "altitude".  Water temperature at 70m depth is extracted for the North Pacific Ocean.
+This is an example of an extract from a 4-D dataset (results from the "Simple Ocean Data Assimilation (SODA)" model), and illustrate the case where the z-coordinate does not have the default name "altitude".  Water temperature at 70m depth is extracted for the North Pacific Ocean east of the dateline.
 
 
 ```{r soda70}
 require("rerddap")
 dataInfo <- rerddap::info('erdSoda331oceanmday')
-xpos <- c(135.25, 240.25)
+xpos <- c(185.25, 240.25)
 ypos <- c(20.25, 60.25)
 zpos <- c(76.80285, 76.80285)
 tpos <- c('2010-12-15', '2010-12-15')
@@ -388,28 +373,15 @@ soda70 <- rxtracto_3D(dataInfo, parameter = 'temp', xcoord = xpos, ycoord = ypos
 str(soda70)
 ```
 
-Since the data cross the dateline, it is necessary to use the new "world2Hires" continental outlines in the package "mapdata" which is Pacific Ocean centered.  Unfortunatley there is a small problem where the outlines from certain countries wrap and mistakenly appear in plots, and those countries must be removed,  see code below.
 
 
 ```{r soda70Plot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
-require("mapdata")
-xlim <- c(135, 240)
-ylim <- c(20, 60)
-soda70Frame <- mapFrame(soda70$longitude,soda70$latitude, soda70$temp[, , 1, 1])
-my.col <- colors$temperature
-## Must do a kludge to remove countries that wrap and mess up the plot
-w1 <- map("world2Hires", xlim = c(135, 240), ylim = c(20, 60), fill = TRUE, plot = FALSE)
-remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
-w <- map_data("world2Hires", regions = w1$names[!(w1$names %in% remove)], ylim = ylim, xlim = xlim)
-myplot <- ggplot() + 
-    geom_raster(data = soda70Frame, aes(x = x, y = y, fill = chla), interpolate = FALSE) + 
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits = c(-3,30), name = "temperature") +
-    ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim) + 
-    ggtitle(paste("temperature at 70 meters depth from SODA for", soda70$time[1]))
-myplot
+require("plotdata")
+require("sf")
+sodaPlot <- plotBox(soda70, plotColor = 'temperature', name = 'temp_at_70m', maxpixels = 30000)
+sodaPlot
+
 ```
 
 
@@ -433,21 +405,20 @@ str(NAtlSSS)
 
 ```{r NAtlSSSplot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
-require("mapdata")
-xlim <- c(-17.99375, -1.00625)
-ylim <- c(48.00625, 57.50625)
-NAtlSSSFrame <- mapFrame(NAtlSSS$longitude, NAtlSSS$latitude, NAtlSSS$sea_surface_salinity[, , 1])
-my.col <- colors$salinity
-w <- map_data("worldHires", ylim = ylim, xlim = xlim)
-myplot <- ggplot() + 
-    geom_raster(data = NAtlSSSFrame, aes(x = x, y = y, fill = chla), interpolate = FALSE) + 
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits = c(34, 36), name = "salinity") +
-    ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim) + 
-    ggtitle(paste("salinity", NAtlSSS$time[1]))
-myplot
+require("plotdap")
+NAtlSSSPlot <- plotBox(NAtlSSS, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
+NAtlSSSPlot
 ```
+
+A lot of the details in the ocean are hidden in the plot above, because there are some low salinity values right close to shore. The plot can be modified using the plotdap function add_ggplot() so that only values between (32, 36) are plotted, and to change the colorbar to reflect this.
+
+<span id="modify"></span>
+```{r NAtlSSSplot1, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
+require("ggplot2")
+require("plotdap")
+add_ggplot(NAtlSSSPlot, scale_colour_gradientn(colours = colors$salinity, na.value = NA, limits = c(32, 36)), scale_fill_gradientn(colours = colors$salinity, na.value = NA, limits = c(32, 36)))
+```
+
 
 ### IFREMER
 
@@ -457,7 +428,7 @@ The French agency IFREMER also has an <span style="color:red">ERDDAP</span> serv
 require("rerddap")
 urlBase <- "http://www.ifremer.fr/erddap/"
 parameter <- "PSAL"
-ifrTimes <- c("2013-05-15", "2013-05-15")
+ifrTimes <- c("2013-09-15", "2013-09-15")
 ifrLats <- c(30., 50.)
 ifrLons <- c(-140., -110.)
 ifrDepth <- c(75., 75.)
@@ -466,35 +437,13 @@ ifrPSAL <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = ifrLons, ycoord
 str(ifrPSAL)
 ```
 
-The `ggplot2` function `geom_raster()` is not designed for unevenly spaced coordinates, as are the latitudes from this model.  The function `interp()` from the package `akima` is used to interpolate the data which are then plotted.
-
+Plotting th results using `plotBox()`:
 
 ```{r ifrPSALplot, fig.width = 6, fig.height = 3, fig.align='center', warning = FALSE}
-## ggplot2 has trouble with unequal y's
- require("akima")
- require("dplyr")
- require("ggplot2")
- require("mapdata")
-  xlim <- c(-140, -110)
-  ylim <- c(30, 51)
-## ggplot2 has trouble with unequal y's
-  my.col <- colors$salinity
-  tempData1 <- ifrPSAL$PSAL[, , 1, 1]
-  tempData <- array(tempData1 , 61 * 54)
-  tempFrame <- expand.grid(x = ifrPSAL$longitude, y = ifrPSAL$latitude)
-  tempFrame$temp <- tempData
-  tempFrame1 <- dplyr::filter(tempFrame, !is.nan(temp))
-  myinterp <- akima::interp(tempFrame1$x, tempFrame1$y, tempFrame1$temp, xo = seq(min(tempFrame1$x), max(tempFrame1$x), length = 61), yo = seq(min(tempFrame1$y), max(tempFrame1$y), length = 54))
-  myinterp1 <- expand.grid(x = myinterp$x, y = myinterp$y)
-  myinterp1$temp <- array(myinterp$z, 61 * 54)
-  w <- map_data("worldHires", ylim = ylim, xlim = xlim)
- myplot <- ggplot() +
-    geom_raster(data = myinterp1, aes(x = x, y = y, fill = temp), interpolate = FALSE) +
-    geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +
-    theme_bw() + scale_fill_gradientn(colours = my.col, na.value = NA, limits = c(32, 35), name = "salinity") +
-    ylab("latitude") + xlab("longitude") +
-    coord_fixed(1.3, xlim = xlim, ylim = ylim) + ggtitle(paste("salinity at 75 meters",ifrPSAL$time[1] ))
- myplot
+require("ggplot2")
+require("plotdap")
+ifrPSALPlot <- plotBox(ifrPSAL, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
+ifrPSALPlot
 ```
 
 

@@ -20,14 +20,33 @@ checkBounds <- function(dataCoordList, dimargs) {
   dimLen <- length(names(dataCoordList))
   for (i in (1:dimLen)) {
     cIndex <- which(names(dataCoordList)[i] == names(dimargs))
-    if ((min(dimargs[[cIndex]]) < min(dataCoordList[[i]])) |  (max(dimargs[[cIndex]]) > max(dataCoordList[[i]]))) {
-      print('dimension coordinate out of bounds')
-      print(paste0('dimension name: ', names(dimargs)[cIndex]))
-      print(paste('given coordinate bounds', dimargs[cIndex]))
-      returnCode <- 1
-      print(paste('ERDDAP datasets bounds',  min(dataCoordList[i]),  max(dataCoordList[i])))
+    if (names(dimargs)[cIndex] == 'time') {
+      min_dimargs <- min(as.numeric(dimargs[[cIndex]]))
+      max_dimargs <- max(as.numeric(dimargs[[cIndex]]))
+      temp_time <- parsedate::parse_iso_8601(dataCoordList[[i]])
+      min_coord <- min( as.numeric(temp_time))
+      max_coord <- max( as.numeric(temp_time))
+    } else {
+      min_dimargs <- min(dimargs[[cIndex]])
+      max_dimargs <- max(dimargs[[cIndex]])
+      min_coord <- min(dimargs[[cIndex]])
+      max_coord <- max(dimargs[[cIndex]])
     }
-
+    if ((min_dimargs < min_coord) |  (max_dimargs > max_coord)) {
+      if (names(dimargs)[cIndex] == 'time') {
+        print('dimension coordinate out of bounds')
+        print(paste0('dimension name: ', names(dimargs)[cIndex]))
+        print(paste('given coordinate bounds', min_dimargs, max_dimargs))
+        returnCode <- 1
+        print(paste('ERDDAP datasets bounds',  as.Date(min_coord), as.Date( max_coord)))
+      } else {
+        print('dimension coordinate out of bounds')
+        print(paste0('dimension name: ', names(dimargs)[cIndex]))
+        print(paste('given coordinate bounds', min_dimargs, max_dimargs))
+        returnCode <- 1
+        print(paste('ERDDAP datasets bounds',  min_coord,  max_coord))
+        }
+    }
   }
 
 

@@ -49,8 +49,8 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   }
   #  check that the base url ends in /
   lenURL <- nchar(urlbase)
-  if (substr(urlbase, lenURL, lenURL) == '/') {
-    urlbase <- substr(urlbase, 1, (lenURL - 1))
+  if (substr(urlbase, lenURL, lenURL) != '/') {
+    urlbase <- paste0(urlbase, '/')
   }
 
   # check that urlbase connects to an ERDDAP

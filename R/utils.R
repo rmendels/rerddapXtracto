@@ -28,6 +28,8 @@ strextract1 <- function(str, pattern) regmatches(str, regexpr(pattern, str))
 
 strtrim1 <- function(str) gsub("^\\s+|\\s+$", "", str)
 
+###  End utilites from rerddap
+
 findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim,
                             tcoordLim, zcoordLim, xName, yName, tName, zName) {
   newxIndex <-  rep(NA_integer_, 2)
@@ -73,32 +75,44 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim
 }
 
 
-makeCmd <- function(urlbase, xName, yName, zName, tName, parameter,
+makeCmd <- function(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                     erddapXcoord, erddapYcoord, erddapTcoord, erddapZcoord,
                     verbose ) {
-  myCallOpts <- ""
-  if (!(urlbase == "http://upwell.pfeg.noaa.gov/erddap")) {
-    myCallOpts <- paste0(", url='", urlbase,"/'")
+
+  myCallOpts <- list(dataInfo)
+  myCallOptsNames <- list('x')
+  if (!(urlbase == "https://upwell.pfeg.noaa.gov/erddap/")) {
+    myCallOpts$url <- urlbase
+    myCallOptsNames <- c(myCallOptsNames, 'url')
   }
   if (verbose) {
-    myCallOpts <- paste0(myCallOpts,", callopts = httr::verbose()")
+    myCallOpts$callopts <- httr::verbose()
+    myCallOptsNames <- c(myCallOptsNames, 'callopts')
   }
-  griddapCmd <- 'rerddap::griddap(dataInfo,'
   if (!is.na(erddapXcoord[1])) {
-    griddapCmd <- paste0(griddapCmd, xName,'=c(',erddapXcoord[1],',', erddapXcoord[2],'),')
+    myCallOpts$xName <- erddapXcoord
+    myCallOptsNames <- c(myCallOptsNames, xName)
   }
-  if (!is.na(erddapYcoord[1])) {
-    griddapCmd <- paste0(griddapCmd, yName,'=c(',erddapYcoord[1],',', erddapYcoord[2],'),')
-  }
+    if (!is.na(erddapYcoord[1])) {
+    myCallOpts$yName <- erddapYcoord
+    myCallOptsNames <- c(myCallOptsNames, yName)
+    }
   if (!is.na(erddapZcoord[1])) {
-    griddapCmd <- paste0(griddapCmd, zName,'=c(',erddapZcoord[1],',', erddapZcoord[2],'),')
+    myCallOpts$zName <- erddapZcoord
+    myCallOptsNames <- c(myCallOptsNames, zName)
   }
   if (!is.na(erddapTcoord[1])) {
-    griddapCmd <- paste0(griddapCmd, tName,'=c("',erddapTcoord[1],'","', erddapTcoord[2],'"),')
+    myCallOpts$tName <- erddapTcoord
+    myCallOptsNames <- c(myCallOptsNames, tName)
   }
-  griddapCmd <- paste0(griddapCmd,'fields="', parameter,'",read = FALSE', myCallOpts,')')
+  myCallOpts$fields = parameter
+  myCallOptsNames <- c(myCallOptsNames, 'fields')
+  myCallOpts$read <- FALSE
+  myCallOptsNames <- c(myCallOptsNames, 'read')
 
-  return(griddapCmd)
+  names(myCallOpts) <- myCallOptsNames
+
+  return(myCallOpts)
 }
 
 removeLast <- function(isotime, tcoord1) {
