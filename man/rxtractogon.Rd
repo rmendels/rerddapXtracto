@@ -7,7 +7,7 @@
 rxtractogon(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
   zName = "altitude", tName = "time",
-  urlbase = "http://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
+  urlbase = "https://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
 }
 \arguments{
 \item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}

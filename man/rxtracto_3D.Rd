@@ -7,7 +7,7 @@
 rxtracto_3D(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
   zName = "altitude", tName = "time",
-  urlbase = "https://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
+  urlbase = "https://upwell.pfeg.noaa.gov/erddap/", verbose = FALSE)
 }
 \arguments{
 \item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
@@ -54,7 +54,7 @@ The same call could be made directly in rerddap,
 but function is maintained as it is used in the polygon routine.
 }
 \examples{
-urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
 dataInfo <- rerddap::info('erdMBsstd8day')
 parameter <- 'sst'
 xcoord <- c(230, 235)

@@ -7,7 +7,7 @@
 rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0, zlen = 0,
   xName = "longitude", yName = "latitude", zName = "altitude",
-  tName = "time", urlbase = "http://upwell.pfeg.noaa.gov/erddap",
+  tName = "time", urlbase = "https://upwell.pfeg.noaa.gov/erddap",
   verbose = FALSE)
 }
 \arguments{
@@ -64,7 +64,7 @@ A dataframe containing:
 data from an ERDDAP server along a (x,y,z, time) trajectory.
 }
 \examples{
-urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
 dataInfo <- rerddap::info('erdMBsstd8day')
 parameter <- 'sst'
 xcoord <- c(230, 231)
