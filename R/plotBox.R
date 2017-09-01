@@ -13,15 +13,16 @@
 #' @return a plotdap plot
 #'
 #' @examples
-#' tagData <- Marlintag38606
-#' xpos <- tagData$lon
-#' ypos <- tagData$lat
-#' tpos <- tagData$date
-#' zpos <- rep(0., length(xpos))
-#' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
-#' swchlInfo <- rerddap::info('erdSWchla8day')
-#' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
-#' plotBox(xpos, ypos, swchl, plotColor = 'chlorophyll')
+#' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
+#' dataInfo <- rerddap::info('erdMBsstd1day')
+#' parameter <- 'sst'
+#' xcoord <- c(230, 245)
+#' ycoord <- c(30, 45)
+#' tcoord <- c('2006-01-15', '2006-01-18??')
+#' zcoord <- c(0., 0.)
+#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#'                        tcoord = tcoord, zcoord = zcoord)
+#' plotBox(extract, plotColor = 'temperature')
 
 plotBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000){
   require(rerddap)
