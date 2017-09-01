@@ -18,7 +18,7 @@
 #' parameter <- 'sst'
 #' xcoord <- c(230, 245)
 #' ycoord <- c(30, 45)
-#' tcoord <- c('2006-01-15', '2006-01-18??')
+#' tcoord <- c('2006-01-15', '2006-01-18')
 #' zcoord <- c(0., 0.)
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        tcoord = tcoord, zcoord = zcoord)

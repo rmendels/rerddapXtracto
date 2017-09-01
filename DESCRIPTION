@@ -1,7 +1,7 @@
 Package: rerddapXtracto
 Type: Package
 Title: Extracts Environmental Data from ERD's ERDDAP Web Service
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
 Description: The xtractomatic package contains three functions that access
     environmental data from ERD's ERDDAP service. The rxtracto function extracts
