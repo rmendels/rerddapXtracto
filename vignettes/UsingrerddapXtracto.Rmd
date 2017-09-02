@@ -21,7 +21,7 @@ library(rerddapXtracto)
 
 This version has several major changes. In both `rxtracto()` and `rxtracto_3D()` the zcoord is not limited to be at a set location.  That means for `rxtracto_3D()` that if the zCoord needs to be given for any reason, then it must be of length two,  and for `rxtracto()` if the zCoord needs to be given for any reason,  it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to make extracts moving in (x, y, z, t) space.
 
-Second there are now two functions,  `plotTrack()` for tracks and `plotBox()` for grids,  that produce quick maps of the output using the <span style="color:red">R</span> package `plotdap`.  All of the examples have been changed to use these functions.  Bounding box extracts, as in `rxtracto_3D()`, can be done just using `rerddap`, but the `rerddap` function `griddap()` returns a "melted" version of the data, while `rxtracto_3D()` retains the grid structure. Also,  `rxtractogon()` uses `rxtracto_3D()` and therefore `plotBox()` can be used to plot the the results from `rxtractogon()`.  These functions should also work with the output from the <span style="color:red">R</span> package `xtractomatic`.
+Second there are now two functions,  `plotTrack()` for tracks and `plotBBox()` for grids,  that produce quick maps of the output using the <span style="color:red">R</span> package `plotdap`.  All of the examples have been changed to use these functions.  Bounding box extracts, as in `rxtracto_3D()`, can be done just using `rerddap`, but the `rerddap` function `griddap()` returns a "melted" version of the data, while `rxtracto_3D()` retains the grid structure. Also,  `rxtractogon()` uses `rxtracto_3D()` and therefore `plotBBox()` can be used to plot the the results from `rxtractogon()`.  These functions should also work with the output from the <span style="color:red">R</span> package `xtractomatic`.
 
 ### The Main xtractomatic functions
 
@@ -37,7 +37,7 @@ and two functions for producing maps:
 
 - `plotTrack <- function(xcoord, ycoord, resp, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
 
-- `plotBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
+- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
 
 The data extraction functions are similar to but not identical to the functions in `xtractomatic`. The main differences are having to obtain information about the dataset first using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
@@ -112,7 +112,7 @@ library("sf")
 
 ## Getting Started
 
-The plotting functions are new, and there are some fine points that neeed to be understood if they are to be used properly, in particular `plotBox()`. Both plotTrack() and `plotBox()` rearrange the output so that the plotdap functions add_tabledap() and `add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that is passed to `add_griddap()` has mutiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. The function `plotBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
+The plotting functions are new, and there are some fine points that neeed to be understood if they are to be used properly, in particular `plotBBox()`. Both plotTrack() and `plotBBox()` rearrange the output so that the plotdap functions add_tabledap() and `add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that is passed to `add_griddap()` has mutiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
 
 - [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the rerddap color pallete. These colors are based on the cmocean colormaps designed by Kristen Thyng (see http://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initally developed for Python, but a version of the colormaps is used in the oce package by Dan Kelley and Clark Richards and that is also what is used in rerddap.
 
@@ -271,7 +271,7 @@ The coordinate names of the structure are based on the names given in the `rxtra
 
 
 
-We can map the data using `plotBox()`:
+We can map the data using `plotBBox()`:
 
 <span id="transform"></span>
 ```{r VIIRSLogPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
@@ -279,7 +279,7 @@ require("ggplot2")
 require("plotdap")
 require("sf")
 myFunc <- function(x) log(x)
-chlalogPlot <- plotBox(VIIRS, plotColor = 'chlorophyll', myFunc = myFunc)
+chlalogPlot <- plotBBox(VIIRS, plotColor = 'chlorophyll', myFunc = myFunc)
 chlalogPlot
 ```
 
@@ -304,7 +304,7 @@ sanctchl <- rxtractogon(dataInfo, parameter = parameter, xcoord = xpos, ycoord =
 str(sanctchl)
 ```
 
-The extract (see `str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  This example shows how to pull out only a single time period to be used in `plotBox()`. 
+The extract (see `str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  This example shows how to pull out only a single time period to be used in `plotBBox()`. 
 
 <span id="plot1"></span>
 ```{r mbnmsChlaPlot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
@@ -315,7 +315,7 @@ myFunc <- function(x) log(x)
 sanctchl1 <- sanctchl
 sanctchl1$chla <- sanctchl1$chla[, , 2]
 sanctchl1$time <- sanctchl1$time[2]
-sanctchlPlot <- plotBox(sanctchl1, plotColor = 'chlorophyll', myFunc = myFunc)
+sanctchlPlot <- plotBBox(sanctchl1, plotColor = 'chlorophyll', myFunc = myFunc)
 sanctchlPlot
 ```
 
@@ -329,7 +329,7 @@ require("ggplot2")
 require("plotdap")
 require("sf")
 myFunc <- function(x) log(x)
-sanctchlPlot <- plotBox(sanctchl, plotColor = 'chlorophyll', myFunc = myFunc, time = identity, animate = TRUE)
+sanctchlPlot <- plotBBox(sanctchl, plotColor = 'chlorophyll', myFunc = myFunc, time = identity, animate = TRUE)
 ```
 
 ![Sanctuary Animation](ani.gif)
@@ -352,7 +352,7 @@ Mapping the data to show the canyon:
 require("ggplot2")
 require("mapdata")
 myFunc = function(x) -x
-bathyPlot <- plotBox(bathy, plotColor = 'density', myFunc = myFunc, name = 'Depth')
+bathyPlot <- plotBBox(bathy, plotColor = 'density', myFunc = myFunc, name = 'Depth')
 bathyPlot
 ```
 
@@ -379,7 +379,7 @@ str(soda70)
 require("ggplot2")
 require("plotdata")
 require("sf")
-sodaPlot <- plotBox(soda70, plotColor = 'temperature', name = 'temp_at_70m', maxpixels = 30000)
+sodaPlot <- plotBBox(soda70, plotColor = 'temperature', name = 'temp_at_70m', maxpixels = 30000)
 sodaPlot
 
 ```
@@ -406,7 +406,7 @@ str(NAtlSSS)
 ```{r NAtlSSSplot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
 require("plotdap")
-NAtlSSSPlot <- plotBox(NAtlSSS, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
+NAtlSSSPlot <- plotBBox(NAtlSSS, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
 NAtlSSSPlot
 ```
 
@@ -437,12 +437,12 @@ ifrPSAL <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = ifrLons, ycoord
 str(ifrPSAL)
 ```
 
-Plotting th results using `plotBox()`:
+Plotting th results using `plotBBox()`:
 
 ```{r ifrPSALplot, fig.width = 6, fig.height = 3, fig.align='center', warning = FALSE}
 require("ggplot2")
 require("plotdap")
-ifrPSALPlot <- plotBox(ifrPSAL, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
+ifrPSALPlot <- plotBBox(ifrPSAL, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
 ifrPSALPlot
 ```
 

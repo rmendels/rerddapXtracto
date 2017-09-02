@@ -7,7 +7,10 @@
 #' @param ycoord passed to rxtracto() or xtracto()
 #' @param resp data frame returned from rxtracto() or xtracto()
 #' @param plotColor the color to use in plot from rerddap
+#' @param name name for colorbar label
 #' @param myFunc function of one argument to transform the data
+#' @param shape shape to use to mark track
+#' @param size size of shape to use to mark track
 #' @return a plotdap plot
 #'
 #' @examples

@@ -8,11 +8,13 @@
 #' @param plotColor the color to use in plot from rerddap
 #' @param time a function to map multi-time to one,  or else identity for animation
 #' @param animate if multiple times, if TRUE will animate the maps
+#' @param name name for colorbar label
 #' @param myFunc function of one argument to transform the data
 #' @param maxpixels maximum numbe rof pixels to use in making the map - controls resolution
 #' @return a plotdap plot
 #'
 #' @examples
+#' require("ggplot2")
 #' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
 #' dataInfo <- rerddap::info('erdMBsstd1day')
 #' parameter <- 'sst'
@@ -22,9 +24,9 @@
 #' zcoord <- c(0., 0.)
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        tcoord = tcoord, zcoord = zcoord)
-#' plotBox(extract, plotColor = 'temperature')
+#' plotBBox(extract, plotColor = 'temperature')
 
-plotBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000){
+plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000){
   require(rerddap)
   require(plotdap)
   if (!is.function(time)) {

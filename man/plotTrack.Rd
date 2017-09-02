@@ -16,7 +16,13 @@ plotTrack(xcoord, ycoord, resp, plotColor = "viridis", name = NA,
 
 \item{plotColor}{the color to use in plot from rerddap}
 
+\item{name}{name for colorbar label}
+
 \item{myFunc}{function of one argument to transform the data}
+
+\item{shape}{shape to use to mark track}
+
+\item{size}{size of shape to use to mark track}
 }
 \value{
 a plotdap plot
