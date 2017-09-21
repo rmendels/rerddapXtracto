@@ -22,9 +22,9 @@
 #' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 #' swchlInfo <- rerddap::info('erdSWchla8day')
 #' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
-#' plotTrack(xpos, ypos, swchl, plotColor = 'chlorophyll')
+#' plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
 
-plotTrack <- function(xcoord, ycoord, resp, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5){
+plotTrack <- function(resp, xcoord, ycoord,  plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5){
   require(rerddap)
   require(plotdap)
   ind <- which(xcoord > 180)

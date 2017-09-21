@@ -4,15 +4,15 @@
 \alias{plotTrack}
 \title{plot result of xtracto or rxtracto}
 \usage{
-plotTrack(xcoord, ycoord, resp, plotColor = "viridis", name = NA,
+plotTrack(resp, xcoord, ycoord, plotColor = "viridis", name = NA,
   myFunc = NA, shape = 20, size = 0.5)
 }
 \arguments{
+\item{resp}{data frame returned from rxtracto() or xtracto()}
+
 \item{xcoord}{passed to rxtracto() or xtracto()}
 
 \item{ycoord}{passed to rxtracto() or xtracto()}
-
-\item{resp}{data frame returned from rxtracto() or xtracto()}
 
 \item{plotColor}{the color to use in plot from rerddap}
 
@@ -40,5 +40,5 @@ zpos <- rep(0., length(xpos))
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 swchlInfo <- rerddap::info('erdSWchla8day')
 swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
-plotTrack(xpos, ypos, swchl, plotColor = 'chlorophyll')
+plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
 }

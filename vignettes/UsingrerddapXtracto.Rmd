@@ -35,7 +35,7 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 and two functions for producing maps:
 
-- `plotTrack <- function(xcoord, ycoord, resp, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
+- `plotTrack <- function(resp, xcoord, ycoord,plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
 
 - `plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
 
@@ -187,7 +187,7 @@ require("ggplot2")
 require("plotdap")
 require("sf")
 
-myPlot <- plotTrack(xpos, ypos, swchl, plotColor = 'chlorophyll')
+myPlot <- plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
 myPlot
 ```
 
@@ -208,7 +208,7 @@ xlim <- c(-160, -105)
 topoInfo <- rerddap::info('etopo360')
 topo <- rxtracto(topoInfo, parameter = 'altitude', xcoord = xpos, ycoord = ypos, xlen = .1, ylen = .1)
 myFunc = function(x) -x
-topoPlot <- plotTrack(xpos, ypos, topo, plotColor = 'density', name = 'Depth', myFunc = myFunc)
+topoPlot <- plotTrack(topo, xpos, ypos, plotColor = 'density', name = 'Depth', myFunc = myFunc)
 topoPlot
 ```
 
@@ -377,7 +377,7 @@ str(soda70)
 
 ```{r soda70Plot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
-require("plotdata")
+require("plotdap")
 require("sf")
 sodaPlot <- plotBBox(soda70, plotColor = 'temperature', name = 'temp_at_70m', maxpixels = 30000)
 sodaPlot
