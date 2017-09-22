@@ -11,7 +11,7 @@ rerddapXtracto - R package for accessing environmental data using rerddap  (**Fo
 
 `rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude, time and depth  (new in this version) points; in a 3D bounding box; or within a polygon (through time). 
 
-New in this version is that a track can now move in (x, y, z, t) space if appropriae for the dataset being accessed.  And two plotting functions have been added,  `plotTrack()` and `plotBox()` that make use of the `plotdap` package.  See the new [rerdapXtracto vignette](https://rmendels.github.io/UsingrerddapXtracto.nb.html).  A lot of the code has been reworked, in particular the handling of time,  and in the formation of the requests to `rerddap`.
+New in this version is that a track can now move in (x, y, z, t) space if appropriate for the dataset being accessed.  And two plotting functions have been added,  `plotTrack()` and `plotBox()` that make use of the `plotdap` package.  See the new [rerdapXtracto vignette](https://rmendels.github.io/UsingrerddapXtracto.nb.html).  A lot of the code has been reworked, in particular the handling of time,  and in the formation of the requests to `rerddap`.
 
 
 
