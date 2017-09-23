@@ -208,8 +208,10 @@ latSouth <- working_coords$latSouth
 
     if (length(extract) == 0) {
        print(griddapCmd)
-       stop("There was an error in the url call.  See message on screen and URL called")
-        }
+      print("There was an error in the url call.  See message on screen and URL called")
+      print("Returning incomplete download")
+      return(out_dataframe)
+    }
     # read in netcdf file
      datafileID <- ncdf4::nc_open(extract$summary$filename)
      paramdata <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
