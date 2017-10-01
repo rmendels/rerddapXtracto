@@ -47,9 +47,8 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, na
   names(myList) <- c('plot', 'grid', 'var', 'fill', 'time', 'animate', 'maxpixels')
   myplot <- do.call(plotdap::add_griddap, myList)
   if (!is.na(name)) {
-    myColor <- colors[[plotColor]]
-    myplot <- plotdap::add_ggplot(myplot, ggplot2::scale_fill_gradientn(name = name, colors = myColor))
-  }
+    myplot <- plotdap::add_ggplot(myplot, ggplot2::guides(fill = ggplot2::guide_colourbar(title = name)))
+      }
   myplot
 }
 
