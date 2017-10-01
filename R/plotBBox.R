@@ -35,9 +35,6 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, na
   if (is.function(myFunc)) {
     resp[[1]] <- myFunc(resp[[1]])
   }
-  if (!is.na(name)) {
-    names(resp)[1] <- name
-  }
   paramName = names(resp)[1]
   myStruct <- meltnc(resp)
   myStruct <- structure(
@@ -49,6 +46,10 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, na
   myList <- list(p, myStruct, parameter1, plotColor, time, animate, maxpixels )
   names(myList) <- c('plot', 'grid', 'var', 'fill', 'time', 'animate', 'maxpixels')
   myplot <- do.call(plotdap::add_griddap, myList)
+  if (!is.na(name)) {
+    myColor <- colors[[plotColor]]
+    myplot <- plotdap::add_ggplot(myplot, ggplot2::scale_fill_gradientn(name = name, colors = myColor))
+  }
   myplot
 }
 
