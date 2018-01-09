@@ -42,7 +42,7 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, na
     class = c("griddap_nc", "nc", "data.frame")
   )
   p <- plotdap::plotdap()
-  parameter1 <- as.formula(paste('~', paramName))
+  parameter1 <- stats::as.formula(paste('~', paramName))
   myList <- list(p, myStruct, parameter1, plotColor, time, animate, maxpixels )
   names(myList) <- c('plot', 'grid', 'var', 'fill', 'time', 'animate', 'maxpixels')
   myplot <- do.call(plotdap::add_griddap, myList)

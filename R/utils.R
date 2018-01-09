@@ -38,7 +38,7 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim
   newzIndex <- NA_integer_
   erddapXcoord <- rep(NA_real_, 2)
   erddapYcoord <- rep(NA_real_, 2)
-  erddapTcoord <- rep(NA_real_, 2)
+  erddapTcoord <- rep(NA, 2)
   erddapZcoord <- rep(NA_real_, 2)
   if (xName %in% names(dataCoordList)) {
     newxIndex[1] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[1]))
@@ -56,8 +56,8 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim, ycoordLim
   if (tName %in% names(dataCoordList)) {
     newTimeIndex[1] <- which.min(abs(udtime - tcoordLim[1]))
     newTimeIndex[2] <- which.min(abs(udtime - tcoordLim[2]))
-    erddapTcoord[1] <- isotime[newTimeIndex[1]]
-    erddapTcoord[2] <- isotime[newTimeIndex[2]]
+    erddapTcoord[1] <- as.character(isotime[newTimeIndex[1]])
+    erddapTcoord[2] <- as.character(isotime[newTimeIndex[2]])
   }
 
   if (zName %in% names(dataCoordList)) {
