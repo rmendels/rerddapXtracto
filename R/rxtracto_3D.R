@@ -53,7 +53,10 @@
 #' xcoord <- c(10, 11)
 #' ycoord <- c(10, 11)
 #' zcoord <- c(1, 1)
-#' tcoord <- c('2016-09-02', '2016-09-03')
+#'  # time span changes in this dataset - get last three times
+#'  myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
+#' myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
+#' tcoord <- c(myTimes[1], myTimes[3])
 #' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        zcoord = zcoord, tcoord = tcoord, xName = xName,
 #'                        yName = yName, zName = zName)
@@ -81,21 +84,22 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL
  rerddap::cache_setup(temp_dir = TRUE)
  callDims <- list(xcoord, ycoord, zcoord, tcoord)
  names(callDims) <- c(xName, yName, zName, tName)
- urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
+ dataInfo1 <- dataInfo
+ urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
 
 
 
 # Check and readjust coordinate variables ---------------------------------
 # get the actual coordinate values for the dataset
-allCoords <- dimvars(dataInfo)
-dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
+allCoords <- dimvars(dataInfo1)
+dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"), allCoords, urlbase)
 if (length(dataCoordList) == 0) {
    stop("Error retrieving coordinate variable")
 }
 
 
-working_coords <- remapCoords(dataInfo, callDims, dataCoordList,  urlbase)
-
+working_coords <- remapCoords(dataInfo1, callDims, dataCoordList,  urlbase)
+dataInfo1 <- working_coords$dataInfo1
 
 # Check request is within dataset bounds ----------------------------------
 #get limits over new coordinates
@@ -118,7 +122,7 @@ tcoordLim <- NULL
 if (!is.null(working_coords$tcoord1)) {
   # check for last in time,  and convert
   isoTime <- dataCoordList$time
-  udtTime <- parsedate::parse_date(isoTime)
+  udtTime <- parsedate::parse_iso_8601(isoTime)
   tcoord1 <- removeLast(isoTime, working_coords$tcoord1)
   tcoord1 <- parsedate::parse_iso_8601(tcoord1)
   tcoordLim <- tcoord1
@@ -136,8 +140,8 @@ checkBounds(dataCoordList, dimargs)
 
 
 erddapList <- findERDDAPcoord(dataCoordList, isoTime, udtTime,
-xcoordLim,  ycoordLim, tcoordLim,  zcoordLim,
-xName, yName, tName, zName)
+                  xcoordLim,  ycoordLim, tcoordLim,  zcoordLim,
+                  xName, yName, tName, zName)
 erddapCoords <- erddapList$erddapCoords
 
 
@@ -145,7 +149,7 @@ erddapCoords <- erddapList$erddapCoords
 
 
 
-griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
+griddapCmd <- makeCmd(dataInfo1, urlbase, xName, yName, zName, tName, parameter,
                     erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                     erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                     verbose )
@@ -190,7 +194,7 @@ dataY <- tempCoords$dataY
 
 extract <- list(NA, NA, NA, NA, NA, NA)
 extract[[1]] <- tempCoords$param
-extract[[2]] <- attributes(dataInfo)$datasetid
+extract[[2]] <- attributes(dataInfo1)$datasetid
 extract[[3]] <- dataX
 extract[[4]] <- dataY
 if (!is.null(zcoord)) {

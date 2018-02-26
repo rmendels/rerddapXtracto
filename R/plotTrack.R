@@ -15,29 +15,32 @@
 #'
 #' @examples
 #' tagData <- Marlintag38606
-#' xpos <- tagData$lon
-#' ypos <- tagData$lat
-#' tpos <- tagData$date
+#' xpos <- tagData$lon[1:20]
+#' ypos <- tagData$lat[1:20]
+#' tpos <- tagData$date[1:20]
+#' tpos <- tagData$date[1:20]
 #' zpos <- rep(0., length(xpos))
 #' urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 #' swchlInfo <- rerddap::info('erdSWchla8day')
-#' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
+#' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
+#'         ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 #' plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
 
-plotTrack <- function(resp, xcoord, ycoord,  plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5){
-  require(rerddap)
-  require(plotdap)
+plotTrack <- function(resp, xcoord, ycoord,  plotColor = 'viridis',
+                      name = NA, myFunc = NA, shape = 20, size = .5){
+#  require(rerddap)
+#  require(plotdap)
   ind <- which(xcoord > 180)
   xcoord[ind] <- xcoord[ind] - 360
   if (is.function(myFunc)) {
     resp[[1]] <- myFunc(resp[[1]])
   }
-  myDataFrame = data.frame(xcoord, ycoord, resp[[1]])
+  myDataFrame <- data.frame(xcoord, ycoord, resp[[1]])
   nameLen <- nchar(names(resp))
   if (is.na(name)) {
     paramName <-  substr(names(resp)[1], 6, nameLen)
   }else{
-    paramName = name
+    paramName <- name
   }
   names(myDataFrame) <- c('longitude', 'latitude', paramName)
 myStruct <- structure(
@@ -45,7 +48,7 @@ myStruct <- structure(
     class = c("tabledap", "data.frame")
   )
 p <- plotdap::plotdap()
-paramName1 <- as.formula(paste('~', paramName))
+paramName1 <- stats::as.formula(paste('~', paramName))
 myList <- list(p, myStruct, paramName1, plotColor, shape, size)
 names(myList) <- c('plot', 'table', 'var', 'color', 'shape', 'size')
 #plotCmd <-  paste0('add_tabledap(plotdap(), myStruct, ~',  paramName,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/getFIleCoords.R
 \name{getfileCoords}
 \alias{getfileCoords}
-\title{Get Cooordinate  (Dimension) Data from ERDDAP Dataset}
+\title{Get Coordinate  (Dimension) Data from ERDDAP Dataset}
 \usage{
 getfileCoords(datasetID, dataCoords, urlbase)
 }
@@ -15,7 +15,7 @@ getfileCoords(datasetID, dataCoords, urlbase)
 A list containing the values of the coordinate variables
 }
 \description{
-Get Cooordinate  (Dimension) Data from ERDDAP Dataset
+Get Coordinate  (Dimension) Data from ERDDAP Dataset
 }
 \keyword{(dimension)}
 \keyword{\code{getFileCoords}}

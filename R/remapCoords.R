@@ -16,15 +16,24 @@ remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase) {
     if (max(lonVal2) > 180.) {xcoord1 <- make360(xcoord1)}
   }
 
-
   # if ycoord is latitude,if ERDDAP lats run north-south for 3D case change limits to reflect this. Done for each value in rxtracto case
   latSouth <- TRUE
   if ('latitude' %in% names(callDims)) {
-       latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
+    #       latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
+    #      latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
+    #north-south  datasets
+    #      if (latVal2[1] > latVal2[2]) {latSouth <- FALSE}
+    spacing_string <- unlist(strsplit(dataInfo$alldata$latitude$value[1], ","))
+    spacing = unlist(strsplit(spacing_string[3], "="))
+    spacing <- as.numeric(spacing[2])
+    if (spacing < 0) {
+      latSouth <- FALSE
+      latVal <- dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"]
       latVal2 <- as.numeric(strtrim1(strsplit(latVal, ",")[[1]]))
-      #north-south  datasets
-      if (latVal2[1] > latVal2[2]) {latSouth <- FALSE}
+      tempLat <- paste0(latVal2[2], ',', latVal2[1])
+      dataInfo$alldata$latitude[dataInfo$alldata$latitude$attribute_name == "actual_range", "value"] <- tempLat
+    }
   }
+  return(list(xcoord1 = xcoord1, ycoord1 = ycoord1, zcoord1 = zcoord1, tcoord1 = tcoord1, latSouth = latSouth, dataInfo1 = dataInfo))
 
-  return(list(xcoord1 = xcoord1, ycoord1 = ycoord1, zcoord1 = zcoord1, tcoord1 = tcoord1, latSouth = latSouth))
 }

@@ -78,7 +78,10 @@ zName <- 'nsigma'
 xcoord <- c(10, 11)
 ycoord <- c(10, 11)
 zcoord <- c(1, 1)
-tcoord <- c('2016-09-02', '2016-09-03')
+ # time span changes in this dataset - get last three times
+ myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
+myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
+tcoord <- c(myTimes[1], myTimes[3])
 extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                        zcoord = zcoord, tcoord = tcoord, xName = xName,
                        yName = yName, zName = zName)

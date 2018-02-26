@@ -33,12 +33,14 @@ rxtracto() and xtracto()
 }
 \examples{
 tagData <- Marlintag38606
-xpos <- tagData$lon
-ypos <- tagData$lat
-tpos <- tagData$date
+xpos <- tagData$lon[1:20]
+ypos <- tagData$lat[1:20]
+tpos <- tagData$date[1:20]
+tpos <- tagData$date[1:20]
 zpos <- rep(0., length(xpos))
 urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
 swchlInfo <- rerddap::info('erdSWchla8day')
-swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
+swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
+        ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
 }

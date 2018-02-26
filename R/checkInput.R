@@ -21,7 +21,7 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   allvars <- getallvars(dataInfo)
   # numparms <- dim(dataInfo$variables)[1]
   allCoords <- dimvars(dataInfo)
-  callDims <- callDims[!sapply(callDims,is.null)]
+  callDims <- callDims[!vapply(callDims, is.null, logical(1))]
 
   # test coordinate names
   namesTest <- names(callDims) %in% allCoords
@@ -44,7 +44,8 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   if (!(parameter %in% allvars)) {
     cat("Parameter given is not in dataset")
     cat("Parameter given: ", parameter)
-    cat("Dataset Parameters: ", allvars[(length(allCoords) + 1):length(allvars)])
+    cat("Dataset Parameters: ",
+        allvars[(length(allCoords) + 1):length(allvars)])
     stop("execution halted", call. = FALSE)
   }
   #  check that the base url ends in /

@@ -8,7 +8,7 @@
 #' @param xcoord - a real array with the x-coordinates of the trajectory (if longitude in #'   decimal degrees East, either 0-360 or -180 to 180)
 #' @param ycoord -  a real array with the y-coordinate of the trajectory (if latitude in
 #'   decimal degrees N; -90 to 90)
-#' @param zcoord -  a real array with the z-coordinate of the trajectory (usually altitude or depth)
+#' @param zcoord -a real array with the z-coordinate of the trajectory (usually altitude or depth)
 #' @param tcoord - a character array with the times of the trajectory in
 #'   "YYYY-MM-DD" - for now restricted to be time.
 #' @param xlen - real array defining the longitude box around the given point (xlen/2 around the point)
@@ -19,7 +19,8 @@
 #' @param zName - character string with name of the zcoord in the ERDDAP dataset (default "altitude")
 #' @param tName - character string with name of the tcoord in the ERDDAP dataset (default "time")
 #' @param urlbase - base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
-#' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
+#' @param verbose - logical variable (default FALSE)
+#'                   if the the URL request should be verbose
 #' @return A dataframe containing:
 #' \itemize{
 #'  \item column 1 = mean of data within search radius
@@ -62,7 +63,10 @@
 #' xcoord <- c(10, 11)
 #' ycoord <- c(10, 11)
 #' zcoord <- c(1, 1)
-#' tcoord <- c('2016-09-02', '2016-09-03')
+#'  # time span changes in this dataset - get last three times
+#'  myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
+#' myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
+#' tcoord <- c(myTimes[1], myTimes[3])
 #' xlen <- 0
 #' ylen <- 0
 #' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
@@ -72,7 +76,12 @@
 
 
 
-rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'https://upwell.pfeg.noaa.gov/erddap', verbose = FALSE) {
+rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
+                  zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
+                  xName = 'longitude', yName = 'latitude', zName = 'altitude',
+                  tName = 'time',
+                  urlbase = 'https://upwell.pfeg.noaa.gov/erddap',
+                  verbose = FALSE) {
 
   # Check Passed Info -------------------------------------------------------
   rerddap::cache_setup(temp_dir = TRUE)
@@ -83,24 +92,29 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zco
   dimLengths <- lapply(callDims, length)
   dimLengths[dimLengths == 0] <- NULL
   dimLengths1 <- Filter(Negate(is.null), dimLengths)
-  lengthTest <- all(sapply(dimLengths1, function(x) x == dimLengths1[1]))
+  lengthTest <- all(vapply(dimLengths1, function(x) x == dimLengths1[1],
+                           logical(1)))
   if (!lengthTest) {
     print("The length of the non-empty coordinates do not agree")
     names(dimLengths) <- c(xName, yName, zName, tName)
     print(dimLengths)
     stop("Correct Input Vectors")
   }
+  urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
 
   # Check and readjust coordinate variables ---------------------------------
-  # get the actual coordinate values for the dataset
-  urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
+  # get the list of coordinates from the info call
   allCoords <- dimvars(dataInfo)
-  dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
+  # get the actual coordinate values from ERDDAP
+  dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"),
+                                 allCoords, urlbase)
   if (length(dataCoordList) == 0) {
     stop("Error retrieving coordinate variable")
   }
 
-  working_coords <- remapCoords(dataInfo, callDims, dataCoordList, urlbase)
+  # remap coordinates as needed,  so requested longtiudes are same as dataset
+  # and deal with latitude running north-south
+   working_coords <- remapCoords(dataInfo, callDims, dataCoordList, urlbase)
   #newTime <- coordLims$newTime
 
 
@@ -118,12 +132,17 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zco
 
 
 # correct xcoord and ycoord by given "radius"
- xcoordLim <- c(min(working_coords$xcoord1 - (xrad/2)), max(working_coords$xcoord1 + (xrad/2)))
- ycoordLim <- c(min(working_coords$ycoord1 - (yrad/2)), max(working_coords$ycoord1 + (yrad/2)))
+ xcoordLim <- c(min(working_coords$xcoord1 - (xrad/2)),
+                max(working_coords$xcoord1 + (xrad/2)))
+ ycoordLim <- c(min(working_coords$ycoord1 - (yrad/2)),
+                max(working_coords$ycoord1 + (yrad/2)))
  zcoordLim <- NULL
  if (!is.null(working_coords$zcoord1)) {
-   zcoordLim <- c(min(working_coords$zcoord1 - (zrad/2)), max(working_coords$zcoord1 + (zrad/2)))
+   zcoordLim <- c(min(working_coords$zcoord1 - (zrad/2)),
+                  max(working_coords$zcoord1 + (zrad/2)))
  }
+ # not only get time limits but convert to an R date
+ # so numerical value for comparison is available
  tcoordLim <- NULL
  if (!is.null(working_coords$tcoord1)) {
    isoTime <- dataCoordList$time
@@ -150,14 +169,30 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL, zco
 
   out_dataframe <- as.data.frame(matrix(ncol = 13,nrow = length(xcoord)))
  if (("latitude" %in% names(dimargs))  & ("longitude" %in% names(dimargs))) {
-  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested lon min',      'requested lon max', 'requested lat min', 'requested lat max', 'requested z min', 'requested z max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
+  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter),
+                                    paste0('stdev ',parameter), 'n',
+                                    'satellite date', 'requested lon min',
+                                    'requested lon max', 'requested lat min',
+                                    'requested lat max', 'requested z min',
+                                    'requested z max', 'requested date',
+                                    paste0('median ', parameter),
+                                    paste0('mad ', parameter))
 } else{
-  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter), paste0('stdev ', parameter), 'n', 'satellite date', 'requested x min',  'requested x max', 'requested y min', 'requested y max', 'requested z min', 'requested z max', 'requested date', paste0('median ', parameter), paste0('mad ', parameter))
+  dimnames(out_dataframe)[[2]] <- c(paste0('mean ', parameter),
+                                    paste0('stdev ', parameter), 'n',
+                                    'satellite date', 'requested x min',
+                                    'requested x max', 'requested y min',
+                                    'requested y max', 'requested z min',
+                                    'requested z max', 'requested date',
+                                    paste0('median ', parameter),
+                                    paste0('mad ', parameter))
 }
 
-# Will calculate actual index of each coordinate requested to compare old and new request
+# Will calculate actual index of each coordinate requested
+# to compare old and new request
 # store in oldIndex, as well as dataframe to store create dataframe
-oldIndex <- list(xIndex = rep(NA_integer_, 2), yIndex = rep(NA_integer_, 2), zIndex = rep(NA_integer_, 2), TimeIndex = rep(NA_integer_, 2))
+oldIndex <- list(xIndex = rep(NA_integer_, 2), yIndex = rep(NA_integer_, 2),
+                 zIndex = rep(NA_integer_, 2), TimeIndex = rep(NA_integer_, 2))
 newIndex <- oldIndex
 oldDataFrame <- out_dataframe[1, ]
 
@@ -165,7 +200,7 @@ oldDataFrame <- out_dataframe[1, ]
 latSouth <- working_coords$latSouth
 
 # loop over the track positions
- for (i in 1:length(xcoord)) {
+ for (i in seq_len(length(xcoord))) {
 
 
 # define bounding box
@@ -199,11 +234,13 @@ latSouth <- working_coords$latSouth
      # the call will be the same as last time, so no need to repeat
      out_dataframe[i,] <- oldDataFrame
    } else {
-     griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
+     # construct the griddap() command from the inputs
+     griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName,
+                           parameter,
                            erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                            erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                            verbose )
-
+       # call griddap with constructed list as arguments
      extract <- do.call(rerddap::griddap, griddapCmd )
 
     if (length(extract) == 0) {
@@ -214,16 +251,17 @@ latSouth <- working_coords$latSouth
     }
     # read in netcdf file
      datafileID <- ncdf4::nc_open(extract$summary$filename)
-     paramdata <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
+     paramdata <- ncdf4::ncvar_get(datafileID, varid = parameter,
+                                   collapse_degen = FALSE)
      ncdf4::nc_close(datafileID)
 
-     # adjust coordiantes back to original scale,  latitudes always go south-north
-     # tempCoords <- readjustCoords(dataX, dataY, xcoord, datafileID, callDims)
+    # adjust coordiantes back to original scale,latitudes always go south-north
+    # tempCoords <- readjustCoords(dataX, dataY, xcoord, datafileID, callDims)
 
     # populate the dataframe
-     out_dataframe[i, 1] <- mean(paramdata, na.rm = T)
-     out_dataframe[i, 2] <- stats::sd(paramdata, na.rm = T)
-     out_dataframe[i, 3] <- length(stats::na.omit(paramdata))
+     out_dataframe[i, 1] <- mean(paramdata, na.rm = TRUE)
+     out_dataframe[i, 2] <- stats::sd(paramdata, na.rm = TRUE)
+     out_dataframe[i, 3] <- length(paramdata[!is.na(paramdata)])
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 4] <- requesttime
      }
@@ -236,12 +274,13 @@ latSouth <- working_coords$latSouth
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 11] <- as.character.Date(tcoord[i])
      }
-     out_dataframe[i, 12] <- stats::median(paramdata, na.rm = T)
-     out_dataframe[i, 13] <- stats::mad(paramdata, na.rm = T)
+     out_dataframe[i, 12] <- stats::median(paramdata, na.rm = TRUE)
+     out_dataframe[i, 13] <- stats::mad(paramdata, na.rm = TRUE)
 
      remove('paramdata')
      rerddap::cache_delete(extract)
-     }
+   }
+   # store last request in case next one is same
    oldIndex <- newIndex
    oldDataFrame <- out_dataframe[i,]
 

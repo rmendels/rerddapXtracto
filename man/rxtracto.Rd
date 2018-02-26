@@ -20,7 +20,7 @@ rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
 \item{ycoord}{-  a real array with the y-coordinate of the trajectory (if latitude in
 decimal degrees N; -90 to 90)}
 
-\item{zcoord}{-  a real array with the z-coordinate of the trajectory (usually altitude or depth)}
+\item{zcoord}{-a real array with the z-coordinate of the trajectory (usually altitude or depth)}
 
 \item{tcoord}{- a character array with the times of the trajectory in
 "YYYY-MM-DD" - for now restricted to be time.}
@@ -41,7 +41,8 @@ decimal degrees N; -90 to 90)}
 
 \item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
 
-\item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
+\item{verbose}{- logical variable (default FALSE)
+if the the URL request should be verbose}
 }
 \value{
 A dataframe containing:
@@ -91,7 +92,10 @@ zName <- 'nsigma'
 xcoord <- c(10, 11)
 ycoord <- c(10, 11)
 zcoord <- c(1, 1)
-tcoord <- c('2016-09-02', '2016-09-03')
+ # time span changes in this dataset - get last three times
+ myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
+myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
+tcoord <- c(myTimes[1], myTimes[3])
 xlen <- 0
 ylen <- 0
 extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
