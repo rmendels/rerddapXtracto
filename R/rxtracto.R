@@ -87,6 +87,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   rerddap::cache_setup(temp_dir = TRUE)
   callDims <- list(xcoord, ycoord, zcoord, tcoord)
   names(callDims) <- c(xName, yName, zName, tName)
+  dataInfo1 <- dataInfo
 
   # Check that the non-null input vectors are the same length
   dimLengths <- lapply(callDims, length)
@@ -100,13 +101,13 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     print(dimLengths)
     stop("Correct Input Vectors")
   }
-  urlbase <- checkInput(dataInfo, parameter, urlbase, callDims)
+  urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
 
   # Check and readjust coordinate variables ---------------------------------
   # get the list of coordinates from the info call
-  allCoords <- dimvars(dataInfo)
+  allCoords <- dimvars(dataInfo1)
   # get the actual coordinate values from ERDDAP
-  dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"),
+  dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"),
                                  allCoords, urlbase)
   if (length(dataCoordList) == 0) {
     stop("Error retrieving coordinate variable")
@@ -114,7 +115,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
 
   # remap coordinates as needed,  so requested longtiudes are same as dataset
   # and deal with latitude running north-south
-   working_coords <- remapCoords(dataInfo, callDims, dataCoordList, urlbase)
+   working_coords <- remapCoords(dataInfo1, callDims, dataCoordList, urlbase)
+   dataInfo1 <- working_coords$dataInfo1
   #newTime <- coordLims$newTime
 
 
@@ -235,7 +237,7 @@ latSouth <- working_coords$latSouth
      out_dataframe[i,] <- oldDataFrame
    } else {
      # construct the griddap() command from the inputs
-     griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName,
+     griddapCmd <- makeCmd(dataInfo1, urlbase, xName, yName, zName, tName,
                            parameter,
                            erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                            erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
