@@ -224,6 +224,7 @@ if (!fcopy) {
 }
 # remove netcdf file from cache
 rerddap::cache_delete(griddapExtract)
+extract <- structure(extract, class = 'rxtracto3D')
 return(extract)
 }
 

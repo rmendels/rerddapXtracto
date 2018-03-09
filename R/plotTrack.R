@@ -28,7 +28,14 @@
 
 plotTrack <- function(resp, xcoord, ycoord,  plotColor = 'viridis',
                       name = NA, myFunc = NA, shape = 20, size = .5){
-#  require(rerddap)
+
+  # check that the response is of the right class
+   if (!(class(resp) == 'rxtractoTrack')) {
+   print('given extract is not valid rxtracto() output')
+   print("class of the response is not' 'rxtractoTrack' ")
+   stop('execution halted')
+ }
+  #  require(rerddap)
 #  require(plotdap)
   ind <- which(xcoord > 180)
   xcoord[ind] <- xcoord[ind] - 360

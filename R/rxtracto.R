@@ -286,7 +286,8 @@ latSouth <- working_coords$latSouth
    oldIndex <- newIndex
    oldDataFrame <- out_dataframe[i,]
 
-}
+ }
+out_dataframe <- structure(out_dataframe, class = 'rxtractoTrack')
 return(out_dataframe)
 }
 
