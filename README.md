@@ -1,4 +1,4 @@
-# rerddapXtracto (Version 0.3.0)
+# rerddapXtracto (Version 0.3.4)
 rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
 
 - ** New - Cleaner exit if `rxtracto()` fails part way,  returns incomplete download **
