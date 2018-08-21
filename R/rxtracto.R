@@ -202,6 +202,7 @@ oldDataFrame <- out_dataframe[1, ]
 latSouth <- working_coords$latSouth
 
 # loop over the track positions
+ numtries <- 5
  for (i in seq_len(length(xcoord))) {
 
 
@@ -242,12 +243,22 @@ latSouth <- working_coords$latSouth
                            erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
                            erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                            verbose )
-       # call griddap with constructed list as arguments
-     extract <- do.call(rerddap::griddap, griddapCmd )
-
-    if (length(extract) == 0) {
-       print(griddapCmd)
-      print("There was an error in the url call.  See message on screen and URL called")
+     # call griddap with constructed list as arguments
+     # will try 5 times,  if failure will stop and save data
+     tryn <- 0
+     goodtry <- -1
+     options(warn = 2)
+     while ((tryn <= numtries) & (goodtry == -1)) {
+       tryn <- tryn + 1
+       extract <- try(do.call(rerddap::griddap, griddapCmd ))
+       if (!class(extract)[1] == "try-error") {
+         goodtry <- 1
+       }
+     }
+    # extract <- do.call(rerddap::griddap, griddapCmd )
+    if (goodtry == -1) {
+      print(griddapCmd)
+      print("There was an error in the url call, perhaps a time out.  See message on screen and URL called")
       print("Returning incomplete download")
       return(out_dataframe)
     }
