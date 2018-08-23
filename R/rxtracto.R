@@ -261,6 +261,8 @@ latSouth <- working_coords$latSouth
       print("There was an error in the url call, perhaps a time out.  See message on screen and URL called")
       print("Returning incomplete download")
       out_dataframe <- out_dataframe[1:(i - 1), ]
+      remove('paramdata')
+      rerddap::cache_delete(extract)
       return(out_dataframe)
     }
     # read in netcdf file
