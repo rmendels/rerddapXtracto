@@ -199,7 +199,7 @@ newIndex <- oldIndex
 oldDataFrame <- out_dataframe[1, ]
 
 # logical variable if the latitude coordinate goes south to north
-latSouth <- working_coords$latSouth
+#latSouth <- working_coords$latSouth
 
 # loop over the track positions
  numtries <- 5
@@ -209,13 +209,9 @@ latSouth <- working_coords$latSouth
 # define bounding box
   xmax <- working_coords$xcoord1[i] + (xrad[i]/2)
   xmin <- working_coords$xcoord1[i] - (xrad[i]/2)
-  if (latSouth) {
-     ymax <- working_coords$ycoord1[i] + (yrad[i]/2)
-     ymin <- working_coords$ycoord1[i] - (yrad[i]/2)
-  } else {
-     ymin <- working_coords$ycoord1[i] + (yrad[i]/2)
-     ymax <- working_coords$ycoord1[i] - (yrad[i]/2)
-  }
+  ymax <- working_coords$ycoord1[i] + (yrad[i]/2)
+  ymin <- working_coords$ycoord1[i] - (yrad[i]/2)
+
   zmin <- NA
   zmax <- NA
   if (!is.null(working_coords$zcoord1[i])) {

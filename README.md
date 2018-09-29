@@ -1,5 +1,12 @@
-# rerddapXtracto (Version 0.3.4)
+# rerddapXtracto (Version 0.3.5)
 rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
+
+******
+This version is updated to work with `rerddap` Version 0.4.5, at present available on Github.
+Even though the plot routines are included, the dependency on `plotdap` has been removed.
+Due to some changes in both `R` and the `sf` package,  `plotdap` does not always produce 
+correct results.  When this has been resolved,  the dependency will be put back in.
+******
 
 - ** New - Cleaner exit if `rxtracto()` fails part way,  returns incomplete download **
 - ** Version.  Still for testing purposes only **

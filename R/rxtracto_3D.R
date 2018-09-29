@@ -104,11 +104,12 @@ dataInfo1 <- working_coords$dataInfo1
 # Check request is within dataset bounds ----------------------------------
 #get limits over new coordinates
 xcoordLim <- working_coords$xcoord1
-if (working_coords$latSouth) {
-    ycoordLim <- c(min(working_coords$ycoord1), max(working_coords$ycoord1))
-} else {
-    ycoordLim <- c(max(working_coords$ycoord1), min(working_coords$ycoord1))
-}
+#if (working_coords$latSouth) {
+#    ycoordLim <- c(min(working_coords$ycoord1), max(working_coords$ycoord1))
+#} else {
+#    ycoordLim <- c(max(working_coords$ycoord1), min(working_coords$ycoord1))
+#}
+ycoordLim <- c(min(working_coords$ycoord1), max(working_coords$ycoord1))
 
 zcoordLim <- NULL
 if (!is.null(working_coords$zcoord1)) {
