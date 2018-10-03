@@ -52,6 +52,17 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     newxIndex[2] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[2]))
     erddapXcoord[1] <- dataCoordList[[xName]][newxIndex[1]]
     erddapXcoord[2] <- dataCoordList[[xName]][newxIndex[2]]
+    # check for edge effects and rounding errors
+    if (newxIndex[1]  == 1) {
+      if (abs(dataCoordList[[xName]][newxIndex[1]] - xcoordLim[1]) < .0001) {
+        erddapXcoord[1] <- xcoordLim[1]
+      }
+    }
+    if (newxIndex[2]  == length(dataCoordList[[xName]])) {
+      if (abs(dataCoordList[[xName]][newxIndex[2]] - xcoordLim[2]) < .0001) {
+        erddapXcoord[2] <- xcoordLim[2]
+      }
+    }
   }
   # if ycoord exists,  gets thee closest coordinates,
   # and the value of those coordinates
@@ -60,7 +71,17 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     newyIndex[2] <- which.min(abs(dataCoordList[[yName]] - ycoordLim[2]))
     erddapYcoord[1] <- dataCoordList[[yName]][newyIndex[1]]
     erddapYcoord[2] <- dataCoordList[[yName]][newyIndex[2]]
-
+    # check for edge effects and rounding errors
+    if (newyIndex[1]  == 1) {
+      if (abs(dataCoordList[[yName]][newyIndex[1]] - ycoordLim[1]) < .0001) {
+        erddapYcoord[1] <- ycoordLim[1]
+      }
+    }
+    if (newyIndex[2]  == length(dataCoordList[[yName]])) {
+      if (abs(dataCoordList[[yName]][newyIndex[2]] - ycoordLim[2]) < .0001) {
+        erddapYcoord[2] <- ycoordLim[2]
+      }
+    }
   }
   # if time is a coordinate,  gets the closest coordinates,
   # and the value of those coordinates
@@ -77,7 +98,18 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     newzIndex[2] <- which.min(abs(dataCoordList[[zName]] - zcoordLim[2]))
     erddapZcoord[1] <- dataCoordList[[zName]][newzIndex[1]]
     erddapZcoord[2] <- dataCoordList[[zName]][newzIndex[2]]
-  }
+    # check for edge effects and rounding errors
+    if (newzIndex[1]  == 1) {
+      if (abs(dataCoordList[[zName]][newzIndex[1]] - zcoordLim[1]) < .0001) {
+        erddapZcoord[1] <- zcoordLim[1]
+      }
+    }
+    if (newzIndex[2]  == length(dataCoordList[[zName]])) {
+      if (abs(dataCoordList[[zName]][newzIndex[2]] - zcoordLim[2]) < .0001) {
+        erddapZcoord[2] <- zcoordLim[2]
+      }
+    }
+    }
   # want to return the coordinate limits for the call
   # and the indices of these coordinates for rxtracto()
   erddapCoords <- list(erddapXcoord = erddapXcoord,
