@@ -159,7 +159,12 @@ griddapCmd <- makeCmd(dataInfo1, urlbase, xName, yName, zName, tName, parameter,
 # Get the data ------------------------------------------------------------
 
 
-griddapExtract <- do.call(rerddap::griddap, griddapCmd )
+griddapExtract <- try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE)
+if (class(griddapExtract)[1] == "try-error") {
+    print('error in trying to download the subset')
+    print('check your settings')
+    stop('check that the dataset is active in the given ERDDAP server')
+}
 
 
 

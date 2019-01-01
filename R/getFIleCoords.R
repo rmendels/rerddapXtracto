@@ -17,15 +17,23 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
 # skip headers
   coordList <- list()
   for (i in seq_len(length(dataCoords))) {
-    myURL <- paste0(urlbase, 'griddap/', datasetID, '.csvp?',
-                    dataCoords[i], '[0:1:last]')
-#    coordVals <- utils::read.csv(myURL, skip = 2, header = FALSE, stringsAsFactors = FALSE)
+#    myURL <- paste0(urlbase, 'griddap/', datasetID, '.csvp?',
+#                    dataCoords[i], '[0:1:last]')
+    myURL <- paste0(urlbase, 'griddap/', datasetID, '.csvp?', dataCoords[i])
+    #    coordVals <- utils::read.csv(myURL, skip = 2, header = FALSE,
+#    stringsAsFactors = FALSE)
 #    coordVals <- coordVals[, 1]
 #    coordList[[i]] <- coordVals
 
-    r1 <- httr::GET(myURL)
+    r1 <- try( httr::GET(myURL), silent = TRUE)
+    if (class(r1) == "try-error") {
+      print('error in trying to retrieve the dataset coordinate variables')
+      print(paste('failed on dimension ', dataCoords[i] ))
+      stop('check on the ERDDAP server that the dataset is active')
+    }
     if (dataCoords[i] == "time" ) {
-      coordVals <- suppressMessages(readr::read_csv(r1$content, col_types = readr::cols(.default  = readr::col_character()  ))[[1]])
+      coordVals <- suppressMessages(readr::read_csv(r1$content,
+         col_types = readr::cols(.default  = readr::col_character()  ))[[1]])
 
     } else {
       coordVals <- suppressMessages(readr::read_csv(r1$content)[[1]])
