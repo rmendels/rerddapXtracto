@@ -1,32 +1,40 @@
 Package: rerddapXtracto
 Type: Package
-Title: Extracts Environmental Data from ERD's ERDDAP Web Service
-Version: 0.3.5.900
+Title: Extracts Environmental Data from 'ERDDAP' Web Services
+Version: 0.3.5
 Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
-Description: The xtractomatic package contains three functions that access
-    environmental data from ERD's ERDDAP service. The rxtracto function extracts
+Description: Contains three functions that access
+    environmental data from any 'ERDDAP' data web service. The rxtracto() function extracts
     data along a trajectory for a given "radius" around the point. The
-    rxtracto_3D function extracts data in a box. The rxtractogon function
-    extracts data in a polygon. There are also two helper functions to obtain
-    information about available data.
-    These functions differ from those in the xtractomatic package in that they
-    use the `rerddap` package to access gridded data on any ERDDAP server, but
-    they require the user to provide initial information about the data
-    to be extracted.
+    rxtracto_3D() function extracts data in a box. The rxtractogon() function
+    extracts data in a polygon. All of those three function use the 'rerddap' package
+    to extract the data, and should work with any 'ERDDAP' server.
+    There are also two functions, plotBBox() and plotTrack() that use the 'plotdap'
+    package to simplify the creation of maps of the data.
 URL: https://github.com/rmendels/rerddapXtracto
 BugReports: https://github.com/rmendels/rerddapXtracto/issues
+Depends:
+    R(>= 3.5.0)
 License: CC0
-LazyData: TRUE
 Imports:
     abind,
+    dplyr,
+    ggplot2,
+    httr,
     methods,
     ncdf4,
     parsedate,
-    rerddap,
+    plotdap,
+    readr,
+    rerddap (>= 0.6.0),
     sp,
-    stats
+    stats,
 Suggests:
-    ggplot2,
+    gganimate,
     knitr,
     mapdata,
-RoxygenNote: 6.0.1
+    rmarkdown
+RoxygenNote: 6.1.1
+Encoding: UTF-8
+LazyData: TRUE
+VignetteBuilder: knitr

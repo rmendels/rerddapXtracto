@@ -2,15 +2,15 @@
 % Please edit documentation in R/rxtractogon.R
 \name{rxtractogon}
 \alias{rxtractogon}
-\title{Extract environmental data in a polygon using ERDDAP.}
+\title{Extract environmental data in a polygon using 'ERDDAP' and 'rerddap'.}
 \usage{
 rxtractogon(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
-  zcoord = NULL, tcoord = NULL, xName = "longitude", yName = "latitude",
-  zName = "altitude", tName = "time",
-  urlbase = "https://upwell.pfeg.noaa.gov/erddap", verbose = FALSE)
+  zcoord = NULL, tcoord = NULL, xName = "longitude",
+  yName = "latitude", zName = "altitude", tName = "time",
+  verbose = FALSE)
 }
 \arguments{
-\item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
+\item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}
 
 \item{parameter}{- character string containing the name of the parameter to extract}
 
@@ -24,15 +24,13 @@ degrees N; -90 to 90)of polygon}
 
 \item{tcoord}{- 2-array of minimum and maximum times as 'YYYY-MM-DD'}
 
-\item{xName}{- character string with name of the xcoord in the ERDDAP dataset (default "longitude")}
+\item{xName}{- character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")}
 
-\item{yName}{- character string with name of the ycoord in the ERDDAP dataset (default "latitude")}
+\item{yName}{- character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")}
 
-\item{zName}{- character string with name of the zcoord in the ERDDAP dataset (default "altitude")}
+\item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
 
-\item{tName}{- character string with name of the tcoord in the ERDDAP dataset (default "time")}
-
-\item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
+\item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
 
 \item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 }
@@ -48,26 +46,31 @@ structure with data and dimensions
   }
 }
 \description{
-\code{rxtractogon} uses the ERD ERDDAP data web service to extact
-environmental data inside a polygon defined by vectors of
-latitudes and longitudes
+\code{rxtractogon} uses the R program 'rerddap' to extract environmental data
+from an 'ERDDAP' server in a polygon through time.
 }
 \section{Details}{
 
  rxtractogon extracts the data from the smallest bounding box that contains
  the polygon, and then uses the function "point.in.polygon" from the "sp"
- package to mask out the areas outside of the polygon. rxtractogon only works with
- datasets defined on a latitude and longitude grid.
+ package to mask out the areas outside of the polygon.
+ rxtractogon only works with datasets defined
+ on a latitude and longitude grid.
 }
 
 \examples{
-dataInfo <- rerddap::info('erdVH3chlamday')
-parameter <- 'chla'
-tcoord <- c("2016-06-15", "2016-06-15")
-xcoord <- mbnms$Longitude
-ycoord <- mbnms$Latitude
-sanctchl <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
+# toy example to show use
+# and keep execution time low
+\donttest{
+dataInfo <- rerddap::info('erdHadISST')
+}
+parameter <- 'sst'
+tcoord <- c("2016-06-15")
+xcoord <- mbnms$Longitude[1:3]
+ycoord <- mbnms$Latitude[1:3]
+sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
                          ycoord = ycoord,  tcoord= tcoord)
+\donttest{
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
 dataInfo <- rerddap::info('etopo180')
@@ -76,4 +79,5 @@ xName <- 'longitude'
 yName <- 'latitude'
 bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord,
                       ycoord = ycoord)
+}
 }

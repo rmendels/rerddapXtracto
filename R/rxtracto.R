@@ -1,9 +1,9 @@
-#' Extract environmental data along a trajectory from an ERDDAP server using rerddap.
+#' Extract environmental data along a trajectory from an 'ERDDAP' server using 'rerddap'.
 #'
-#' \code{rxtracto} uses the R program rerddap to extract environmental
-#' data from an ERDDAP server along a (x,y,z, time) trajectory.
+#' \code{rxtracto} uses the R program 'rerddap' to extract environmental
+#' data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
 #' @export
-#' @param dataInfo - the return from an rerddap "info" call to an ERDDAP server
+#' @param dataInfo - the return from an 'rerddap::info' call to an 'ERDDAP' server
 #' @param parameter - character string containing the name of the parameter to extract
 #' @param xcoord - a real array with the x-coordinates of the trajectory (if longitude in #'   decimal degrees East, either 0-360 or -180 to 180)
 #' @param ycoord -  a real array with the y-coordinate of the trajectory (if latitude in
@@ -14,11 +14,10 @@
 #' @param xlen - real array defining the longitude box around the given point (xlen/2 around the point)
 #' @param ylen - real array defining the latitude box around the given point (ylen/2 around the point)
 #' @param zlen - real array defining the depth or altitude box around the given point (zlen/2 around the point)
-#' @param xName - character string with name of the xcoord in the ERDDAP dataset (default "longitude")
-#' @param yName - character string with name of the ycoord in the ERDDAP dataset (default "latitude")
-#' @param zName - character string with name of the zcoord in the ERDDAP dataset (default "altitude")
-#' @param tName - character string with name of the tcoord in the ERDDAP dataset (default "time")
-#' @param urlbase - base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"
+#' @param xName - character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")
+#' @param yName - character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")
+#' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
+#' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
 #' @param verbose - logical variable (default FALSE)
 #'                   if the the URL request should be verbose
 #' @return A dataframe containing:
@@ -36,42 +35,28 @@
 #'  \item column 11 = median absolute deviation of data within search radius
 #'  }
 #' @examples
-#' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
-#' dataInfo <- rerddap::info('erdMBsstd8day')
+#' # toy example to show use
+#' # but keep execution time down
+#' \donttest{
+#' dataInfo <- rerddap::info('erdHadISST')
+#' }
 #' parameter <- 'sst'
-#' xcoord <- c(230, 231)
-#' ycoord <- c(40, 41)
-#' tcoord <- c('2006-01-15', '2006-01-20')
-#' zcoord <- c(0., 0.)
-#' xlen <- 0.5
-#' ylen <- 0.5
+#' xcoord <- c(-130.5)
+#' ycoord <- c(40.5)
+#' tcoord <- c('2006-01-16')
+#' xlen <- 0.01
+#' ylen <- 0.01
 #' extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
-#'                     ycoord = ycoord, tcoord= tcoord, zcoord = zcoord,
+#'                     ycoord = ycoord, tcoord= tcoord,
 #'                     xlen = xlen, ylen = ylen)
+#' \donttest{
 #' # 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
 #' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                     xlen = xlen, ylen = ylen)
+#' }
 #'
-#' # Example where grid is not latitude-longitude
-#' dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
-#' parameter <- 'temp'
-#' xName <- 'nx'
-#' yName <- 'ny'
-#' zName <- 'nsigma'
-#' xcoord <- c(10, 11)
-#' ycoord <- c(10, 11)
-#' zcoord <- c(1, 1)
-#'  # time span changes in this dataset - get last three times
-#'  myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
-#' myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
-#' tcoord <- c(myTimes[1], myTimes[3])
-#' xlen <- 0
-#' ylen <- 0
-#' extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-#'                     zcoord = zcoord, tcoord = tcoord, xlen = xlen,
-#'                     ylen = ylen, xName = xName, yName = yName, zName = zName)
 
 
 
@@ -80,7 +65,6 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
                   xName = 'longitude', yName = 'latitude', zName = 'altitude',
                   tName = 'time',
-                  urlbase = 'https://upwell.pfeg.noaa.gov/erddap',
                   verbose = FALSE) {
 
   # Check Passed Info -------------------------------------------------------
@@ -88,7 +72,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   callDims <- list(xcoord, ycoord, zcoord, tcoord)
   names(callDims) <- c(xName, yName, zName, tName)
   dataInfo1 <- dataInfo
-
+  urlbase <- dataInfo1$base_url
   # Check that the non-null input vectors are the same length
   dimLengths <- lapply(callDims, length)
   dimLengths[dimLengths == 0] <- NULL
@@ -243,7 +227,6 @@ oldDataFrame <- out_dataframe[1, ]
      # will try 5 times,  if failure will stop and save data
      tryn <- 0
      goodtry <- -1
-     options(warn = 2)
      while ((tryn <= numtries) & (goodtry == -1)) {
        tryn <- tryn + 1
        extract <- try(do.call(rerddap::griddap, griddapCmd ))
@@ -254,7 +237,9 @@ oldDataFrame <- out_dataframe[1, ]
     # extract <- do.call(rerddap::griddap, griddapCmd )
     if (goodtry == -1) {
       print(griddapCmd)
-      print("There was an error in the url call, perhaps a time out.  See message on screen and URL called")
+      text1 <- "There was an error in the url call, perhaps a time out."
+      text2 <- "See message on screen and URL called"
+      print(paste(text1, text2))
       print("Returning incomplete download")
       out_dataframe <- out_dataframe[1:(i - 1), ]
       remove('paramdata')
@@ -297,7 +282,7 @@ oldDataFrame <- out_dataframe[1, ]
    oldDataFrame <- out_dataframe[i,]
 
  }
-out_dataframe <- structure(out_dataframe, class = 'rxtractoTrack')
+out_dataframe <- structure(out_dataframe, class = c('list', 'rxtractoTrack'))
 return(out_dataframe)
 }
 

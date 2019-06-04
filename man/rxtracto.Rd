@@ -2,16 +2,15 @@
 % Please edit documentation in R/rxtracto.R
 \name{rxtracto}
 \alias{rxtracto}
-\title{Extract environmental data along a trajectory from an ERDDAP server using rerddap.}
+\title{Extract environmental data along a trajectory from an 'ERDDAP' server using 'rerddap'.}
 \usage{
 rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0, zlen = 0,
   xName = "longitude", yName = "latitude", zName = "altitude",
-  tName = "time", urlbase = "https://upwell.pfeg.noaa.gov/erddap",
-  verbose = FALSE)
+  tName = "time", verbose = FALSE)
 }
 \arguments{
-\item{dataInfo}{- the return from an rerddap "info" call to an ERDDAP server}
+\item{dataInfo}{- the return from an 'rerddap::info' call to an 'ERDDAP' server}
 
 \item{parameter}{- character string containing the name of the parameter to extract}
 
@@ -31,15 +30,13 @@ decimal degrees N; -90 to 90)}
 
 \item{zlen}{- real array defining the depth or altitude box around the given point (zlen/2 around the point)}
 
-\item{xName}{- character string with name of the xcoord in the ERDDAP dataset (default "longitude")}
+\item{xName}{- character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")}
 
-\item{yName}{- character string with name of the ycoord in the ERDDAP dataset (default "latitude")}
+\item{yName}{- character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")}
 
-\item{zName}{- character string with name of the zcoord in the ERDDAP dataset (default "altitude")}
+\item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
 
-\item{tName}{- character string with name of the tcoord in the ERDDAP dataset (default "time")}
-
-\item{urlbase}{- base URL of the ERDDAP server being accessed - default "http://upwell.pfeg.noaa.gov/erddap"}
+\item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
 
 \item{verbose}{- logical variable (default FALSE)
 if the the URL request should be verbose}
@@ -61,44 +58,30 @@ A dataframe containing:
  }
 }
 \description{
-\code{rxtracto} uses the R program rerddap to extract environmental
-data from an ERDDAP server along a (x,y,z, time) trajectory.
+\code{rxtracto} uses the R program 'rerddap' to extract environmental
+data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
 }
 \examples{
-urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
-dataInfo <- rerddap::info('erdMBsstd8day')
+# toy example to show use
+# but keep execution time down
+\donttest{
+dataInfo <- rerddap::info('erdHadISST')
+}
 parameter <- 'sst'
-xcoord <- c(230, 231)
-ycoord <- c(40, 41)
-tcoord <- c('2006-01-15', '2006-01-20')
-zcoord <- c(0., 0.)
-xlen <- 0.5
-ylen <- 0.5
+xcoord <- c(-130.5)
+ycoord <- c(40.5)
+tcoord <- c('2006-01-16')
+xlen <- 0.01
+ylen <- 0.01
 extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
-                    ycoord = ycoord, tcoord= tcoord, zcoord = zcoord,
+                    ycoord = ycoord, tcoord= tcoord,
                     xlen = xlen, ylen = ylen)
+\donttest{
 # 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
 extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                     xlen = xlen, ylen = ylen)
+}
 
-# Example where grid is not latitude-longitude
-dataInfo <- rerddap::info('glos_tds_5912_ca66_3f41')
-parameter <- 'temp'
-xName <- 'nx'
-yName <- 'ny'
-zName <- 'nsigma'
-xcoord <- c(10, 11)
-ycoord <- c(10, 11)
-zcoord <- c(1, 1)
- # time span changes in this dataset - get last three times
- myURL <- "https://upwell.pfeg.noaa.gov/erddap/griddap/glos_tds_5912_ca66_3f41.csv0?time[last - 2:1:last]"
-myTimes <- utils::read.csv(utils::URLencode(myURL), header = FALSE, stringsAsFactors = FALSE)[[1]]
-tcoord <- c(myTimes[1], myTimes[3])
-xlen <- 0
-ylen <- 0
-extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-                    zcoord = zcoord, tcoord = tcoord, xlen = xlen,
-                    ylen = ylen, xName = xName, yName = yName, zName = zName)
 }

@@ -1,11 +1,16 @@
 ## Test environments
 * local OS X install, R 3.6.0
-* rhub check_for_cran Windows Server
+* rhub check_for_cran Windows Server and Fedora
 * win-builder (devel and release)
 
 ## Resubmission
 
-Problem with keywords fixed.
+Comments given on last submission:
+
+1. Don't quote function names in Description - fixed
+2. change \dontrun{} to \donttest{} -   fixed
+3. Don't set user option - fixed
+4. Don't write to user space - fixed
 
 Timings have been reduced as much as possible.
 'rxtracto()', 'rxtracto_3D()', and 'rxtractogon()' all are functions that perform subsetting
@@ -31,6 +36,9 @@ On rhub Windows Server I get:
    rxtracto    0.21   0.04    7.10
    rxtracto_3D 0.04   0.02    6.40
 
+On rhub Fedora I get:
+
+new submission
 
 On winbuilder-release I get:
 
