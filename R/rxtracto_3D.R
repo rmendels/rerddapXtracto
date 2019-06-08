@@ -91,7 +91,7 @@ if (length(dataCoordList) == 0) {
 
 working_coords <- remapCoords(dataInfo1, callDims, dataCoordList,  urlbase)
 dataInfo1 <- working_coords$dataInfo1
-
+cross_dateline_180 <- working_coords$cross_dateline_180
 # Check request is within dataset bounds ----------------------------------
 #get limits over new coordinates
 xcoordLim <- working_coords$xcoord1
@@ -125,7 +125,7 @@ names(dimargs) <- c(xName, yName, zName, tName)
 dimargs <- Filter(Negate(is.null), dimargs)
 
 #check that coordinate bounds are contained in the dataset
-checkBounds(dataCoordList, dimargs)
+checkBounds(dataCoordList, dimargs, cross_dateline_180)
 
 
 # Find dataset coordinates closest to requested coordinates ---------------

@@ -15,7 +15,7 @@
 #'   otherwise
 #'
 
-checkBounds <- function(dataCoordList, dimargs) {
+checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
   returnCode <- 0
   dimLen <- length(names(dataCoordList))
   for (i in seq_len(dimLen)) {
