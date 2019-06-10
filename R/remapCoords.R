@@ -1,6 +1,8 @@
-remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase) {
+remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase, xlen = 0., ylen = 0.) {
   # Logic here
   #  make copies of given coordinates that can be changed if needed without changing original values
+  xlen_max <- max(xlen)/2
+  ylen_max <- max(ylen)/2
   xcoord1 <- unlist(callDims[1])
   ycoord1 <- unlist(callDims[2])
   zcoord1 <- unlist(callDims[3])
@@ -17,7 +19,9 @@ remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase) {
     if (min(lonVal2) < 0.) {
         # check to see if the request crosses dateline on
         # (180, 180) dataset.  If so flag and do nothing
-        if ((xcoord1[1] < 180.) && (xcoord1[2] > 180.)) {
+        temp_coord1 <- min(xcoord1) - xlen_max
+        temp_coord2 <- max(xcoord1) + xlen_max
+        if ((temp_coord1 < 180.) && (temp_coord2 > 180.)) {
           cross_dateline_180 = TRUE
         }
         #  else put the request on (-180,  180)

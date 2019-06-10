@@ -32,7 +32,7 @@ strtrim1 <- function(str) gsub("^\\s+|\\s+$", "", str)
 
 findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
                             ycoordLim, tcoordLim, zcoordLim,
-                            xName, yName, tName, zName) {
+                            xName, yName, tName, zName, cross_dateline_180) {
 
   # make ERDDAP call to actual closest coordinate
   # for rxtracto the indices of the call need to be stored
@@ -48,8 +48,13 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
   # if xcoord exists,  gets the closest coordinates,
   # and the value of those coordinates
   if (xName %in% names(dataCoordList)) {
-    newxIndex[1] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[1]))
-    newxIndex[2] <- which.min(abs(dataCoordList[[xName]] - xcoordLim[2]))
+    # if longitude crosses dateline have to be careful
+    # request is in still in terms of (0, 360)
+    # data is in terms of (-180,  180)
+    temp_xlimit <- xcoordLim
+    if (cross_dateline_180) {temp_xlimit <- make180(temp_xlimit)}
+    newxIndex[1] <- which.min(abs(dataCoordList[[xName]] - temp_xlimit[1]))
+    newxIndex[2] <- which.min(abs(dataCoordList[[xName]] - temp_xlimit[2]))
     erddapXcoord[1] <- dataCoordList[[xName]][newxIndex[1]]
     erddapXcoord[2] <- dataCoordList[[xName]][newxIndex[2]]
     # check for edge effects and rounding errors
@@ -124,7 +129,7 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
 
 makeCmd <- function(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                     erddapXcoord, erddapYcoord, erddapTcoord, erddapZcoord,
-                    verbose ) {
+                    verbose) {
   # build up a list with the arguments for rerddap::griddap() using do.call()
   # rerddap needs first the results from calling info
   myCallOpts <- list(dataInfo)
@@ -170,6 +175,7 @@ makeCmd <- function(dataInfo, urlbase, xName, yName, zName, tName, parameter,
 
   return(myCallOpts)
 }
+
 
 removeLast <- function(isotime, tcoord1) {
   # looks for "last" in the time bound

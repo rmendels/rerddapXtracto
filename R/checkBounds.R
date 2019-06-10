@@ -38,21 +38,25 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
       min_coord <- min(dataCoordList[[i]])
       max_coord <- max(dataCoordList[[i]])
     }
-    if ((min_dimargs < min_coord) |  (max_dimargs > max_coord)) {
-      # time is treated differently because it is printed out differently
-      if (names(dimargs)[cIndex] == 'time') {
-        print('dimension coordinate out of bounds')
-        print(paste0('dimension name: ', names(dimargs)[cIndex]))
-        print(paste('given coordinate bounds',min(dimargs[[cIndex]]), max(dimargs[[cIndex]])))
-        returnCode <- 1
-        print(paste('ERDDAP datasets bounds',  min(temp_time), max(temp_time)))
-      } else {
-        print('dimension coordinate out of bounds')
-        print(paste0('dimension name: ', names(dimargs)[cIndex]))
-        print(paste('given coordinate bounds', min_dimargs, max_dimargs))
-        returnCode <- 1
-        print(paste('ERDDAP datasets bounds',  min_coord,  max_coord))
+    # if cross_dateline_180 = TRUE will not check longitude bound
+    # for the nonce.  Too many issues.
+    if (!(names(dimargs)[cIndex] == 'longitude')) {
+      if ((min_dimargs < min_coord) |  (max_dimargs > max_coord)) {
+        # time is treated differently because it is printed out differently
+        if (names(dimargs)[cIndex] == 'time') {
+          print('dimension coordinate out of bounds')
+          print(paste0('dimension name: ', names(dimargs)[cIndex]))
+          print(paste('given coordinate bounds',min(dimargs[[cIndex]]), max(dimargs[[cIndex]])))
+          returnCode <- 1
+          print(paste('ERDDAP datasets bounds',  min(temp_time), max(temp_time)))
+        } else {
+          print('dimension coordinate out of bounds')
+          print(paste0('dimension name: ', names(dimargs)[cIndex]))
+          print(paste('given coordinate bounds', min_dimargs, max_dimargs))
+          returnCode <- 1
+          print(paste('ERDDAP datasets bounds',  min_coord,  max_coord))
         }
+      }
     }
   }
 

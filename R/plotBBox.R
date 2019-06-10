@@ -1,38 +1,43 @@
-#' plot result of xtracto_3D or rxtracto_3D
+#' plot result of 'rxtracto_3D'
 #'
 #' \code{plotBox} is a function to plot the results from
-#' rxtracto() and xtracto()
+#' 'rxtracto()' and 'xtracto()'
 #'
 #' @export
-#' @param resp data frame returned from rxtracto() or xtracto()
-#' @param plotColor the color to use in plot from rerddap
+#' @param resp data frame returned from 'rxtracto()'
+#' @param plotColor the color to use in plot from 'rerddap'
 #' @param time a function to map multi-time to one, or else identity
 #'  for animation
 #' @param animate if multiple times, if TRUE will animate the maps
+#' @param cumulative makes cumulative animation of data
 #' @param name name for colorbar label
 #' @param myFunc function of one argument to transform the data
-#' @param maxpixels maximum number of pixels to use in making the map - controls resolution
-#' @return a plotdap plot
+#' @param maxpixels maximum number of pixels to use in making the map
+#'  - controls resolution
+#' @return a 'plotdap' plot
 #'
 #' @examples
 #' require("ggplot2")
-#' urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
+#' \donttest{
 #' dataInfo <- rerddap::info('erdMBsstd1day')
 #' parameter <- 'sst'
-#' xcoord <- c(230, 245)
-#' ycoord <- c(30, 45)
-#' tcoord <- c('2006-01-15', '2006-01-18')
+#' xcoord <- c(230, 232)
+#' ycoord <- c(33, 35)
+#' tcoord <- c('2006-01-15', '2006-01-15')
 #' zcoord <- c(0., 0.)
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#' MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #'                        tcoord = tcoord, zcoord = zcoord)
-#' plotBBox(extract, plotColor = 'temperature')
+#' }
+#' # low resolution selected to keep time to render down
+#' p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
 
 plotBBox <- function(resp, plotColor = 'viridis', time = NA,
-                animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000) {
+                animate = FALSE, cumulative = FALSE, name = NA, myFunc = NA,
+                maxpixels = 10000) {
 
 
   # check that the response is of the right class
-  if (!(class(resp) == 'rxtracto3D')) {
+  if (!('rxtracto3D' %in% class(resp))) {
     print('given extract is not valid rxtracto_3D() output')
     print("class of the response is not' 'rxtracto3D' ")
     stop('execution halted')
@@ -45,8 +50,8 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA,
   }
 
   # check that time is POSIXlt
-  if (!(is.na(resp$time))) {
-    if (!(is(resp$time, "POSIXlt"))) {
+  if (!(is.na(resp$time[1]))) {
+    if (!(methods::is(resp$time, "POSIXlt"))) {
       stop('time is a variable but is not POSIXlt')
     }
   }
@@ -71,15 +76,28 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA,
   # set up the plotdap parts an call plotdap
   p <- plotdap::plotdap()
   parameter1 <- stats::as.formula(paste('~', paramName))
-  myList <- list(p, myStruct, parameter1, plotColor, time, animate, maxpixels )
+  myList <- list(p, myStruct, parameter1, plotColor, time, animate, cumulative,
+                 maxpixels )
   names(myList) <- c('plot', 'grid', 'var', 'fill', 'time',
-                     'animate', 'maxpixels')
+                     'animate', 'cumulative', 'maxpixels')
   myplot <- do.call(plotdap::add_griddap, myList)
   # if a name os given,  change the colorbar label
   if (!is.na(name)) {
     myplot <- plotdap::add_ggplot(myplot,
               ggplot2::guides(fill = ggplot2::guide_colourbar(title = name)))
-      }
+  }
+  if (animate) {
+    xlim <- c(min(myStruct$longitude), max(myStruct$longitude))
+    ylim <- c(min(myStruct$latitude), max(myStruct$latitude))
+    suppressMessages(myplot <- plotdap::add_ggplot(
+      myplot, ggplot2::coord_sf(
+        crs = myplot$crs, datum = myplot$datum,
+        xlim = xlim, ylim = ylim
+      )
+    ))
+
+  }
+
   myplot
 }
 
