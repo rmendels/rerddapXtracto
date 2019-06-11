@@ -4,7 +4,7 @@
 \alias{checkBounds}
 \title{Check Coordinate Dimensions}
 \usage{
-checkBounds(dataCoordList, dimargs)
+checkBounds(dataCoordList, dimargs, cross_dateline_180)
 }
 \arguments{
 \item{dataStruct}{A structure describing the dataset from erddapStruct.rda}

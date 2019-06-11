@@ -38,3 +38,13 @@ extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
                     ycoord = ycoord, tcoord = tcoord,
                     xlen = xlen, ylen = ylen)
 
+dataInfo <- rerddap::info('jplMURSST41mday')
+parameter <- 'sst'
+xcoord <- c(179.7, 179.8, 179.9, 180., 180.1, 180.2, 180.3, 180.4)
+ycoord <- c(40, 40, 40, 40, 40, 40, 40, 40)
+tcoord <- c('2018-03-16', '2018-03-16', '2018-03-16','2018-03-16','2018-03-16','2018-03-16','2018-03-16','2018-03-16')
+xlen <- .05
+ylen <- .05
+extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
+                    ycoord = ycoord, tcoord = tcoord,
+                    xlen = xlen, ylen = ylen)
