@@ -16,6 +16,7 @@
 #' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
 #' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
 #' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
+#' @param cache_remove - logical variable (default TRUE) whether to delete 'rerddap' cache
 #' @return structure with data and dimensions
 #' \itemize{
 #'   \item extract$data - the masked data array dimensioned (lon,lat,time)
@@ -61,9 +62,8 @@
 rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
                         zcoord = NULL, tcoord = NULL, xName = 'longitude',
                         yName = 'latitude', zName = 'altitude', tName = 'time',
-                        verbose = FALSE) {
+                        verbose = FALSE, cache_remove = TRUE) {
 
-  rerddap::cache_setup(temp_dir = TRUE)
 
   #  check that a valid rerddap info structure is being passed
   if (!(methods::is(dataInfo, "info"))) {
@@ -96,7 +96,7 @@ ycoord1 <- c(min(ycoord), max(ycoord))
 extract <-  rxtracto_3D(dataInfo, parameter = parameter, xcoord = xcoord1,
                         ycoord = ycoord1, zcoord = zcoord, tcoord = tcoord1,
                         xName = xName, yName = yName, zName = zName,
-                        verbose = verbose)
+                        verbose = verbose, cache_remove = cache_remove)
 #	extract <- xtracto_3D(xcoord1,ycoord1,tpos1,dtype, verbose)
 if (length(dim(extract[[1]])) == 2) {
    extract[[1]] <- array(extract[[1]], c(dim(extract[[1]]), 1))

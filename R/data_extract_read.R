@@ -62,7 +62,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
 
   temp_extract <- list(NA, NA, NA, NA, NA, NA)
   # temp_extract <-  vector("list", 6)
-  temp_extract[[1]] <- param
+  temp_extract[[1]] <- tempCoords$param
   temp_extract[[2]] <- attributes(dataInfo)$datasetid
   temp_extract[[3]] <- dataX
   temp_extract[[4]] <- dataY

@@ -32,19 +32,26 @@ This version has several major changes. In both `rxtracto()` and `rxtracto_3D()`
 
 Second there are now two functions,  `plotTrack()` for tracks and `plotBBox()` for grids,  that produce quick maps of the output using the <span style="color:red">R</span> package `plotdap`.  All of the examples have been changed to use these functions.  Bounding box extracts, as in `rxtracto_3D()`, can be done just using `rerddap`, but the `rerddap` function `griddap()` returns a "melted" version of the data, while `rxtracto_3D()` retains the grid structure. Also,  `rxtractogon()` uses `rxtracto_3D()` and therefore `plotBBox()` can be used to plot the the results from `rxtractogon()`.  These functions should also work with the output from the <span style="color:red">R</span> package `xtractomatic`. For when more control of plot is desired several examples uses `ggplot2` directly.
 
+Third, it is now possible to make an extract that crosses the dateline for a dataset
+that is on a (-180, 180) longitude grid.  This must be used with care,  because some
+of the built-in checks are disabled for this case, and the requests must have longitudes
+on a (0, 360) longtiude grid else errors will occur.  This is particularly important
+for `rxtracto()` where the observed longitude point may not cross the dataline but the
+bounding box defined by "xlen" may cross it.
+
 ### The Main xtractomatic functions
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
 - `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE)`
 
-- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE)`
+- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE, cache_remove = TRUE)`
 
 - `rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE)`
 
 and two functions for producing maps:
 
-- `plotTrack <- function(resp, xcoord, ycoord, plotColor = 'viridis', 
+- `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', 
                          animate = FALSE, cumulative = FALSE, 
                          name = NA, myFunc = NA, shape = 20, size = .5)`
 
@@ -69,7 +76,7 @@ With all due respect to the [Chambers Brothers](https://en.wikipedia.org/wiki/Ti
 
 ## Setting up 
 
-`rerddapXtracto` uses the <span style="color:red">R</span> packages `ncdf4`, `parsedate`, `rerddap`,  `plotdap`, and `sp`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
+`rerddapXtracto` uses the <span style="color:red">R</span> packages  `ncdf4`, `parsedate`, `rerddap`,  `plotdap`, and `sp`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
 
 ```{r install, eval = FALSE}
 install.packages("ncdf4", dependencies = TRUE) 
@@ -214,7 +221,7 @@ myPlot <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll',
 
 ### Topography data
 
-The second example from the  `xtractomatic`  vignette is accessing topographic data along the Marlin track. This example also shows how to pass a function to `plotTrack` to transform the data before plotting,  and to change the name shown on the colorbar. 
+The second example from the  `xtractomatic`  vignette is accessing topographic data along the Marlin track. This example also shows how to pass a function to `plotTrack` to transform the data before plotting,  how to change the name shown on the colorbar, and how to call `plotTrack()` if the dataset does not have a time coordinate. 
 
 <span id="name"></span>
 ```{r topotag, eval = FALSE, echo = TRUE}
@@ -227,7 +234,7 @@ xlim <- c(-160, -105)
 topoInfo <- rerddap::info('etopo360')
 topo <- rxtracto(topoInfo, parameter = 'altitude', xcoord = xpos, ycoord = ypos, xlen = .1, ylen = .1)
 myFunc = function(x) -x
-topoPlot <- plotTrack(topo, xpos, ypos, tpos, plotColor = 'density', name = 'Depth', myFunc = myFunc)
+topoPlot <- plotTrack(topo, xpos, ypos, NA, plotColor = 'density', name = 'Depth', myFunc = myFunc)
 topoPlot
 ```
 
@@ -239,6 +246,8 @@ Again, note the differences from the `xtractomatic` example:
 - the user has to call `rerddap::info('etopo360')` to obtain information about that dataset
 - the user has to know the parameter name desired for that datasetID, in this case 'altitude'
 - only the xcoord and ycoord values need to be given, as 'etopo360' is a 2-D dataset, and this is handled more gracefully then in `xtractomatic`.
+
+### Track moving in (x, y, z, t) space.
 
 The following is an artificial example showing a track moving in (x, y, z, t) space. Since the times of the model output change, the actual times are retrieved, and the last three times used in the example.
 
@@ -255,6 +264,25 @@ sstLons <- c(-10.25975390624996, -10.247847656249961, -10.23594140624996)
 sstDepths <- c(2, 6, 10)
 sstTrack <- rxtracto(dataInfo, parameter = parameter, xcoord = sstLons, ycoord = sstLats, tcoord = sstTimes, zcoord = sstDepths, xlen = .05, ylen = .05, zlen = 0., zName = 'altitude')
 str(sstTrack)
+```
+
+
+### Crossing the dateline
+
+The following is an artificial example of a track that crosses the dateline,  using the MUR(Multi-scale Ultra-high Resolution) SST analysis:
+
+```{r dateline_track}
+dataInfo <- rerddap::info('jplMURSST41mday')
+parameter <- 'sst'
+xcoord <- c(179.7, 179.8, 179.9, 180., 180.1, 180.2, 180.3, 180.4)
+ycoord <- c(40, 40, 40, 40, 40, 40, 40, 40)
+tcoord <- c('2018-03-16', '2018-03-16', '2018-03-16','2018-03-16','2018-03-16','2018-03-16','2018-03-16','2018-03-16')
+xlen <- .05
+ylen <- .05
+extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
+                    ycoord = ycoord, tcoord = tcoord,
+                    xlen = xlen, ylen = ylen)
+str(extract)
 ```
 
 
@@ -305,6 +333,20 @@ chlalogPlot
 
 
 
+### Crossing the dateline
+
+The following is an `rxtracto_3D()` request that again uses the MUR dataset and crosses the dateline:
+
+```{r dateline_3D}
+dataInfo <- rerddap::info('jplMURSST41mday')
+parameter <- 'sst'
+xcoord <- c(179, 181)
+ycoord <- c(40, 40.1)
+tcoord <- c('2019-03-16', '2019-03-16')
+extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+                       tcoord = tcoord)
+str(extract)
+```
 
 
 
