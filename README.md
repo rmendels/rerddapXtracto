@@ -2,7 +2,7 @@
 rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
 
 ******
-This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail
+This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail.  This version is now on CRAN,  as is `plotdap`.
 ******
 
 The big change with this version is the ability to cross the dateline for datasets that are
@@ -35,9 +35,15 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 and two functions for producing maps:
 
-- `plotTrack <- function(resp, xcoord, ycoord, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
+- `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
+                      mapData = NULL, crs = NULL,
+                      animate = FALSE, cumulative = FALSE,
+                      name = NA,  shape = 20, size = .5)`
 
-- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
+- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
+                mapData = NULL, crs = NULL,
+                animate = FALSE, cumulative = FALSE, name = NA,
+                maxpixels = 10000)`
 
 
 
@@ -46,30 +52,15 @@ and two functions for producing maps:
 ```{r install,eval=FALSE}
 install.packages("ncdf4") 
 install.packages("parsedata") 
+install.packages("plotdap") 
+install.packages("rerddap") 
 install.packages("sp")
 ```
 
-The present version of `rerddapXtracto` is coded against a version of `rerddap` that is not yet on CRAN.  To obtain that version of `rerddap`:
 
-```{r plotdap, eval = FALSE}
-install.packages("devtools")
-devtools::install_github('ropensci/rerddap')
+
 ```
 
-
-To install the plotdap package from <span style="color:blue">Github</span>:
-
-```{r plotdap, eval = FALSE}
-install.packages("devtools")
-devtools::install_github('ropensci/plotdap')
-```
-
-The `rerddapXtracto` package at the moment can be installed from Github using the devtools package:
-
-```{r install,eval=FALSE}
-install.packages("devtools")
-devtools::install_github("rmendels/rerddapXtracto")
-```
 
 
 

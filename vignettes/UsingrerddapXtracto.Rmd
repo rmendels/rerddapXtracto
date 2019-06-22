@@ -180,7 +180,7 @@ ypos <- tagData$lat
 tpos <- tagData$date
 zpos <- rep(0., length(xpos))
 swchlInfo <- rerddap::info('erdSWchla8day')
-swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
+swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 ```
 
 Note the differences from the `xtractomatic` example.
@@ -199,7 +199,7 @@ We plot the track line with the locations colored according to the mean of the s
 require("ggplot2")
 require("plotdap")
 
-myPlot <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll')
+myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'chlorophyll')
 myPlot
 ```
 
@@ -211,7 +211,7 @@ To make a cumulative animation of the track:
 
 <span id="animateTrack"></span>
 ```{r animateTrack, echo = TRUE, eval = FALSE}
-myPlot <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll',
+myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'chlorophyll',
                     animate = TRUE, cumulative = TRUE)
 
 ```

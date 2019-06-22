@@ -8,10 +8,13 @@
 #' @param plotColor the color to use in plot from 'rerddap'
 #' @param time a function to map multi-time to one, or else identity
 #'  for animation
+#' @param myFunc function of one argument to transform the data
+#' @param myFunc function of one argument to transform the data
+#' @param mapData map data from 'maps' or 'mapdata', must be of class 'map'
+#' @param crs valid crs string
 #' @param animate if multiple times, if TRUE will animate the maps
 #' @param cumulative makes cumulative animation of data
 #' @param name name for colorbar label
-#' @param myFunc function of one argument to transform the data
 #' @param maxpixels maximum number of pixels to use in making the map
 #'  - controls resolution
 #' @return a 'plotdap' plot
@@ -31,8 +34,9 @@
 #' # low resolution selected to keep time to render down
 #' p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
 
-plotBBox <- function(resp, plotColor = 'viridis', time = NA,
-                animate = FALSE, cumulative = FALSE, name = NA, myFunc = NA,
+plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
+                mapData = NULL, crs = NULL,
+                animate = FALSE, cumulative = FALSE, name = NA,
                 maxpixels = 10000) {
 
 
@@ -55,7 +59,19 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA,
       stop('time is a variable but is not POSIXlt')
     }
   }
-
+  # check that if a crs string is given,  that it is a valid string
+  if (!is.null(crs)) {
+    crs_test <- inherits(try(sf::st_crs(crs), silent = TRUE), "try-error")
+    if (crs_test) {
+      stop('crs is given but is not a valid crs string')
+    }
+  }
+# check that if outline is given,  it is of class maps
+ if (!is.null(mapData)) {
+   if (!("map" == class(mapData))) {
+     stop('map outline given but not of class "maps" ')
+   }
+ }
     # if time s not given as a function,  set it to the default
   if (!is.function(time)) {
     time <- function(x) mean(x, na.rm = TRUE)
@@ -74,7 +90,12 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA,
     class = c("griddap_nc", "nc", "data.frame")
   )
   # set up the plotdap parts an call plotdap
-  p <- plotdap::plotdap()
+  if (is.null(mapData)) {
+    mapData <- maps::map("world", plot = FALSE, fill = TRUE)
+  }
+  plotdap_list <- list(mapData = mapData, crs = crs)
+  #p <- plotdap::plotdap()
+  p <- do.call(plotdap::plotdap, plotdap_list)
   parameter1 <- stats::as.formula(paste('~', paramName))
   myList <- list(p, myStruct, parameter1, plotColor, time, animate, cumulative,
                  maxpixels )

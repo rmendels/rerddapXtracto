@@ -8,10 +8,12 @@
 #' @param tcoord passed to 'rxtracto()'
 #' @param resp data frame returned from 'rxtracto()'
 #' @param plotColor the color to use in plot from 'rerddap'
+#' @param myFunc function of one argument to transform the data
+#' @param mapData map data from 'maps' or 'mapdata', must be of class 'map'
+#' @param crs valid crs string
 #' @param animate if multiple times, if TRUE will animate the maps
 #' @param cumulative makes cumulative animation of data
 #' @param name name for colorbar label
-#' @param myFunc function of one argument to transform the data
 #' @param shape shape to use to mark track
 #' @param size size of shape to use to mark track
 #' @return a 'plotdap' plot
@@ -30,9 +32,10 @@
 #' }
 #' p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll')
 
-plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis',
+plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
+                      mapData = NULL, crs = NULL,
                       animate = FALSE, cumulative = FALSE,
-                      name = NA, myFunc = NA, shape = 20, size = .5){
+                      name = NA,  shape = 20, size = .5){
 
   # check that the response is of the right class
    if (!('rxtractoTrack' %in% class(resp))) {
@@ -40,6 +43,19 @@ plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis',
    print("class of the response is not' 'rxtractoTrack' ")
    stop('execution halted')
  }
+  # check that if a crs string is given,  that it is a valid string
+  if (!is.null(crs)) {
+    crs_test <- inherits(try(sf::st_crs(crs), silent = TRUE), "try-error")
+    if (crs_test) {
+      stop('crs is given but is not a valid crs string')
+    }
+  }
+  # check that if outline is given,  it is of class maps
+  if (!is.null(mapData)) {
+    if (!("map" == class(mapData))) {
+      stop('map outline given but not of class "maps" ')
+    }
+  }
   #  require(rerddap)
 #  require(plotdap)
   ind <- which(xcoord > 180)
@@ -59,7 +75,13 @@ myStruct <- structure(
     myDataFrame,
     class = c("tabledap", "data.frame")
   )
-p <- plotdap::plotdap()
+# set up the plotdap parts an call plotdap
+if (is.null(mapData)) {
+  mapData <- maps::map("world", plot = FALSE, fill = TRUE)
+}
+plotdap_list <- list(mapData = mapData, crs = crs)
+#p <- plotdap::plotdap()
+p <- do.call(plotdap::plotdap, plotdap_list)
 paramName1 <- stats::as.formula(paste('~', paramName))
 myList <- list(p, myStruct, paramName1, plotColor,
                animate, cumulative, shape, size)

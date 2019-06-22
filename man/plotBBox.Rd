@@ -4,8 +4,9 @@
 \alias{plotBBox}
 \title{plot result of 'rxtracto_3D'}
 \usage{
-plotBBox(resp, plotColor = "viridis", time = NA, animate = FALSE,
-  cumulative = FALSE, name = NA, myFunc = NA, maxpixels = 10000)
+plotBBox(resp, plotColor = "viridis", time = NA, myFunc = NA,
+  mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE,
+  name = NA, maxpixels = 10000)
 }
 \arguments{
 \item{resp}{data frame returned from 'rxtracto()'}
@@ -15,16 +16,22 @@ plotBBox(resp, plotColor = "viridis", time = NA, animate = FALSE,
 \item{time}{a function to map multi-time to one, or else identity
 for animation}
 
+\item{myFunc}{function of one argument to transform the data}
+
+\item{mapData}{map data from 'maps' or 'mapdata', must be of class 'map'}
+
+\item{crs}{valid crs string}
+
 \item{animate}{if multiple times, if TRUE will animate the maps}
 
 \item{cumulative}{makes cumulative animation of data}
 
 \item{name}{name for colorbar label}
 
-\item{myFunc}{function of one argument to transform the data}
-
 \item{maxpixels}{maximum number of pixels to use in making the map
 - controls resolution}
+
+\item{myFunc}{function of one argument to transform the data}
 }
 \value{
 a 'plotdap' plot

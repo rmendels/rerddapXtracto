@@ -146,12 +146,24 @@ if (cross_dateline_180) {
                                xcoord_temp, erddapCoords$erddapYcoord,
                                erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                verbose, cache_remove )
+  if (extract1 == -1) {
+    text1 <- "There was an error in the url call, perhaps a time out."
+    text2 <- "See message on screen and URL called"
+    print(paste(text1, text2))
+    stop("stopping download")
+  }
   xcoord_temp <- c(min(dataCoordList$longitude), erddapCoords$erddapXcoord[2])
   extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
                                 xName, yName, zName, tName, parameter,
                                 xcoord_temp, erddapCoords$erddapYcoord,
                                 erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                 verbose, cache_remove )
+  if (extract2 == -1) {
+    text1 <- "There was an error in the url call, perhaps a time out."
+    text2 <- "See message on screen and URL called"
+    print(paste(text1, text2))
+    stop("stopping download")
+  }
   extract2$longitude = make360(extract2$longitude)
   # extract <- list(NA, NA, NA, NA, NA, NA)
   extract <- vector("list", 6)
@@ -179,6 +191,12 @@ if (cross_dateline_180) {
                                erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                verbose, cache_remove )
 
+}
+if (!is.list(extract)) {
+  text1 <- "There was an error in the url call, perhaps a time out."
+  text2 <- "See message on screen and URL called"
+  print(paste(text1, text2))
+  stop("stopping download")
 }
 
 extract <- structure(extract, class = c('list', 'rxtracto3D'))

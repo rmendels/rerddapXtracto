@@ -230,12 +230,32 @@ oldDataFrame <- out_dataframe[1, ]
                                      xcoord_temp, erddapCoords$erddapYcoord,
                                      erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                      verbose, cache_remove = TRUE)
+       if (!is.list(extract1)) {
+         text1 <- "There was an error in the url call, perhaps a time out."
+         text2 <- "See message on screen and URL called"
+         print(paste(text1, text2))
+         print("Returning incomplete download")
+         out_dataframe <- out_dataframe[1:(i - 1), ]
+         remove('paramdata')
+         rerddap::cache_delete(extract1)
+         return(out_dataframe)
+       }
        xcoord_temp <- c(min(dataCoordList$longitude), erddapCoords$erddapXcoord[2])
        extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
                                      xName, yName, zName, tName, parameter,
                                      xcoord_temp, erddapCoords$erddapYcoord,
                                      erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                      verbose, cache_remove = TRUE)
+       if (!is.list(extract2)) {
+         text1 <- "There was an error in the url call, perhaps a time out."
+         text2 <- "See message on screen and URL called"
+         print(paste(text1, text2))
+         print("Returning incomplete download")
+         out_dataframe <- out_dataframe[1:(i - 1), ]
+         remove('paramdata')
+         rerddap::cache_delete(extract2)
+         return(out_dataframe)
+       }
        extract2$longitude = make360(extract2$longitude)
        # extract <- list(NA, NA, NA, NA, NA, NA)
        extract <- vector("list", 6)
@@ -263,6 +283,16 @@ oldDataFrame <- out_dataframe[1, ]
                                     erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                     verbose, cache_remove = TRUE)
 
+     }
+     if (!is.list(extract)) {
+       text1 <- "There was an error in the url call, perhaps a time out."
+       text2 <- "See message on screen and URL called"
+       print(paste(text1, text2))
+       print("Returning incomplete download")
+       out_dataframe <- out_dataframe[1:(i - 1), ]
+       remove('paramdata')
+       rerddap::cache_delete(extract)
+       return(out_dataframe)
      }
 
 

@@ -5,8 +5,8 @@
 \title{plot result of 'rxtracto'}
 \usage{
 plotTrack(resp, xcoord, ycoord, tcoord, plotColor = "viridis",
-  animate = FALSE, cumulative = FALSE, name = NA, myFunc = NA,
-  shape = 20, size = 0.5)
+  myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE,
+  cumulative = FALSE, name = NA, shape = 20, size = 0.5)
 }
 \arguments{
 \item{resp}{data frame returned from 'rxtracto()'}
@@ -19,13 +19,17 @@ plotTrack(resp, xcoord, ycoord, tcoord, plotColor = "viridis",
 
 \item{plotColor}{the color to use in plot from 'rerddap'}
 
+\item{myFunc}{function of one argument to transform the data}
+
+\item{mapData}{map data from 'maps' or 'mapdata', must be of class 'map'}
+
+\item{crs}{valid crs string}
+
 \item{animate}{if multiple times, if TRUE will animate the maps}
 
 \item{cumulative}{makes cumulative animation of data}
 
 \item{name}{name for colorbar label}
-
-\item{myFunc}{function of one argument to transform the data}
 
 \item{shape}{shape to use to mark track}
 

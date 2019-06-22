@@ -6,7 +6,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                         erddapXcoord, erddapYcoord, erddapTcoord, erddapZcoord,
                         verbose)
-
+  #print(griddapCmd)
   # Get the data ------------------------------------------------------------
 
   numtries <- 5
@@ -22,7 +22,10 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   if (class(griddapExtract)[1] == "try-error") {
     print('error in trying to download the subset')
     print('check your settings')
-    stop('check that the dataset is active in the given ERDDAP server')
+    print(griddapCmd)
+    #stop('check that the dataset is active in the given ERDDAP server')
+    temp_extract <- -1
+    return(temp_extract)
   }
 
 
