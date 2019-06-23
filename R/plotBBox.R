@@ -69,7 +69,7 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
 # check that if outline is given,  it is of class maps
  if (!is.null(mapData)) {
    if (!("map" == class(mapData))) {
-     stop('map outline given but not of class "maps" ')
+     stop('map outline given but not of class "map" ')
    }
  }
     # if time s not given as a function,  set it to the default

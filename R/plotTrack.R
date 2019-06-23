@@ -56,10 +56,15 @@ plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFun
       stop('map outline given but not of class "maps" ')
     }
   }
-  #  require(rerddap)
-#  require(plotdap)
-  ind <- which(xcoord > 180)
-  xcoord[ind] <- xcoord[ind] - 360
+# default maps ar eon (-180, 180).  If we don't cross dateline will
+# transform longitudes
+  cross_180 <- FALSE
+  if ((min(xcoord) < 180.) && (max(xcoord) > 180.)) { cross_180 <- TRUE}
+  if (!cross_180) {
+    ind <- which(xcoord > 180)
+    xcoord[ind] <- xcoord[ind] - 360
+   }
+
   if (is.function(myFunc)) {
     resp[[1]] <- myFunc(resp[[1]])
   }
