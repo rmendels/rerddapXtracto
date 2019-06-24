@@ -39,6 +39,8 @@ on a (0, 360) longtiude grid else errors will occur.  This is particularly impor
 for `rxtracto()` where the observed longitude point may not cross the dataline but the
 bounding box defined by "xlen" may cross it.
 
+Finally,  the plotting packages now allow for user defined continental outlines  (important if crossing the datelne), a user defined crs, as well as animation. 
+
 ### The Main xtractomatic functions
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
@@ -51,13 +53,9 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 and two functions for producing maps:
 
-- `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', 
-                         animate = FALSE, cumulative = FALSE, 
-                         name = NA, myFunc = NA, shape = 20, size = .5)`
+- `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA,  shape = 20, size = .5)`
 
-- `plotBBox <- function(resp, plotColor = 'viridis', time = NA,
-                        animate = FALSE, cumulative = FALSE,
-                        name = NA, myFunc = NA, maxpixels = 10000)`
+- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA, maxpixels = 10000)`
 
 The data extraction functions are similar to but not identical to the functions in `xtractomatic`. The main differences are having to obtain information about the dataset first using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can't be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
@@ -76,7 +74,7 @@ With all due respect to the [Chambers Brothers](https://en.wikipedia.org/wiki/Ti
 
 ## Setting up 
 
-`rerddapXtracto` uses the <span style="color:red">R</span> packages  `ncdf4`, `parsedate`, `rerddap`,  `plotdap`, and `sp`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
+`rerddapXtracto` uses the <span style="color:red">R</span> packages  `ncdf4`, `parsedate`, `plotdap`, `rerddap`, and `sp`, and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.  
 
 ```{r install, eval = FALSE}
 install.packages("ncdf4", dependencies = TRUE) 
@@ -102,7 +100,7 @@ devtools::install_github("rmendels/rerddapXtracto")
 
 Note that `plotdap` depends on a number of packages that must be installed. These include the packages `ggplot2`, `raster` and `sf`. To use the animation features, `gganimate` must be installed.
 
-If the other <span style="color:red">R</span> libraries  (`rerddap`, `ncdf4`,`sp`, and `parsedate`) have been installed they will be found and do not need to be explicitly loaded.   
+If the other <span style="color:red">R</span> libraries have been installed they will be found and do not need to be explicitly loaded.   
 
 
 ### Using the R code examples
@@ -124,7 +122,7 @@ library("plotdap")
 
 ## Getting Started
 
-The plotting functions are new, and there are some fine points that need to be understood if they are to be used properly, in particular `plotBBox()`. Both `plotTrack()` and `plotBBox()` rearrange the output so that the functions `plotdap::add_tabledap()` and `plotdap::add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that is passed to `add_griddap()` has multiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. If an animation is requested and the option "cumulative" is set to be "TRUE",  then the animation will be cumulative.  This is a nice feature for displaying tracks through time. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
+The plotting functions are new, and there are some fine points that need to be understood if they are to be used properly, in particular `plotBBox()`. Both `plotTrack()` and `plotBBox()` rearrange the output so that the functions `plotdap::add_tabledap()` and `plotdap::add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that are passed to `add_griddap()` has multiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. If an animation is requested and the option "cumulative" is set to be "TRUE",  then the animation will be cumulative.  This is a nice feature for displaying tracks through time. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
 
 - [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the `rerddap` color palette. These colors are based on the cmocean colormaps designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initially developed for Python, but a version of the colormaps is used in the oce package by Dan Kelley and Clark Richards and that is also what is used in rerddap.
 
@@ -143,7 +141,7 @@ The plotting functions are new, and there are some fine points that need to be u
 
 
 
-The first several examples reproduce some of the examples in the `xtractomatic` vignette, hopefully to make clear how the functions in the two packages relate. One change from the `xtractomatic` vignette is that the plots use the `cmocean` colormaps designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean).  These colormaps were initially developed for Python, the most recent version was translated to be used in <span style="color:red">R</span>.
+The first several examples reproduce some of the examples in the `xtractomatic` vignette, hopefully to make clear how the functions in the two packages relate. One change from the `xtractomatic` vignette is that the plots use the `cmocean` colormaps described above.
  
 The first step is to find the necessary information from the <span style="color:red">ERDDAP</span> server being used.  These include the
 
@@ -151,7 +149,7 @@ The first step is to find the necessary information from the <span style="color:
 - the datasetID of the data to be accessed (for example the 1-day composite of chlorophyll from MODIS Aqua has a datasetID of 'erdMBchla1day' - see https://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html)
 - the parameter name (in this case "chlorophyll")
 
-In order for `rerddapXtracto` to have this information, as well as the coordinate variables and their limits, and the parameter names, a call must be made to the function `rerdap::info()` for the appropriate datasetID and baseURL:
+In order for `rerddapXtracto` to have this information, as well as the coordinate variables and their limits, and the parameter names, a call must be made to the function `rerddap::info()` for the appropriate datasetID and baseURL:
 
 ```{r info}
 require("rerddap")
@@ -185,7 +183,7 @@ swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord =
 
 Note the differences from the `xtractomatic` example.
 
-- the user has to find the datasetID from the given <span style="color:red">ERDDAP</span> server, in this case 'erdSWchla8day' (from https            ://upwell.pfeg.noaa.gov/erddap/griddap/erdSWchla8day.html)
+- the user has to find the datasetID from the given <span style="color:red">ERDDAP</span> server, in this case 'erdSWchla8day' (from https://upwell.pfeg.noaa.gov/erddap/griddap/erdSWchla8day.html)
 - the user has to call `rerddap::info('erdSWchla8day')` to obtain information about that dataset
 - the user has to know the parameter name desired for that datasetID, in this case 'chlorophyll'
 - the zcoord has to be explicitly given,  because 'erdSWchla8day' is a 4-D dataset (altitude is a dimension).

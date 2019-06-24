@@ -146,7 +146,7 @@ if (cross_dateline_180) {
                                xcoord_temp, erddapCoords$erddapYcoord,
                                erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                verbose, cache_remove )
-  if (extract1 == -1) {
+  if (!is.list(extract1)) {
     text1 <- "There was an error in the url call, perhaps a time out."
     text2 <- "See message on screen and URL called"
     print(paste(text1, text2))
@@ -158,7 +158,7 @@ if (cross_dateline_180) {
                                 xcoord_temp, erddapCoords$erddapYcoord,
                                 erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
                                 verbose, cache_remove )
-  if (extract2 == -1) {
+  if (!is.list(extract2)) {
     text1 <- "There was an error in the url call, perhaps a time out."
     text2 <- "See message on screen and URL called"
     print(paste(text1, text2))
