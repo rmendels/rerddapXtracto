@@ -335,18 +335,52 @@ chlalogPlot
 
 The following is an `rxtracto_3D()` request that again uses the MUR dataset and crosses the dateline:
 
-```{r dateline_3D}
+```{r dateline_3D, echo = TRUE,  eval = FALSE}
 dataInfo <- rerddap::info('jplMURSST41mday')
 parameter <- 'sst'
-xcoord <- c(179, 181)
-ycoord <- c(40, 40.1)
+xcoord <- c(175, 185)
+ycoord <- c(40, 50)
 tcoord <- c('2019-03-16', '2019-03-16')
-extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+mur_dateline <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                        tcoord = tcoord)
-str(extract)
 ```
 
+## Plotting crossing the dateline
 
+To make plots that cross the dateline, is is necessary to use the 'world2' continental outlines rather than the default.  Due to some problems with that dataset, some regions must be removed in order to not get artificial lines.
+
+```{r world2hires, echo = TRUE, eval = FALSE}
+xlim <- c(170, 190)
+ylim <- c(40, 55)
+remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
+w <- map("world2Hires", xlim = xlim, ylim = ylim, fill = TRUE, plot = FALSE)
+w <- map("mapdata::world2Hires", regions = w$names[!(w$names %in% remove)], plot = FALSE, fill = TRUE, ylim = ylim, xlim = xlim)
+
+```
+
+At present `plotBBox()` can plot across the dateline,  but the x-axis labels get mixed up.  Instead, the data can be plotted using `ggplot2`. A function `mapFrame()` is defined to help melt the data into a dataframe suitbale for `ggplot2`, and then plotted using the outline defined above.
+
+```{r world2hires_map, echo = TRUE, eval = FALSE}
+mapFrame <- function(longitude, latitude, my_data) {
+  my_data_name <- names(my_data)
+  temp_data <- drop(my_data[[1]])
+  dims <- dim(temp_data)
+  temp_data <- array(temp_data, dims[1] * dims[2])
+  my_frame <- expand.grid(x = longitude, y = latitude)
+  my_frame[my_data_name] <- temp_data
+  return(my_frame)
+}
+mur_frame <- mapFrame(mur_dateline$longitude, mur_dateline$latitude, mur_dateline['sst'])
+mycolor <- cmocean$thermal
+  myplot <- ggplot(data = mur_frame, aes(x = x, y = y, fill = sst)) +
+  geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +     geom_raster(interpolate = FALSE) +
+    scale_fill_gradientn(colours = mycolor, na.value = NA) + 
+    theme_bw() + ylab("latitude") + xlab("longitude") +
+    coord_fixed(1.3, xlim = xlim, ylim = ylim)
+myplot
+```
+
+![](mur_dateline.png)
 
 ## Using `rxtractogon` 
 
