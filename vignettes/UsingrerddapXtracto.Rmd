@@ -35,11 +35,11 @@ Second there are now two functions,  `plotTrack()` for tracks and `plotBBox()` f
 Third, it is now possible to make an extract that crosses the dateline for a dataset
 that is on a (-180, 180) longitude grid.  This must be used with care,  because some
 of the built-in checks are disabled for this case, and the requests must have longitudes
-on a (0, 360) longtiude grid else errors will occur.  This is particularly important
-for `rxtracto()` where the observed longitude point may not cross the dataline but the
+on a (0, 360) longitude grid else errors will occur.  This is particularly important
+for `rxtracto()` where the observed longitude point may not cross the dateline but the
 bounding box defined by "xlen" may cross it.
 
-Finally,  the plotting packages now allow for user defined continental outlines  (important if crossing the datelne), a user defined crs, as well as animation. 
+Finally,  the plotting packages now allow for user defined continental outlines  (important if crossing the dateline), a user defined crs, as well as animation. 
 
 ### The Main xtractomatic functions
 
@@ -105,7 +105,7 @@ If the other <span style="color:red">R</span> libraries have been installed they
 
 ### Using the R code examples
 
-Once installed, to use rerddapXtracto:
+Once installed, to use `rerddapXtracto`:
 
 ```{r, eval = FALSE}
 library("rerddapXtracto")
@@ -124,11 +124,11 @@ library("plotdap")
 
 The plotting functions are new, and there are some fine points that need to be understood if they are to be used properly, in particular `plotBBox()`. Both `plotTrack()` and `plotBBox()` rearrange the output so that the functions `plotdap::add_tabledap()` and `plotdap::add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that are passed to `add_griddap()` has multiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. If an animation is requested and the option "cumulative" is set to be "TRUE",  then the animation will be cumulative.  This is a nice feature for displaying tracks through time. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
 
-- [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the `rerddap` color palette. These colors are based on the cmocean colormaps designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initially developed for Python, but a version of the colormaps is used in the oce package by Dan Kelley and Clark Richards and that is also what is used in rerddap.
+- [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the `rerddap` color palette. These colors are based on the `cmocean` colormaps designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initially developed for Python, but a version of the colormaps is used in the `oce` package by Dan Kelley and Clark Richards and that is also what is used in `rerddap`.
 
 - [Plot one time period](#plot1) example shows how to manipulate an existing output from `rxtracto_3D()` or `rextractogon()` to plot just one time period.
 
-- [Transform the data](#transform) example shows how to use the “myFunc” option to transform the data before plotting. The function has to be a function of a single argument. This example also shows how to use the “name” option to change the name displayed on the color bar. In this example, we want depth to go downwards in the colorbar, and the name given changed from “altitude”, which is the name on ERDDAP, to the name “Depth”.
+- [Transform the data](#transform) example shows how to use the “myFunc” option to transform the data before plotting. The function has to be a function of a single argument. This example also shows how to use the “name” option to change the name displayed on the color bar. In this example, we want depth to go downwards in the colorbar, and the name given changed from “altitude”, which is the name on <span style="color:red">ERDDAP</span>, to the name “Depth”.
 
 - [Name](#name) example shows how to change the name on the colorbar.
 
@@ -267,7 +267,7 @@ str(sstTrack)
 
 ### Crossing the dateline
 
-The following is an artificial example of a track that crosses the dateline,  using the MUR(Multi-scale Ultra-high Resolution) SST analysis:
+The following is an artificial example of a track that crosses the date-line,  using the MUR(Multi-scale Ultra-high Resolution) SST analysis:
 
 ```{r dateline_track}
 dataInfo <- rerddap::info('jplMURSST41mday')
@@ -308,12 +308,12 @@ VIIRS <- rxtracto_3D(VIIRSInfo, parameter = 'chla', xcoord = xpos, ycoord = ypos
 
  * VIIRS$chla       : num [xcoord, ycoord, tcoord] 
  * VIIRS$datasetname: character string of the ERDDAP dataset ID
- * VIIRS$longitude  : num [xcoord] longitude of extact
+ * VIIRS$longitude  : num [xcoord] longitude of extract
  * VIIRS$latitude   : num [ycoord] latitudes of extract
  * VIIRS$altitude   : num zcoord of extract
  * VIIRS$time       : POSIXlt[tcoord] times of extract
 
-The coordinate names of the structure are based on the names given in the `rxtracto_3d()` call, so may differ between datasets. A similar call to `rerddap::griddap()` will either return the data "pre-melted" (that is long-form) or only get the netcdf file and have the user read in the data.  There are tradeoffs to having the data "pre-melted", for consistency we maintain a structure similar to that in  `xtracto_3D()`, plus this works even if the xcoord and ycoord are not longitude and latitude, where the "pre-melting" in `rerddap::griddap()` fails.
+The coordinate names of the structure are based on the names given in the `rxtracto_3d()` call, so may differ between datasets. A similar call to `rerddap::griddap()` will either return the data "pre-melted" (that is long-form) or only get the netcdf file and have the user read in the data.  There are trade-offs to having the data "pre-melted", for consistency we maintain a structure similar to that in  `xtracto_3D()`, plus this works even if the xcoord and ycoord are not longitude and latitude, where the "pre-melting" in `rerddap::griddap()` fails.
 
 
 
@@ -331,9 +331,9 @@ chlalogPlot
 
 
 
-### Crossing the dateline
+### Crossing the date-line
 
-The following is an `rxtracto_3D()` request that again uses the MUR dataset and crosses the dateline:
+The following is an `rxtracto_3D()` request that again uses the MUR dataset and crosses the date-line:
 
 ```{r dateline_3D, echo = TRUE,  eval = FALSE}
 dataInfo <- rerddap::info('jplMURSST41mday')
@@ -347,7 +347,7 @@ mur_dateline <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoor
 
 ## Plotting crossing the dateline
 
-To make plots that cross the dateline, is is necessary to use the 'world2' continental outlines rather than the default.  Due to some problems with that dataset, some regions must be removed in order to not get artificial lines.
+To make plots that cross the date-line, is is necessary to use the 'world2' continental outlines rather than the default.  Due to some problems with that dataset, some regions must be removed in order to not get artificial lines.
 
 ```{r world2hires, echo = TRUE, eval = FALSE}
 xlim <- c(170, 190)
@@ -358,7 +358,7 @@ w <- map("mapdata::world2Hires", regions = w$names[!(w$names %in% remove)], plot
 
 ```
 
-At present `plotBBox()` can plot across the dateline,  but the x-axis labels get mixed up.  Instead, the data can be plotted using `ggplot2`. A function `mapFrame()` is defined to help melt the data into a dataframe suitbale for `ggplot2`, and then plotted using the outline defined above.
+At present `plotBBox()` can plot across the date-line,  but the x-axis labels get mixed up.  Instead, the data can be plotted using `ggplot2`. A function `mapFrame()` is defined to help melt the data into a dataframe suitable for `ggplot2`, and then plotted using the outline defined above.
 
 ```{r world2hires_map, echo = TRUE, eval = FALSE}
 mapFrame <- function(longitude, latitude, my_data) {
@@ -559,7 +559,7 @@ isotime[which.min(abs(time - tpos[2]))] # maximum time
 
 where  `tpos` and `time` have been converted to an <span style="color:red">R</span> date format so that it is a number rather than a string. For example, the FNMOC 6-hourly Ekman transports are on a 1-degree grid. A request for the data at a longitude of 220.2 and a latitude of 38.7 will return the result at a longitude of 220 and a latitude of 39.  These values are then used in a call to `rerddap::griddap()`, with `parameter` being the variable of interest.
 
-## Cacheing
+## Caching
 
 `rerddap` caches requests as it's default behavior. For the function `rxtracto()`, as a lot of files are downloaded, these are removed from the cache after each download.  For the functions `rxtracto_3D()` and `rxtratogon()` after downloading and putting the data into a dataframe,  the downloaded netCDF file is copied from the cache to the present working directory, and renamed based on the parameter name, and the cached file is removed.
 

@@ -141,7 +141,7 @@ makeCmd <- function(dataInfo, urlbase, xName, yName, zName, tName, parameter,
   }
   # if verbose output desired,  add to list
   if (verbose) {
-    myCallOpts$callopts <- httr::verbose()
+    myCallOpts$callopts <- list(verbose = TRUE)
     myCallOptsNames <- c(myCallOptsNames, 'callopts')
   }
   # if xcoord exists,  add its limits
