@@ -9,7 +9,6 @@
 #' @param time a function to map multi-time to one, or else identity
 #'  for animation
 #' @param myFunc function of one argument to transform the data
-#' @param myFunc function of one argument to transform the data
 #' @param mapData map data from 'maps' or 'mapdata', must be of class 'map'
 #' @param crs valid crs string
 #' @param animate if multiple times, if TRUE will animate the maps
@@ -20,7 +19,6 @@
 #' @return a 'plotdap' plot
 #'
 #' @examples
-#' require("ggplot2")
 #' \donttest{
 #' dataInfo <- rerddap::info('erdMBsstd1day')
 #' parameter <- 'sst'

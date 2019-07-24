@@ -8,3 +8,4 @@
 ^mur_dateline\.RData$
 ^myStruct\.Rdata$
 ^w\.Rdata$
+^\.git$

@@ -1,19 +1,18 @@
-#' Check Coordinate Dimensions
-#'
-#' @keywords internal
-#' \code{checkBounds} is an internal function that checks that the requested
-#' latitude, longitude, time bounds are within th dataset bounds
-#'
-#' @param dataStruct A structure describing the dataset from erddapStruct.rda
-#' @param xposLim A list of reals size 2 that contains the longitude limits of
-#'   the data request
-#' @param yposLim A list of reals size 2 that contains the latitude limits of
-#'   the data request
-#' @param xposLim A list of strings  size 2 that contains the time limits of the
-#'   data request
-#' @return returnCode of 0 if all data is in bounds of the served data, -1
-#'   otherwise
-#'
+# Check Coordinate Dimensions
+#
+# 'checkBounds' is an internal function that checks that the requested
+#  latitude, longitude, time bounds are within th dataset bounds
+#
+#  dataStruct - A structure describing the dataset from erddapStruct.rda
+#  xposLim - A list of reals size 2 that contains the longitude limits of
+#   the data request
+#  yposLim - A list of reals size 2 that contains the latitude limits of
+#   the data request
+#  xposLim  -A list of strings  size 2 that contains the time limits of the
+#   data request
+#   return returnCode of 0 if all data is in bounds of the served data, -1
+#   otherwise
+#
 
 checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
   returnCode <- 0

@@ -30,8 +30,6 @@ for animation}
 
 \item{maxpixels}{maximum number of pixels to use in making the map
 - controls resolution}
-
-\item{myFunc}{function of one argument to transform the data}
 }
 \value{
 a 'plotdap' plot
@@ -41,7 +39,6 @@ a 'plotdap' plot
 'rxtracto()' and 'xtracto()'
 }
 \examples{
-require("ggplot2")
 \donttest{
 dataInfo <- rerddap::info('erdMBsstd1day')
 parameter <- 'sst'

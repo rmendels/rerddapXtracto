@@ -1,14 +1,13 @@
-#'
-#' Get Coordinate  (Dimension) Data from ERDDAP Dataset
-#'
-#' @keywords internal
-#' \code{getFileCoords} is an internal function that gets the coordinate
-#' (dimension) variables of the requested dataset
-#'
-#' @param dataStruct A structure describing the dataset from erddapStruct.rda
-#' @param urlbase A character string giving the base URL of the ERDDAP server
-#' @return A list containing the values of the coordinate variables
-#'
+#
+# Get Coordinate  (Dimension) Data from ERDDAP Dataset
+#
+#  'getFileCoords()' is an internal function that gets the coordinate
+# (dimension) variables of the requested dataset
+#
+# dataStruct - A structure describing the dataset from erddapStruct.rda
+# urlbase  - A character string giving the base URL of the ERDDAP server
+# return - A list containing the values of the coordinate variables
+#
 
 
 

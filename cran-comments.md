@@ -3,14 +3,9 @@
 * rhub check_for_cran Windows Server and Fedora
 * win-builder (devel and release)
 
-## Resubmission
+## update Version 0.4.0
 
-Comments given on last submission:
 
-1. Don't quote function names in Description - fixed
-2. change \dontrun{} to \donttest{} -   fixed
-3. Don't set user option - fixed
-4. Don't write to user space - fixed
 
 Timings have been reduced as much as possible.
 'rxtracto()', 'rxtracto_3D()', and 'rxtractogon()' all are functions that perform subsetting
@@ -25,28 +20,28 @@ the "data" folder,  including the results of the necessary calls to 'rerddap::in
 
 On Mac OS X I get:
 
-Duration: 2m 43.1s
+Duration: 51.9s
+
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 
 On rhub Windows Server I get:
 
-   Examples with CPU or elapsed time > 5s
-               user system elapsed
-   rxtractogon 0.08   0.00    6.86
-   rxtracto    0.21   0.04    7.10
-   rxtracto_3D 0.04   0.02    6.40
+* checking examples ... NOTE
+Examples with CPU or elapsed time > 5s
+            user system elapsed
+rxtracto    0.40   0.00    6.75
+rxtracto_3D 0.06   0.02    6.03
+rxtractogon 0.06   0.01    6.07
+** found \donttest examples: check also with --run-donttest
 
-On rhub Fedora I get:
+On r-hub Fedora:
 
-new submission
+Get Ok,  no notes,  no warnings
 
-On winbuilder-release I get:
+on winbuilder_release:
 
-1 note new submission
+OK
 
-On winbuilder_devel I get:
+on winbuilder_develop:
 
-1 note new submission
-
-
-* This is a new release.
+Ok
