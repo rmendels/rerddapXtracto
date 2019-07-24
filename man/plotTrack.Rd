@@ -2,34 +2,45 @@
 % Please edit documentation in R/plotTrack.R
 \name{plotTrack}
 \alias{plotTrack}
-\title{plot result of xtracto or rxtracto}
+\title{plot result of 'rxtracto'}
 \usage{
-plotTrack(resp, xcoord, ycoord, plotColor = "viridis", name = NA,
-  myFunc = NA, shape = 20, size = 0.5)
+plotTrack(resp, xcoord, ycoord, tcoord, plotColor = "viridis",
+  myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE,
+  cumulative = FALSE, name = NA, shape = 20, size = 0.5)
 }
 \arguments{
-\item{resp}{data frame returned from rxtracto() or xtracto()}
+\item{resp}{data frame returned from 'rxtracto()'}
 
-\item{xcoord}{passed to rxtracto() or xtracto()}
+\item{xcoord}{passed to 'rxtracto()'}
 
-\item{ycoord}{passed to rxtracto() or xtracto()}
+\item{ycoord}{passed to 'rxtracto()'}
 
-\item{plotColor}{the color to use in plot from rerddap}
+\item{tcoord}{passed to 'rxtracto()'}
 
-\item{name}{name for colorbar label}
+\item{plotColor}{the color to use in plot from 'rerddap'}
 
 \item{myFunc}{function of one argument to transform the data}
+
+\item{mapData}{map data from 'maps' or 'mapdata', must be of class 'map'}
+
+\item{crs}{valid crs string}
+
+\item{animate}{if multiple times, if TRUE will animate the maps}
+
+\item{cumulative}{makes cumulative animation of data}
+
+\item{name}{name for colorbar label}
 
 \item{shape}{shape to use to mark track}
 
 \item{size}{size of shape to use to mark track}
 }
 \value{
-a plotdap plot
+a 'plotdap' plot
 }
 \description{
 \code{plotTrack} is a function to plot the results from
-rxtracto() and xtracto()
+'rxtracto()'
 }
 \examples{
 tagData <- Marlintag38606
@@ -38,9 +49,10 @@ ypos <- tagData$lat[1:20]
 tpos <- tagData$date[1:20]
 tpos <- tagData$date[1:20]
 zpos <- rep(0., length(xpos))
-urlbase <- 'http://upwell.pfeg.noaa.gov/erddap'
+\donttest{
 swchlInfo <- rerddap::info('erdSWchla8day')
 swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
         ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
-plotTrack(swchl, xpos, ypos, plotColor = 'chlorophyll')
+}
+p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll')
 }

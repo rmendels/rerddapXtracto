@@ -2,3 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+inst/doc
+Aleutian_test.png
+aleutian.RData
+cross_dateline_test.R
+mur_dateline.RData
+myStruct.Rdata
+w.Rdata

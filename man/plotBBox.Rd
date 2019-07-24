@@ -2,43 +2,53 @@
 % Please edit documentation in R/plotBBox.R
 \name{plotBBox}
 \alias{plotBBox}
-\title{plot result of xtracto_3D or rxtracto_3D}
+\title{plot result of 'rxtracto_3D'}
 \usage{
-plotBBox(resp, plotColor = "viridis", time = NA, animate = FALSE,
-  name = NA, myFunc = NA, maxpixels = 10000)
+plotBBox(resp, plotColor = "viridis", time = NA, myFunc = NA,
+  mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE,
+  name = NA, maxpixels = 10000)
 }
 \arguments{
-\item{resp}{data frame returned from rxtracto() or xtracto()}
+\item{resp}{data frame returned from 'rxtracto()'}
 
-\item{plotColor}{the color to use in plot from rerddap}
+\item{plotColor}{the color to use in plot from 'rerddap'}
 
-\item{time}{a function to map multi-time to one,  or else identity for animation}
-
-\item{animate}{if multiple times, if TRUE will animate the maps}
-
-\item{name}{name for colorbar label}
+\item{time}{a function to map multi-time to one, or else identity
+for animation}
 
 \item{myFunc}{function of one argument to transform the data}
 
-\item{maxpixels}{maximum numbe rof pixels to use in making the map - controls resolution}
+\item{mapData}{map data from 'maps' or 'mapdata', must be of class 'map'}
+
+\item{crs}{valid crs string}
+
+\item{animate}{if multiple times, if TRUE will animate the maps}
+
+\item{cumulative}{makes cumulative animation of data}
+
+\item{name}{name for colorbar label}
+
+\item{maxpixels}{maximum number of pixels to use in making the map
+- controls resolution}
 }
 \value{
-a plotdap plot
+a 'plotdap' plot
 }
 \description{
 \code{plotBox} is a function to plot the results from
-rxtracto() and xtracto()
+'rxtracto()' and 'xtracto()'
 }
 \examples{
-require("ggplot2")
-urlbase <- 'https://upwell.pfeg.noaa.gov/erddap'
+\donttest{
 dataInfo <- rerddap::info('erdMBsstd1day')
 parameter <- 'sst'
-xcoord <- c(230, 245)
-ycoord <- c(30, 45)
-tcoord <- c('2006-01-15', '2006-01-18')
+xcoord <- c(230, 232)
+ycoord <- c(33, 35)
+tcoord <- c('2006-01-15', '2006-01-15')
 zcoord <- c(0., 0.)
-extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                        tcoord = tcoord, zcoord = zcoord)
-plotBBox(extract, plotColor = 'temperature')
+}
+# low resolution selected to keep time to render down
+p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
 }

@@ -1,21 +1,23 @@
-# rerddapXtracto (Version 0.3.5)
+# rerddapXtracto (Version 0.4.0)
 rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
 
 ******
-This version is updated to work with `rerddap` Version 0.4.5, at present available on Github.
-Even though the plot routines are included, the dependency on `plotdap` has been removed.
-Due to some changes in both `R` and the `sf` package,  `plotdap` does not always produce 
-correct results.  When this has been resolved,  the dependency will be put back in.
+This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail.  This version is now on CRAN,  as is `plotdap`.
 ******
 
-- ** New - Cleaner exit if `rxtracto()` fails part way,  returns incomplete download **
-- ** Version.  Still for testing purposes only **
-- ** For real work - use at own risk **
-- ** Suggest doing small tests on any extract **
-- ** For rxtracto(), do say the first 3 points with "verbose = TRUE" **
-- ** Make certain the URL calls make sense **
-- ** In final output,  make certain data limits **
-- ** and limits requested from dataset make sense **
+The big change with this version is the ability to cross the dateline for datasets that are
+on a (-180, 180) longitude grid. Some caveats when trying to make an extract that
+crosses the dateline:
+
+- Request must be on a (0, 360) longitude grid
+- Several of the checks that the request makes sense are disabled if the request
+cross the dateline and the dataset is on a (-180, 180) longitude grid.
+- User therefore has more responsibility to check that the request makes sense
+for the dataset being accessed.
+
+Also, several of the internal functions have been refactored, making the code
+in the main functions a little cleaner.
+
 
 `rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude, time and depth  (new in this version) points; in a 3D bounding box; or within a polygon (through time). 
 
@@ -33,9 +35,15 @@ There are three main data extraction functions in the `rerddapXtracto` package:
 
 and two functions for producing maps:
 
-- `plotTrack <- function(resp, xcoord, ycoord, plotColor = 'viridis', name = NA, myFunc = NA, shape = 20, size = .5)`
+- `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
+                      mapData = NULL, crs = NULL,
+                      animate = FALSE, cumulative = FALSE,
+                      name = NA,  shape = 20, size = .5)`
 
-- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, animate = FALSE, name = NA, myFunc = NA, maxpixels = 10000)`
+- `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
+                mapData = NULL, crs = NULL,
+                animate = FALSE, cumulative = FALSE, name = NA,
+                maxpixels = 10000)`
 
 
 
@@ -44,30 +52,15 @@ and two functions for producing maps:
 ```{r install,eval=FALSE}
 install.packages("ncdf4") 
 install.packages("parsedata") 
+install.packages("plotdap") 
+install.packages("rerddap") 
 install.packages("sp")
 ```
 
-The present version of `rerddapXtracto` is coded against a version of `rerddap` that is not yet on CRAN.  To obtain that version of `rerddap`:
 
-```{r plotdap, eval = FALSE}
-install.packages("devtools")
-devtools::install_github('ropensci/rerddap')
+
 ```
 
-
-To install the plotdap package from <span style="color:blue">Github</span>:
-
-```{r plotdap, eval = FALSE}
-install.packages("devtools")
-devtools::install_github('ropensci/plotdap')
-```
-
-The `rerddapXtracto` package at the moment can be installed from Github using the devtools package:
-
-```{r install,eval=FALSE}
-install.packages("devtools")
-devtools::install_github("rmendels/rerddapXtracto")
-```
 
 
 

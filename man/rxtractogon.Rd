@@ -7,7 +7,7 @@
 rxtractogon(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
   zcoord = NULL, tcoord = NULL, xName = "longitude",
   yName = "latitude", zName = "altitude", tName = "time",
-  verbose = FALSE)
+  verbose = FALSE, cache_remove = TRUE)
 }
 \arguments{
 \item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}
@@ -33,6 +33,8 @@ degrees N; -90 to 90)of polygon}
 \item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
 
 \item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
+
+\item{cache_remove}{- logical variable (default TRUE) whether to delete 'rerddap' cache}
 }
 \value{
 structure with data and dimensions

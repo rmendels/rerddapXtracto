@@ -91,7 +91,7 @@ if (length(dataCoordList) == 0) {
 
 working_coords <- remapCoords(dataInfo1, callDims, dataCoordList,  urlbase)
 dataInfo1 <- working_coords$dataInfo1
-
+cross_dateline_180 <- working_coords$cross_dateline_180
 # Check request is within dataset bounds ----------------------------------
 #get limits over new coordinates
 xcoordLim <- working_coords$xcoord1
@@ -125,7 +125,7 @@ names(dimargs) <- c(xName, yName, zName, tName)
 dimargs <- Filter(Negate(is.null), dimargs)
 
 #check that coordinate bounds are contained in the dataset
-checkBounds(dataCoordList, dimargs)
+checkBounds(dataCoordList, dimargs, cross_dateline_180)
 
 
 # Find dataset coordinates closest to requested coordinates ---------------
@@ -133,86 +133,73 @@ checkBounds(dataCoordList, dimargs)
 
 erddapList <- findERDDAPcoord(dataCoordList, isoTime, udtTime,
                   xcoordLim,  ycoordLim, tcoordLim,  zcoordLim,
-                  xName, yName, tName, zName)
+                  xName, yName, tName, zName, cross_dateline_180)
 erddapCoords <- erddapList$erddapCoords
 
 
 # Construct the griddap() command from the input --------------------------
 
-
-
-griddapCmd <- makeCmd(dataInfo1, urlbase, xName, yName, zName, tName, parameter,
-                    erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
-                    erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
-                    verbose )
-
-
-# Get the data ------------------------------------------------------------
-
-
-griddapExtract <- try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE)
-if (class(griddapExtract)[1] == "try-error") {
-    print('error in trying to download the subset')
-    print('check your settings')
-    stop('check that the dataset is active in the given ERDDAP server')
-}
-
-
-
-# read in the downloaded netcdf file --------------------------------------
-
-
-datafileID <- ncdf4::nc_open(griddapExtract$summary$filename)
-
-dataX <- ncdf4::ncvar_get(datafileID, varid = xName)
-dataY <- ncdf4::ncvar_get(datafileID, varid = yName)
-if (!is.null(zcoord)) {
-  dataZ <- ncdf4::ncvar_get(datafileID, varid = zName)
-}
-
-if (!is.null(tcoord)) {
-  datatime <- ncdf4::ncvar_get(datafileID, varid = "time")
-  datatime <- as.POSIXlt(datatime, origin = '1970-01-01', tz = "GMT")
-}
-
-param <- ncdf4::ncvar_get(datafileID, varid = parameter, collapse_degen = FALSE)
-
-ncdf4::nc_close(datafileID)
-
-
-# Readjust lat-lon coordinates --------------------------------------------
-
-tempCoords <- readjustCoords(param, dataX, dataY, xcoord, datafileID, callDims)
-dataX <- tempCoords$dataX
-dataY <- tempCoords$dataY
-
-# create output list ------------------------------------------------------
-
-
-extract <- list(NA, NA, NA, NA, NA, NA)
-extract[[1]] <- tempCoords$param
-extract[[2]] <- attributes(dataInfo1)$datasetid
-extract[[3]] <- dataX
-extract[[4]] <- dataY
-if (!is.null(zcoord)) {
-  extract[[5]] <- dataZ
-}
-if (!is.null(tcoord)) {
-  extract[[6]] <- datatime
-}
-if (grepl('etopo',extract[[2]])) {
-  names(extract) <- c('depth', "datasetname", xName, yName, zName, "time")
-
-}else{
-  names(extract) <- c(parameter, "datasetname", xName, yName, zName, "time")
+if (cross_dateline_180) {
+  xcoord_temp <- c(erddapCoords$erddapXcoord[1], 180)
+  extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
+                               xName, yName, zName, tName, parameter,
+                               xcoord_temp, erddapCoords$erddapYcoord,
+                               erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                               verbose, cache_remove )
+  if (!is.list(extract1)) {
+    text1 <- "There was an error in the url call, perhaps a time out."
+    text2 <- "See message on screen and URL called"
+    print(paste(text1, text2))
+    stop("stopping download")
+  }
+  xcoord_temp <- c(min(dataCoordList$longitude), erddapCoords$erddapXcoord[2])
+  extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
+                                xName, yName, zName, tName, parameter,
+                                xcoord_temp, erddapCoords$erddapYcoord,
+                                erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                                verbose, cache_remove )
+  if (!is.list(extract2)) {
+    text1 <- "There was an error in the url call, perhaps a time out."
+    text2 <- "See message on screen and URL called"
+    print(paste(text1, text2))
+    stop("stopping download")
+  }
+  extract2$longitude = make360(extract2$longitude)
+  # extract <- list(NA, NA, NA, NA, NA, NA)
+  extract <- vector("list", 6)
+  lat_len <- length(extract1$latitude)
+  time_len <- length(extract1$time)
+  lon_len <- length(extract1$longitude) + length(extract2$longitude)
+  temp_array <- array(NA_real_, dim = c(lon_len, lat_len, time_len))
+  temp_array[1:length(extract1$longitude), ,] <- extract1[[1]]
+  temp_array[(length(extract1$longitude) + 1):lon_len, ,] <- extract2[[1]]
+  names(extract) <- names(extract1)
+  extract[[1]] <- temp_array
+  extract$datasetname <- extract1$datasetname
+  extract$latitude <- extract1$latitude
+  extract$altitude <- ifelse(is.null(extract1$altitude), NA, extract1$altitude)
+  if (is.null(extract1$time)) {
+    extract$time <- NA
+  } else{
+    extract$time <-  extract1$time
+  }
+  extract$longitude <- c(extract1$longitude, extract2$longitude)
+}else {
+  extract <- data_extract_read(dataInfo1, callDims, urlbase,
+                               xName, yName, zName, tName, parameter,
+                               erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
+                               erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                               verbose, cache_remove )
 
 }
-
-# remove netcdf file from cache
-if (cache_remove) {
-  rerddap::cache_delete(griddapExtract)
+if (!is.list(extract)) {
+  text1 <- "There was an error in the url call, perhaps a time out."
+  text2 <- "See message on screen and URL called"
+  print(paste(text1, text2))
+  stop("stopping download")
 }
+
 extract <- structure(extract, class = c('list', 'rxtracto3D'))
-return(extract)
+
 }
 
