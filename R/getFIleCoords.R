@@ -24,8 +24,20 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
 #    coordVals <- coordVals[, 1]
 #    coordList[[i]] <- coordVals
 
-    r1 <- try( httr::GET(myURL), silent = TRUE)
-    if (class(r1) == "try-error") {
+    numtries <- 10
+    tryn <- 0
+    goodtry <- -1
+    while ((tryn <= numtries) & (goodtry == -1)) {
+      tryn <- tryn + 1
+      r1 <- try( httr::GET(myURL), silent = TRUE)
+      if (!class(r1)[1] == "try-error") {
+        goodtry <- 1
+      } else{
+        Sys.sleep(tryn * 0.5)
+      }
+    }
+    # if (class(r1) == "try-error") {
+    if (goodtry == -1) {
       print('error in trying to retrieve the dataset coordinate variables')
       print(paste('failed on dimension ', dataCoords[i] ))
       stop('check on the ERDDAP server that the dataset is active')

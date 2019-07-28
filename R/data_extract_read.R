@@ -9,7 +9,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   #print(griddapCmd)
   # Get the data ------------------------------------------------------------
 
-  numtries <- 5
+  numtries <- 10
   tryn <- 0
   goodtry <- -1
   while ((tryn <= numtries) & (goodtry == -1)) {
@@ -17,12 +17,18 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
     griddapExtract <- try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE)
     if (!class(griddapExtract)[1] == "try-error") {
       goodtry <- 1
+    } else{
+      rerddap::cache_delete_all()
+      rerddap::cache_list()
+      Sys.sleep(tryn * 0.5)
     }
   }
-  if (class(griddapExtract)[1] == "try-error") {
+#  if (class(griddapExtract)[1] == "try-error") {
+  if (goodtry == -1) {
     print('error in trying to download the subset')
     print('check your settings')
     print(griddapCmd)
+    print('stopping execution  - will return what has been downloaded so far')
     #stop('check that the dataset is active in the given ERDDAP server')
     temp_extract <- -1
     return(temp_extract)
@@ -32,7 +38,15 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   # read in the downloaded netcdf file --------------------------------------
 
 
-  datafileID <- ncdf4::nc_open(griddapExtract$summary$filename)
+  datafileID <- try(ncdf4::nc_open(griddapExtract$summary$filename), silent = TRUE)
+  if (class(datafileID) == "try-error") {
+    print('error in trying to open netcdf file')
+    print('check check above for any errors')
+    print('stopping execution  - will return what has been downloaded so far')
+    temp_extract <- -1
+    return(temp_extract)
+
+  }
 
   dataX <- ncdf4::ncvar_get(datafileID, varid = xName)
   dataY <- ncdf4::ncvar_get(datafileID, varid = yName)

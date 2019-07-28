@@ -85,6 +85,21 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     print(dimLengths)
     stop("Correct Input Vectors")
   }
+
+  # check "radius" input
+  if ( (length(xlen) > 1) && (length(xlen) != length(xcoord))) {
+    stop('xlen is of size greater than one but not equal to length of xccoord')
+  }
+  if ( (length(ylen) > 1) && (length(ylen) != length(ycoord))) {
+    stop('ylen is of size greater than one but not equal to length of yccoord')
+  }
+  if ( (!is.null(zcoord)) && length(xlen)  > 1) {
+    if (length(zlen) == 1)  {
+      message('warning - zlen has a single value')
+      message('xlen and ylen have length greater than 1')
+      message('zlen will be extended to be same length with repeated value')
+    }
+  }
   urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
 
   # Check and readjust coordinate variables ---------------------------------
@@ -113,7 +128,11 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   } else {
     xrad <- xlen
     yrad <- ylen
-    zrad <- zlen
+    if ( (!is.null(zcoord)) && (length(zlen) == 1)) {
+        zrad <- rep(zlen, length(zcoord))
+    } else {
+        zrad <- zlen
+    }
   }
 
 

@@ -1,19 +1,13 @@
+## update Version 0.4.1
+
 ## Test environments
-* local OS X install, R 3.6.0
+* local OS X install, R 3.6.1
 * rhub check_for_cran Windows Server and Fedora
 * win-builder (devel and release)
 
-## update Version 0.4.0
 
 
 
-Timings have been reduced as much as possible.
-'rxtracto()', 'rxtracto_3D()', and 'rxtractogon()' all are functions that perform subsetting
-and downloading of data from remote servers.  That is why the difference in user time 
-and elapsed time.  It is data downloads.  The examples in this submission are cut down
-as much as can be - they essentially download one point. Also, anything that is 
-extraneous to the particular 'rerddapXtracto' call has been preloaded and is in
-the "data" folder,  including the results of the necessary calls to 'rerddap::info()'.
 
 
 ## R CMD check result

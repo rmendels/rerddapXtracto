@@ -1,5 +1,5 @@
-# rerddapXtracto (Version 0.4.0)
-rerddapXtracto - R package for accessing environmental data using rerddap  (**For Testing Purposes Only**)
+# rerddapXtracto (Version 0.4.1)
+rerddapXtracto - R package for accessing environmental data using rerddap 
 
 ******
 This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail.  This version is now on CRAN,  as is `plotdap`.
