@@ -14,7 +14,6 @@
 #' @param animate if multiple times, if TRUE will animate the maps
 #' @param cumulative makes cumulative animation of data
 #' @param name name for colorbar label
-#' @param myFunc function of one argument to transform the data
 #' @param maxpixels maximum number of pixels to use in making the map
 #'  - controls resolution
 #' @return a 'plotdap' plot
@@ -32,7 +31,6 @@
 #' }
 #' # low resolution selected to keep time to render down
 #' p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
-
 
 plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
                 mapData = NULL, crs = NULL,
