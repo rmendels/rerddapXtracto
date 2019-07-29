@@ -19,7 +19,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
       goodtry <- 1
     } else{
       rerddap::cache_delete_all()
-      rerddap::cache_list()
+      # rerddap::cache_list()
       Sys.sleep(tryn * 0.5)
     }
   }
