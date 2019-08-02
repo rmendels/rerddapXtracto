@@ -140,7 +140,9 @@ erddapCoords <- erddapList$erddapCoords
 # Construct the griddap() command from the input --------------------------
 
 if (cross_dateline_180) {
-  xcoord_temp <- c(erddapCoords$erddapXcoord[1], 180)
+  # upper_bound <- round(max(dataCoordList$longitude), 3)
+  upper_bound <- max(dataCoordList$longitude) - 0.0001
+  xcoord_temp <- c(erddapCoords$erddapXcoord[1], upper_bound)
   extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
                                xName, yName, zName, tName, parameter,
                                xcoord_temp, erddapCoords$erddapYcoord,
@@ -152,7 +154,9 @@ if (cross_dateline_180) {
     print(paste(text1, text2))
     stop("stopping download")
   }
-  xcoord_temp <- c(min(dataCoordList$longitude), erddapCoords$erddapXcoord[2])
+  # lower_bound <- round(min(dataCoordList$longitude), 3)
+  lower_bound <- min(dataCoordList$longitude) + 0.0001
+  xcoord_temp <- c(lower_bound, erddapCoords$erddapXcoord[2])
   extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
                                 xName, yName, zName, tName, parameter,
                                 xcoord_temp, erddapCoords$erddapYcoord,

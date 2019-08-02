@@ -243,7 +243,9 @@ oldDataFrame <- out_dataframe[1, ]
      lon_signs <- sign(erddapCoords$erddapXcoord)
      if (lon_signs[1] != lon_signs[2]) {cross_dateline_180_local <- TRUE}
        if (cross_dateline_180_local) {
-       xcoord_temp <- c(erddapCoords$erddapXcoord[1], 180)
+       # upper_bound <- round(max(dataCoordList$longitude), 3)
+       upper_bound <- max(dataCoordList$longitude) - 0.0001
+       xcoord_temp <- c(erddapCoords$erddapXcoord[1], upper_bound)
        extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
                                      xName, yName, zName, tName, parameter,
                                      xcoord_temp, erddapCoords$erddapYcoord,
@@ -259,7 +261,9 @@ oldDataFrame <- out_dataframe[1, ]
          rerddap::cache_delete(extract1)
          return(out_dataframe)
        }
-       xcoord_temp <- c(min(dataCoordList$longitude), erddapCoords$erddapXcoord[2])
+       # lower_bound <- round(min(dataCoordList$longitude), 3)
+       lower_bound <- min(dataCoordList$longitude) + 0.0001
+       xcoord_temp <- c(lower_bound, erddapCoords$erddapXcoord[2])
        extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
                                      xName, yName, zName, tName, parameter,
                                      xcoord_temp, erddapCoords$erddapYcoord,
