@@ -14,7 +14,7 @@ Description: Contains three functions that access
 URL: https://github.com/rmendels/rerddapXtracto
 BugReports: https://github.com/rmendels/rerddapXtracto/issues
 Depends:
-    R(>= 3.5.0)
+    R(>= 3.6.0)
 License: CC0
 Imports:
     abind,
