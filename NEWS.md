@@ -1,3 +1,8 @@
+# rerddapXtracto 0.4.2
+
+- fixed vignette to reflect new datasetID at IFREMER ERDDAP
+- removed 'plotdap' message when MBMS map is built
+
 # rerddapXtracto 0.4.1
 
 - More robust handling of http timeouts particularly in 'rxtracto()'
