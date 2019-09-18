@@ -47,11 +47,11 @@ and two functions for producing maps:
 
 
 
-`rerddapXtracto` uses the `rerddap`, `ncdf4` , `parsedata`, `plotdap` and `sp` packages , and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.   
+`rerddapXtracto` uses the `rerddap`, `ncdf4` , `parsedate`, `plotdap` and `sp` packages , and these packages (and the packages imported by these packages) must be installed first or `rerddapXtracto` will fail to install.   
 
 ```{r install,eval=FALSE}
 install.packages("ncdf4") 
-install.packages("parsedata") 
+install.packages("parsedate") 
 install.packages("plotdap") 
 install.packages("rerddap") 
 install.packages("sp")
