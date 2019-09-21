@@ -1,3 +1,7 @@
+# rerddapXtracto 0.4.3
+
+- fixed vignette to reflect new datasetID at IFREMER ERDDAP
+
 # rerddapXtracto 0.4.2
 
 - fixed vignette to reflect new datasetID at IFREMER ERDDAP

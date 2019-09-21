@@ -527,7 +527,7 @@ ifrTimes <- c("2013-09-15", "2013-09-15")
 ifrLats <- c(30., 50.)
 ifrLons <- c(-140., -110.)
 ifrDepth <- c(75., 75.)
-dataInfo <- rerddap::info("NRTOA", url = urlBase)
+dataInfo <- rerddap::info("CORIOLIS_GLOBAL_NRTOA_OBS_TIME_SERIE_PSAL", url = urlBase)
 ifrPSAL <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = ifrLons, ycoord = ifrLats, tcoord = ifrTimes, zcoord = ifrDepth, zName = 'depth')
 str(ifrPSAL)
 ```
