@@ -320,9 +320,13 @@ oldDataFrame <- out_dataframe[1, ]
 
 
     # populate the dataframe
-     out_dataframe[i, 1] <- mean(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 2] <- stats::sd(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 3] <- length(extract[[parameter]][!is.na(extract[[parameter]])])
+     parameter1 <- parameter
+     if (grepl('etopo',attributes(dataInfo)$datasetid)) {
+       parameter1 <- "depth"
+     }
+     out_dataframe[i, 1] <- mean(extract[[parameter1]], na.rm = TRUE)
+     out_dataframe[i, 2] <- stats::sd(extract[[parameter1]], na.rm = TRUE)
+     out_dataframe[i, 3] <- length(extract[[parameter1]][!is.na(extract[[parameter1]])])
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 4] <- requesttime
      }
@@ -335,8 +339,8 @@ oldDataFrame <- out_dataframe[1, ]
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 11] <- as.character.Date(tcoord[i])
      }
-     out_dataframe[i, 12] <- stats::median(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 13] <- stats::mad(extract[[parameter]], na.rm = TRUE)
+     out_dataframe[i, 12] <- stats::median(extract[[parameter1]], na.rm = TRUE)
+     out_dataframe[i, 13] <- stats::mad(extract[[parameter1]], na.rm = TRUE)
 
    }
    # store last request in case next one is same

@@ -1,3 +1,7 @@
+# rerddapXtracto 0.4.4
+
+- fixed etopo error reported by user
+
 # rerddapXtracto 0.4.3
 
 - fixed vignette to reflect new datasetID at IFREMER ERDDAP
