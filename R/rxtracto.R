@@ -205,6 +205,16 @@ oldDataFrame <- out_dataframe[1, ]
 # logical variable if the latitude coordinate goes south to north
 #latSouth <- working_coords$latSouth
 
+# deal with name change of extracted param for etopo datasets
+if (grepl('etopo', attr(dataInfo, "datasetid"))) {
+  extract_param <- "depth"
+
+}else{
+  extract_param <- parameter
+
+}
+
+
 # loop over the track positions
  for (i in seq_len(length(xcoord))) {
 
@@ -320,9 +330,9 @@ oldDataFrame <- out_dataframe[1, ]
 
 
     # populate the dataframe
-     out_dataframe[i, 1] <- mean(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 2] <- stats::sd(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 3] <- length(extract[[parameter]][!is.na(extract[[parameter]])])
+     out_dataframe[i, 1] <- mean(extract[[extract_param]], na.rm = TRUE)
+     out_dataframe[i, 2] <- stats::sd(extract[[extract_param]], na.rm = TRUE)
+     out_dataframe[i, 3] <- length(extract[[extract_param]][!is.na(extract[[extract_param]])])
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 4] <- requesttime
      }
@@ -335,8 +345,8 @@ oldDataFrame <- out_dataframe[1, ]
      if (!is.null(working_coords$tcoord1)) {
        out_dataframe[i, 11] <- as.character.Date(tcoord[i])
      }
-     out_dataframe[i, 12] <- stats::median(extract[[parameter]], na.rm = TRUE)
-     out_dataframe[i, 13] <- stats::mad(extract[[parameter]], na.rm = TRUE)
+     out_dataframe[i, 12] <- stats::median(extract[[extract_param]], na.rm = TRUE)
+     out_dataframe[i, 13] <- stats::mad(extract[[extract_param]], na.rm = TRUE)
 
    }
    # store last request in case next one is same
