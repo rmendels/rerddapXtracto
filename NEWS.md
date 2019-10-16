@@ -1,3 +1,7 @@
+# rerddapXtracto 0.4.5
+
+Added maptools and rgdal to Suggests to be consistent with of plotdap v0.0.4
+
 # rerddapXtracto 0.4.4
 
 - fixed etopo error reported by user
