@@ -5,7 +5,7 @@
 #'
 #' @export
 #' @param resp data frame returned from 'rxtracto()'
-#' @param plotColor the color to use in plot from 'rerddap'
+#' @param plotColor the color to use in plot from 'cmocean'
 #' @param time a function to map multi-time to one, or else identity
 #'  for animation
 #' @param myFunc function of one argument to transform the data
@@ -30,7 +30,7 @@
 #'                        tcoord = tcoord, zcoord = zcoord)
 #' }
 #' # low resolution selected to keep time to render down
-#' p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
+#' p <- plotBBox(MBsst, plotColor = 'thermal', maxpixels = 300)
 
 plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
                 mapData = NULL, crs = NULL,
@@ -106,8 +106,8 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
               ggplot2::guides(fill = ggplot2::guide_colourbar(title = name)))
   }
   if (animate) {
-    xlim <- c(min(myStruct$longitude), max(myStruct$longitude))
-    ylim <- c(min(myStruct$latitude), max(myStruct$latitude))
+    xlim <- c(min(myStruct$data$lon), max(myStruct$data$lon))
+    ylim <- c(min(myStruct$data$lat), max(myStruct$data$lat))
     suppressMessages(myplot <- plotdap::add_ggplot(
       myplot, ggplot2::coord_sf(
         crs = myplot$crs, datum = myplot$datum,

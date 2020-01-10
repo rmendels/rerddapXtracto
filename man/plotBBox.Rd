@@ -4,14 +4,23 @@
 \alias{plotBBox}
 \title{plot result of 'rxtracto_3D'}
 \usage{
-plotBBox(resp, plotColor = "viridis", time = NA, myFunc = NA,
-  mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE,
-  name = NA, maxpixels = 10000)
+plotBBox(
+  resp,
+  plotColor = "viridis",
+  time = NA,
+  myFunc = NA,
+  mapData = NULL,
+  crs = NULL,
+  animate = FALSE,
+  cumulative = FALSE,
+  name = NA,
+  maxpixels = 10000
+)
 }
 \arguments{
 \item{resp}{data frame returned from 'rxtracto()'}
 
-\item{plotColor}{the color to use in plot from 'rerddap'}
+\item{plotColor}{the color to use in plot from 'cmocean'}
 
 \item{time}{a function to map multi-time to one, or else identity
 for animation}
@@ -50,5 +59,5 @@ MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                        tcoord = tcoord, zcoord = zcoord)
 }
 # low resolution selected to keep time to render down
-p <- plotBBox(MBsst, plotColor = 'temperature', maxpixels = 300)
+p <- plotBBox(MBsst, plotColor = 'thermal', maxpixels = 300)
 }

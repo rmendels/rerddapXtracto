@@ -4,9 +4,21 @@
 \alias{plotTrack}
 \title{plot result of 'rxtracto'}
 \usage{
-plotTrack(resp, xcoord, ycoord, tcoord, plotColor = "viridis",
-  myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE,
-  cumulative = FALSE, name = NA, shape = 20, size = 0.5)
+plotTrack(
+  resp,
+  xcoord,
+  ycoord,
+  tcoord,
+  plotColor = "viridis",
+  myFunc = NA,
+  mapData = NULL,
+  crs = NULL,
+  animate = FALSE,
+  cumulative = FALSE,
+  name = NA,
+  shape = 20,
+  size = 0.5
+)
 }
 \arguments{
 \item{resp}{data frame returned from 'rxtracto()'}
@@ -17,7 +29,7 @@ plotTrack(resp, xcoord, ycoord, tcoord, plotColor = "viridis",
 
 \item{tcoord}{passed to 'rxtracto()'}
 
-\item{plotColor}{the color to use in plot from 'rerddap'}
+\item{plotColor}{the color to use in plot from 'cmocean'}
 
 \item{myFunc}{function of one argument to transform the data}
 
@@ -54,5 +66,5 @@ swchlInfo <- rerddap::info('erdSWchla8day')
 swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
         ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 }
-p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll')
+p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'algae')
 }

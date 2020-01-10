@@ -4,10 +4,20 @@
 \alias{rxtractogon}
 \title{Extract environmental data in a polygon using 'ERDDAP' and 'rerddap'.}
 \usage{
-rxtractogon(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
-  zcoord = NULL, tcoord = NULL, xName = "longitude",
-  yName = "latitude", zName = "altitude", tName = "time",
-  verbose = FALSE, cache_remove = TRUE)
+rxtractogon(
+  dataInfo,
+  parameter,
+  xcoord = NULL,
+  ycoord = NULL,
+  zcoord = NULL,
+  tcoord = NULL,
+  xName = "longitude",
+  yName = "latitude",
+  zName = "altitude",
+  tName = "time",
+  verbose = FALSE,
+  cache_remove = TRUE
+)
 }
 \arguments{
 \item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}

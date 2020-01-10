@@ -197,7 +197,7 @@ We plot the track line with the locations colored according to the mean of the s
 require("ggplot2")
 require("plotdap")
 
-myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'chlorophyll')
+myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'algae')
 myPlot
 ```
 
@@ -209,7 +209,7 @@ To make a cumulative animation of the track:
 
 <span id="animateTrack"></span>
 ```{r animateTrack, echo = TRUE, eval = FALSE}
-myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'chlorophyll',
+myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'algae',
                     animate = TRUE, cumulative = TRUE)
 
 ```
@@ -232,7 +232,7 @@ xlim <- c(-160, -105)
 topoInfo <- rerddap::info('etopo360')
 topo <- rxtracto(topoInfo, parameter = 'altitude', xcoord = xpos, ycoord = ypos, xlen = .1, ylen = .1)
 myFunc = function(x) -x
-topoPlot <- plotTrack(topo, xpos, ypos, NA, plotColor = 'density', name = 'Depth', myFunc = myFunc)
+topoPlot <- plotTrack(topo, xpos, ypos, NA, plotColor = 'dense', name = 'Depth', myFunc = myFunc)
 topoPlot
 ```
 
@@ -325,7 +325,7 @@ We can map the data using `plotBBox()`:
 require("ggplot2")
 require("plotdap")
 myFunc <- function(x) log(x)
-chlalogPlot <- plotBBox(VIIRS, plotColor = 'chlorophyll', myFunc = myFunc)
+chlalogPlot <- plotBBox(VIIRS, plotColor = 'algae', myFunc = myFunc)
 chlalogPlot
 ```
 
@@ -408,7 +408,7 @@ myFunc <- function(x) log(x)
 sanctchl1 <- sanctchl
 sanctchl1$chla <- sanctchl1$chla[, , 2]
 sanctchl1$time <- sanctchl1$time[2]
-sanctchlPlot <- plotBBox(sanctchl1, plotColor = 'chlorophyll', myFunc = myFunc)
+sanctchlPlot <- plotBBox(sanctchl1, plotColor = 'algae', myFunc = myFunc)
 sanctchlPlot
 ```
 
@@ -421,7 +421,7 @@ require("gganimate")
 require("ggplot2")
 require("plotdap")
 myFunc <- function(x) log(x)
-sanctchlPlot <- plotBBox(sanctchl, plotColor = 'chlorophyll', myFunc = myFunc, time = identity, animate = TRUE)
+sanctchlPlot <- plotBBox(sanctchl, plotColor = 'algae', myFunc = myFunc, time = identity, animate = TRUE)
 ```
 
 ![Sanctuary Animation](sanctuary.gif)
@@ -444,7 +444,7 @@ Mapping the data to show the canyon:
 require("ggplot2")
 require("mapdata")
 myFunc = function(x) -x
-bathyPlot <- suppressMessages((plotBBox(bathy, plotColor = 'density', myFunc = myFunc, name = 'Depth')))
+bathyPlot <- suppressMessages((plotBBox(bathy, plotColor = 'dense', myFunc = myFunc, name = 'Depth')))
 bathyPlot
 ```
 
@@ -470,7 +470,7 @@ str(soda70)
 ```{r soda70Plot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
 require("ggplot2")
 require("plotdap")
-sodaPlot <- plotBBox(soda70, plotColor = 'temperature', name = 'temp_at_70m', maxpixels = 30000)
+sodaPlot <- plotBBox(soda70, plotColor = 'thermal', name = 'temp_at_70m', maxpixels = 30000)
 sodaPlot
 
 ```
@@ -497,7 +497,7 @@ NAtlSSS <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = sssLons, ycoord
 ```{r NAtlSSSplot, eval = FALSE, echo = TRUE}
 require("ggplot2")
 require("plotdap")
-NAtlSSSPlot <- plotBBox(NAtlSSS, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
+NAtlSSSPlot <- plotBBox(NAtlSSS, plotColor = 'haline', name = "salinity", maxpixels = 30000)
 NAtlSSSPlot
 ```
 
@@ -537,8 +537,8 @@ Plotting the results using `plotBBox()`:
 ```{r ifrPSALplot, fig.width = 6, fig.height = 3, fig.align='center', warning = FALSE}
 require("ggplot2")
 require("plotdap")
-ifrPSALPlot <- plotBBox(ifrPSAL, plotColor = 'salinity', name = "salinity", maxpixels = 30000)
-print(ifrPSALPlot)
+ifrPSALPlot <- plotBBox(ifrPSAL, plotColor = 'haline', name = "salinity", maxpixels = 30000)
+ifrPSALPlot
 ```
 
 

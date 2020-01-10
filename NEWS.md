@@ -1,3 +1,7 @@
+# rerddapXtracto 0.4.6
+
+Changed vignette to work with latest version of 'plotdap' that now uses the colors from the 'cmocean' package
+
 # rerddapXtracto 0.4.5
 
 Added maptools and rgdal to Suggests to be consistent with of plotdap v0.0.4

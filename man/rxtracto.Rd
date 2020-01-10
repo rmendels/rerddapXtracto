@@ -4,10 +4,22 @@
 \alias{rxtracto}
 \title{Extract environmental data along a trajectory from an 'ERDDAP' server using 'rerddap'.}
 \usage{
-rxtracto(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
-  zcoord = NULL, tcoord = NULL, xlen = 0, ylen = 0, zlen = 0,
-  xName = "longitude", yName = "latitude", zName = "altitude",
-  tName = "time", verbose = FALSE)
+rxtracto(
+  dataInfo,
+  parameter = NULL,
+  xcoord = NULL,
+  ycoord = NULL,
+  zcoord = NULL,
+  tcoord = NULL,
+  xlen = 0,
+  ylen = 0,
+  zlen = 0,
+  xName = "longitude",
+  yName = "latitude",
+  zName = "altitude",
+  tName = "time",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{dataInfo}{- the return from an 'rerddap::info' call to an 'ERDDAP' server}

@@ -4,10 +4,20 @@
 \alias{rxtracto_3D}
 \title{Extract environmental data in a 3-dimensional box from an 'ERDDAP' server using 'rerddap'.}
 \usage{
-rxtracto_3D(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL,
-  zcoord = NULL, tcoord = NULL, xName = "longitude",
-  yName = "latitude", zName = "altitude", tName = "time",
-  verbose = FALSE, cache_remove = TRUE)
+rxtracto_3D(
+  dataInfo,
+  parameter = NULL,
+  xcoord = NULL,
+  ycoord = NULL,
+  zcoord = NULL,
+  tcoord = NULL,
+  xName = "longitude",
+  yName = "latitude",
+  zName = "altitude",
+  tName = "time",
+  verbose = FALSE,
+  cache_remove = TRUE
+)
 }
 \arguments{
 \item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}

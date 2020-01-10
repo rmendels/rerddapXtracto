@@ -1,6 +1,6 @@
-## update Version 0.4.5
+## update Version 0.4.6
 
-Minor update, added maptools and rgdal to Suggests to be consistent with plotdap v0.0.4.
+Minor update so that the vignette is consistent with 'plotdap' version 0.0.5
 
 
 ## Test environments

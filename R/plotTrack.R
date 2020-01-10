@@ -7,7 +7,7 @@
 #' @param ycoord passed to 'rxtracto()'
 #' @param tcoord passed to 'rxtracto()'
 #' @param resp data frame returned from 'rxtracto()'
-#' @param plotColor the color to use in plot from 'rerddap'
+#' @param plotColor the color to use in plot from 'cmocean'
 #' @param myFunc function of one argument to transform the data
 #' @param mapData map data from 'maps' or 'mapdata', must be of class 'map'
 #' @param crs valid crs string
@@ -30,7 +30,7 @@
 #' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
 #'         ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 #' }
-#' p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'chlorophyll')
+#' p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'algae')
 
 plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
                       mapData = NULL, crs = NULL,
