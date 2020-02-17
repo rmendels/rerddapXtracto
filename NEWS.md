@@ -1,3 +1,10 @@
+# rerddapXtracto 0.4.7
+
+- added option for progress bar in 'rxtracto()'
+
+- improved vignette to more accurately reflect the use of 'cmocean' colors
+  in 'plotdap'.
+
 # rerddapXtracto 0.4.6
 
 Changed vignette to work with latest version of 'plotdap' that now uses the colors from the 'cmocean' package

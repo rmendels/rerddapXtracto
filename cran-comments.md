@@ -1,10 +1,9 @@
-## update Version 0.4.6
+## update Version 0.4.7
 
-Minor update so that the vignette is consistent with 'plotdap' version 0.0.5
-
+Minor update to add progress bar, improve vignette
 
 ## Test environments
-* local OS X install, R 3.6.1
+* local OS X install, R 3.6.2
 * rhub check_for_cran Windows Server and Fedora
 * win-builder (devel and release)
 

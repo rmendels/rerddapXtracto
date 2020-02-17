@@ -1,5 +1,9 @@
-# rerddapXtracto (Version 0.4.1)
+# rerddapXtracto (Version 0.4.7)
 rerddapXtracto - R package for accessing environmental data using rerddap 
+
+******
+`rxtracto()` now cna display a progress bar
+******
 
 ******
 This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail.  This version is now on CRAN,  as is `plotdap`.
@@ -27,7 +31,7 @@ New in this version is that a track can now move in (x, y, z, t) space if approp
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE, progress_bar = FALSE)`
 
 - `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
 

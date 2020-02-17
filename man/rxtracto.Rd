@@ -18,7 +18,8 @@ rxtracto(
   yName = "latitude",
   zName = "altitude",
   tName = "time",
-  verbose = FALSE
+  verbose = FALSE,
+  progress_bar = FALSE
 )
 }
 \arguments{
@@ -52,6 +53,9 @@ decimal degrees N; -90 to 90)}
 
 \item{verbose}{- logical variable (default FALSE)
 if the the URL request should be verbose}
+
+\item{progress_bar}{- logical variable (default FALSE)
+should a progress bar be displayed}
 }
 \value{
 A dataframe containing:

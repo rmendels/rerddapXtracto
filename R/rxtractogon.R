@@ -66,6 +66,7 @@ rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL,
 
 
   #  check that a valid rerddap info structure is being passed
+  rerddap::cache_setup(temp_dir = TRUE)
   if (!(methods::is(dataInfo, "info"))) {
     print("error - dataInfo is not a valid info structure from rerddap")
     return()

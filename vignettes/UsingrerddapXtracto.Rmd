@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 ```{r setup, include = FALSE}
 ### needed libraries
+library(cmocean)
 library(mapdata)
 library(plotdap)
 library(rerddap)
@@ -45,7 +46,7 @@ Finally,  the plotting packages now allow for user defined continental outlines 
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE)`
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE,  progress_bar = FALSE)`
 
 - `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE, cache_remove = TRUE)`
 
@@ -69,7 +70,7 @@ The data extraction functions are similar to but not identical to the functions 
 
 ### Time has come today
 
-With all due respect to the [Chambers Brothers](https://en.wikipedia.org/wiki/Time_Has_Come_Today), since any <span style="color:red">ERDDAP</span> served gridded data can be accessed, a lot more care must be used with the values of "time" passed to `rerddapXtracto` as compared with `xtractomatic`.  This is because datasets can have time increments of less than a day, an example of which is [given below](#hourly). <span style="color:red">ERDDAP</span> maps all times to "Zulu" time, of the form "2016-11-01T00:00:00Z".  The date-time "2016-11-01" gets mapped to "2016-11-01T00:00:00Z".  When passing time limits of resolution finer than a day, be certain to take into account time offsets, and to pass the times in the form above.  Times are parsed using the `parse_date()` function of the [parsedate](https://cran.r-project.org/package=parsedate) package, if in doubt you can use that function to see how the times you are passing will be interpreted.
+With all due respect to the 'Chambers Brothers (their song 'Time Has Come Today'), since any <span style="color:red">ERDDAP</span> served gridded data can be accessed, a lot more care must be used with the values of "time" passed to `rerddapXtracto` as compared with `xtractomatic`.  This is because datasets can have time increments of less than a day, an example of which is [given below](#hourly). <span style="color:red">ERDDAP</span> maps all times to "Zulu" time, of the form "2016-11-01T00:00:00Z".  The date-time "2016-11-01" gets mapped to "2016-11-01T00:00:00Z".  When passing time limits of resolution finer than a day, be certain to take into account time offsets, and to pass the times in the form above.  Times are parsed using the `parse_date()` function of the [parsedate](https://cran.r-project.org/package=parsedate) package, if in doubt you can use that function to see how the times you are passing will be interpreted.
 
 
 ## Setting up 
@@ -124,7 +125,7 @@ library("plotdap")
 
 The plotting functions are new, and there are some fine points that need to be understood if they are to be used properly, in particular `plotBBox()`. Both `plotTrack()` and `plotBBox()` rearrange the output so that the functions `plotdap::add_tabledap()` and `plotdap::add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that are passed to `add_griddap()` has multiple time periods, there are two options. The first option is to set the parameter “time” to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set “time” equal to “identity” and set “animate” to be “TRUE” which will produce a time animation of the results. If an animation is requested and the option "cumulative" is set to be "TRUE",  then the animation will be cumulative.  This is a nice feature for displaying tracks through time. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
 
-- [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the `rerddap` color palette. These colors are based on the `cmocean` colormaps designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), which were initially developed for Python, but a version of the colormaps is used in the `oce` package by Dan Kelley and Clark Richards and that is also what is used in `rerddap`.
+- [Setting the color palette](#colorPalette) shows how to use the “plotColor” option. The “plotColor” parameter can be the name of any of the colors included in the `cmocean` package. The `cmocean` colormaps were designed by Kristen Thyng (see https://matplotlib.org/cmocean/ and https://github.com/matplotlib/cmocean), and were initially developed for Python)
 
 - [Plot one time period](#plot1) example shows how to manipulate an existing output from `rxtracto_3D()` or `rextractogon()` to plot just one time period.
 
@@ -161,7 +162,7 @@ dataInfo
 
 ### An `rxtracto` example 
 
-In this section we extract data along a trackline found in the <span style="color:red">Marlintag38606</span> dataset, which is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC), and show some simple plots of the extracted data.  
+In this section we extract data along a trackline found in the <span style="color:red">Marlintag38606</span> dataset, which is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC), and show some simple plots of the extracted data.  Since it cna be a long extract, a progress bar is displayed:
 
 
 
@@ -178,7 +179,7 @@ ypos <- tagData$lat
 tpos <- tagData$date
 zpos <- rep(0., length(xpos))
 swchlInfo <- rerddap::info('erdSWchla8day')
-swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
+swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2, progress_bar = TRUE)
 ```
 
 Note the differences from the `xtractomatic` example.
@@ -371,7 +372,7 @@ mapFrame <- function(longitude, latitude, my_data) {
   return(my_frame)
 }
 mur_frame <- mapFrame(mur_dateline$longitude, mur_dateline$latitude, mur_dateline['sst'])
-mycolor <- cmocean$thermal
+mycolor <- cmocean::cmocean$thermal
   myplot <- ggplot(data = mur_frame, aes(x = x, y = y, fill = sst)) +
   geom_polygon(data = w, aes(x = long, y = lat, group = group), fill = "grey80") +     geom_raster(interpolate = FALSE) +
     scale_fill_gradientn(colours = mycolor, na.value = NA) + 
@@ -509,7 +510,7 @@ A lot of the details in the ocean are hidden in the plot above, because there ar
 ```{r NAtlSSSplot1, eval = FALSE, echo = TRUE}
 require("ggplot2")
 require("plotdap")
-add_ggplot(NAtlSSSPlot, scale_colour_gradientn(colours = cmocean$haline, na.value = NA, limits = c(32, 36)), scale_fill_gradientn(colours = cmocean$haline, na.value = NA, limits = c(32, 36)))
+add_ggplot(NAtlSSSPlot, scale_colour_gradientn(colours = haline, na.value = NA, limits = c(32, 36)), scale_fill_gradientn(colours = haline, na.value = NA, limits = c(32, 36)))
 ```
 
 

@@ -20,6 +20,8 @@
 #' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
 #' @param verbose - logical variable (default FALSE)
 #'                   if the the URL request should be verbose
+#' @param progress_bar - logical variable (default FALSE)
+#'                   should a progress bar be displayed
 #' @return A dataframe containing:
 #' \itemize{
 #'  \item column 1 = mean of data within search radius
@@ -65,7 +67,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
                   xName = 'longitude', yName = 'latitude', zName = 'altitude',
                   tName = 'time',
-                  verbose = FALSE) {
+                  verbose = FALSE, progress_bar = FALSE) {
 
   # Check Passed Info -------------------------------------------------------
   rerddap::cache_setup(temp_dir = TRUE)
@@ -206,8 +208,13 @@ oldDataFrame <- out_dataframe[1, ]
 #latSouth <- working_coords$latSouth
 
 # loop over the track positions
+ if (progress_bar){
+   pb <- utils::txtProgressBar(min = 0, max = length(xcoord), style = 3)
+ }
  for (i in seq_len(length(xcoord))) {
-
+   if (progress_bar){
+     utils::setTxtProgressBar(pb, i)
+   }
 
 # define bounding box
   xmax <- working_coords$xcoord1[i] + (xrad[i]/2)
@@ -315,6 +322,9 @@ oldDataFrame <- out_dataframe[1, ]
        out_dataframe <- out_dataframe[1:(i - 1), ]
        remove('paramdata')
        rerddap::cache_delete(extract)
+       if (progress_bar) {
+         close(pb)
+       }
        return(out_dataframe)
      }
 
@@ -348,6 +358,9 @@ oldDataFrame <- out_dataframe[1, ]
    oldDataFrame <- out_dataframe[i,]
 
  }
+if (progress_bar) {
+  close(pb)
+}
 out_dataframe <- structure(out_dataframe, class = c('list', 'rxtractoTrack'))
 return(out_dataframe)
 }
