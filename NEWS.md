@@ -1,3 +1,7 @@
+# rerddapXtracto 0.4.8
+
+fixed problem in 'plotBBox' when name is given for colorbar
+
 # rerddapXtracto 0.4.7
 
 - added option for progress bar in 'rxtracto()'

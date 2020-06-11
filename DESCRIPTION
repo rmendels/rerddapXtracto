@@ -1,7 +1,7 @@
 Package: rerddapXtracto
 Type: Package
 Title: Extracts Environmental Data from 'ERDDAP' Web Services
-Version: 0.4.7
+Version: 0.4.8
 Date: 2020-02-17
 Authors@R: person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre"))
 Description: Contains three functions that access
@@ -41,7 +41,7 @@ Suggests:
     maptools,
     rgdal,
     rmarkdown
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Encoding: UTF-8
 LazyData: TRUE
 VignetteBuilder: knitr

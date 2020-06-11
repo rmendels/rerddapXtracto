@@ -4,7 +4,8 @@
 \name{Marlintag38606}
 \alias{Marlintag38606}
 \title{Marlin Tag Data}
-\format{A data frame with 152 obs. of 7 variables:
+\format{
+A data frame with 152 obs. of 7 variables:
 \describe{
   \item{date}{time of observation given as YYYY-MM-DD}
   \item{lon}{longitude of observation}
@@ -13,7 +14,8 @@
   \item{higLon}{high error on longitude}
   \item{lowLat}{low error on latitude}
   \item{higLat}{high error on latitude}
-}}
+}
+}
 \source{
 Dr. Mike Musyl, Pelagic Research Group LLC
 }

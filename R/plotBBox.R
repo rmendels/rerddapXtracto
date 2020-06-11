@@ -103,7 +103,8 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
   # if a name os given,  change the colorbar label
   if (!is.na(name)) {
     myplot <- plotdap::add_ggplot(myplot,
-              ggplot2::guides(fill = ggplot2::guide_colourbar(title = name)))
+              ggplot2::guides(fill = ggplot2::guide_colourbar(title = name)),
+              ggplot2::guides(colour = "none"))
   }
   if (animate) {
     xlim <- c(min(myStruct$data$lon), max(myStruct$data$lon))

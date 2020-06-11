@@ -4,7 +4,9 @@
 \name{swchl}
 \alias{swchl}
 \title{swchl Data}
-\format{An object of class \code{list} (inherits from \code{rxtractoTrack}) of length 13.}
+\format{
+An object of class \code{list} (inherits from \code{rxtractoTrack}) of length 13.
+}
 \usage{
 swchl
 }

@@ -1,9 +1,9 @@
-## update Version 0.4.7
+## update Version 0.4.8
 
-Minor update to add progress bar, improve vignette
+fixed problem in 'plotBBox' when name is given for colorbar
 
 ## Test environments
-* local OS X install, R 3.6.2
+* local OS X install, R 4.0.1
 * rhub check_for_cran Windows Server and Fedora
 * win-builder (devel and release)
 

@@ -4,7 +4,9 @@
 \name{MBsst}
 \alias{MBsst}
 \title{MBsst Data}
-\format{An object of class \code{list} (inherits from \code{rxtracto3D}) of length 6.}
+\format{
+An object of class \code{list} (inherits from \code{rxtracto3D}) of length 6.
+}
 \usage{
 MBsst
 }

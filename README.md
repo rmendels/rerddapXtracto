@@ -2,7 +2,7 @@
 rerddapXtracto - R package for accessing environmental data using rerddap 
 
 ******
-`rxtracto()` now can display a progress bar
+`rxtracto()` now cna display a progress bar
 ******
 
 ******

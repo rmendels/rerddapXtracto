@@ -4,7 +4,9 @@
 \name{dataInfo}
 \alias{dataInfo}
 \title{dataInfo Data}
-\format{An object of class \code{info} of length 3.}
+\format{
+An object of class \code{info} of length 3.
+}
 \usage{
 dataInfo
 }
