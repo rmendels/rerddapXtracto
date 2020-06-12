@@ -11,9 +11,9 @@ fixed problem in 'plotBBox' when name is given for colorbar
 
 On Mac OS X I get:
 
-Duration: 54.2s
+Duration: 2m 27.1s
 
-0 errors v | 0 warnings v | 0 notes v
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 On rhub Windows Server I get:
 
