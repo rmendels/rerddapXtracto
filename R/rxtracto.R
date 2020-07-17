@@ -63,7 +63,7 @@
 
 
 
-rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
+rxtracto_old <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
                   xName = 'longitude', yName = 'latitude', zName = 'altitude',
                   tName = 'time',

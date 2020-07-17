@@ -1,3 +1,11 @@
+# rerddapXtracto 1.0.0
+
+- Major changes in how 'rxtracto()' works.
+- Now one download of all requests at the period
+- If no time,  such as bathymetry,  just one download
+- Calculations are then done on th downloaded data
+- Should greatly speed-up very large requests
+
 # rerddapXtracto 0.4.8
 
 fixed problem in 'plotBBox' when name is given for colorbar
