@@ -27,20 +27,20 @@ library(rerddapXtracto)
 
 ## Introduction 
 
-`rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/package=rerddap) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by being able to extract data for a moving point in time along a user-supplied set of longitude, latitude, depth and time points;  and also extracting data within a polygon (through time). 
+`rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/package=rerddap) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by allowing a user to extract data for a moving point in time along a user-supplied set of longitude, latitude, depth and time points;  and also extracting data within a polygon (through time). 
 
 This version is the first to be fully numbered (version 1.0.0). `rerddapXtracto` has been in use long enough,  by a large enough set of users, such that the feature set and function calls are likely to be stable for awhile. However,  this version represents a major rewrite of the internal workings of `rxtracto()`, which is invisible to the user but should provide for faster execution particularly for large tracks. Now,  instead of doing an extract for each point, one extract is done for all points that match to the same time period in the ERDDAP dataset.  For large extracts,  this can make a very large difference in the speed of execution.  This also means that for extracts that do not have a time coordinate,  such as bathymetric data,  only one extract will be made from ERDDAP.  If the data are of high enough resolution and the data request covers a large enough area, it is possible this will exceed the 2GB limit of ERDDAP netcdf files,  and the extract will have to be done in pieces. 
 
 Features that have been added over the course of development include allowing the z-coordinate to vary in both `rxtracto()` and `rxtracto_3D()`; plotting functions `plotTrack()` and `plotBBox()` that can take the output from `rxtracto()` and `rxtracto_3D()`and produce maps of the data,  including animated maps; the ability to cross the dateline in a request when the ERDDAP dataset has longitudes in the range (-180, 180); an optional progress bar in `rxtracto()`; and the return in `rxtracto()` of values extracted so far should the extract fail partway through the extract. 
 
-Since the z-coordinate is not limited to be at a set location, for `rxtracto_3D()` this means that if the zCoord needs to be given, then it must be of length two. For `rxtracto()` if the zCoord needs to be given it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to make extracts moving in (x, y, z, t) space.
+Since the z-coordinate is not limited to be at a set location, for `rxtracto_3D()` this means that if the z-coordinate needs to be given, then it must be of length two. For `rxtracto()` if the z-coordinate needs to be given it must be of the same length as the other coordinates,  and can also have a "zlen"",  like "xlen" and "ylen", that defines a bounding box within which to make the extract.  The advantage of this is it allows `rxtracto()` to make extracts moving in (x, y, z, t) space.
 
 The plotting function  `plotTrack()` for tracks and `plotBBox()` for grids use the <span style="color:red">R</span> package `plotdap`, originally developed for producing maps from data extracted using `rerddap`. The plotting functions now allow for user defined continental outlines  (important if crossing the dateline), a user defined crs, as well as animation.   When more control of plot is desired,  `ggplot2` (or other map plotting packages) can be used directly.  Several examples in this vignette demonstrate the use of `ggplot2`.
 
 Requesting an extract that crosses the dateline for an ERDDAP dataset that is on a (-180, 180) longitude grid  must be done with care. The requested longitudes must be in the range (0, 360) and several checks that the request is within the bounds of the dataset are disabled.  This is particularly important when using `rxtracto()`, where the observed longitude point may not cross the dateline but the bounding box defined by "xlen" may cross it.
 
 
-### The Main xtractomatic functions
+### The Main `rerddapXtracto` functions
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
@@ -56,7 +56,7 @@ and two functions for producing maps:
 
 - `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA, maxpixels = 10000)`
 
-The data extraction functions require obtaining information about the dataset using the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can not be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
+The data extraction functions require information about the dataset obtained by the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can not be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
 - dataInfo: the return from an `rerddap::info()` call to a dataset on an <span style="color:red">ERDDAP</span> server
 - parameter: character string containing the name of the parameter to extract
@@ -140,7 +140,7 @@ There are some fine points that need to be understood to properly use the plotti
 
 
 
-The first step is to extract information about the dataset of interst from the <span style="color:red">ERDDAP</span> server being used. The needed informaiton include:
+The first step is to obtain information about the dataset of interest from the <span style="color:red">ERDDAP</span> server being used. The needed information include:
 
 - baseURL of the <span style="color:red">ERDDAP</span> server (the default is https://upwell.pfeg.noaa.gov/erddap)
 - the datasetID of the data to be accessed (for example the 1-day composite of chlorophyll from MODIS Aqua has a datasetID of 'erdMBchla1day' - see https://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html)
@@ -158,7 +158,7 @@ dataInfo
 
 ### An `rxtracto` example 
 
-In this section we extract data along a trackline found in the <span style="color:red">Marlintag38606</span> dataset, which is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC), and show some simple plots of the extracted data.  Since it cna be a long extract, a progress bar is displayed:
+In this section data is extracted along a trackline found in the <span style="color:red">Marlintag38606</span> dataset, which is the track of a tagged marlin in the Pacific Ocean (courtesy of Dr. Mike Musyl of the Pelagic Research Group LLC), and then simple plots of the extracted data are made.  Since this can be a long extract, a progress bar is displayed:
 
 
 
@@ -180,7 +180,7 @@ swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord =
 
 ### Plotting the results
 
-The track line with the locations colored according to the mean of the satellite `chlorophyll` around that point cna be plotted using `plotTrack()`. Positions where there was a tag location but no `chlorophyll` values are also shown. This example shows the use of the “plotColor” parameter to use the `cmocean` “algae” color palette.
+The track line with the locations colored according to the mean of the satellite `chlorophyll` around that point can be plotted using `plotTrack()`. Positions where there was a tag location but no `chlorophyll` values are also shown. This example shows the use of the “plotColor” parameter to use the `cmocean` “algae” color palette.
 
 <span id="colorPalette"></span>
 ```{r meantrackPlot, eval = FALSE, echo = TRUE}
@@ -486,7 +486,7 @@ NAtlSSSPlot
 
 ![](NAtlSSSPlot.png)
 
-A lot of the details in the ocean are hidden in the plot above, because there are some low salinity values right close to shore. The plot can be modified using the plotdap function `add_ggplot()` so that only values between (32, 36) are plotted, and to change the colorbar to reflect this.
+A lot of the details in the ocean are hidden in the plot above, because there are some low salinity values right close to shore. The plot can be modified using the `plotdap` function `add_ggplot()` so that only values between (32, 36) are plotted, and to change the colorbar to reflect this.
 
 <span id="modify"></span>
 ```{r NAtlSSSplot1, eval = FALSE, echo = TRUE}
