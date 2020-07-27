@@ -507,7 +507,7 @@ The French agency IFREMER also has an <span style="color:red">ERDDAP</span> serv
 require("rerddap")
 urlBase <- "https://www.ifremer.fr/erddap/"
 parameter <- "PSAL"
-ifrTimes <- c("2013-09-15", "2013-09-15")
+ifrTimes <- c("2018-09-15", "2018-09-15")
 ifrLats <- c(30., 50.)
 ifrLons <- c(-140., -110.)
 ifrDepth <- c(75., 75.)
