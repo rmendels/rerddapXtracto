@@ -499,31 +499,6 @@ add_ggplot(NAtlSSSPlot, scale_colour_gradientn(colours = haline, na.value = NA, 
 
 ![](NAtlSSSPlot2.png)
 
-### IFREMER
-
-The French agency IFREMER also has an <span style="color:red">ERDDAP</span> server, which has salinity data at 75 meters from the Global Ocean, Coriolis Observation Re-Analysis CORA4.1 model off the west coast of the United States.
-
-```{r IFREMER}
-require("rerddap")
-urlBase <- "https://www.ifremer.fr/erddap/"
-parameter <- "PSAL"
-ifrTimes <- c("2018-09-15", "2018-09-15")
-ifrLats <- c(30., 50.)
-ifrLons <- c(-140., -110.)
-ifrDepth <- c(75., 75.)
-dataInfo <- rerddap::info("CORIOLIS_GLOBAL_NRTOA_OBS_TIME_SERIE_PSAL", url = urlBase)
-ifrPSAL <- rxtracto_3D(dataInfo, parameter = parameter, xcoord = ifrLons, ycoord = ifrLats, tcoord = ifrTimes, zcoord = ifrDepth, zName = 'depth')
-str(ifrPSAL)
-```
-
-Plotting the results using `plotBBox()`:
-
-```{r ifrPSALplot, fig.width = 6, fig.height = 3, fig.align='center', warning = FALSE}
-require("ggplot2")
-require("plotdap")
-ifrPSALPlot <- plotBBox(ifrPSAL, plotColor = 'haline', name = "salinity", maxpixels = 30000)
-ifrPSALPlot
-```
 
 
 ## What happens when you request an extract
