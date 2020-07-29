@@ -74,7 +74,7 @@ A dataframe containing:
  }
 }
 \description{
-\code{rxtracto} uses the R program 'rerddap' to extract environmental
+\code{rxtracto_new} uses the R program 'rerddap' to extract environmental
 data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
 }
 \examples{

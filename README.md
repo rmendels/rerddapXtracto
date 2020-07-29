@@ -1,31 +1,14 @@
-# rerddapXtracto (Version 0.4.7)
-rerddapXtracto - R package for accessing environmental data using rerddap 
+# rerddapXtracto (Version 1.0.0)
+rerddapXtracto - R package for accessing environmental data using 'rerddap' 
 
 ******
-`rxtracto()` now cna display a progress bar
+`rxtracto()` major rewrite of this function to reduce the number of requests made to the ERDDAP server, and to improve overall speed.
 ******
 
-******
-This version is updated to work with `rerddap` Version 0.6.0, earlier versions can fail.  This version is now on CRAN,  as is `plotdap`.
-******
 
-The big change with this version is the ability to cross the dateline for datasets that are
-on a (-180, 180) longitude grid. Some caveats when trying to make an extract that
-crosses the dateline:
+`rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude, time and depth points; in a 3D bounding box; or within a polygon (through time). 
 
-- Request must be on a (0, 360) longitude grid
-- Several of the checks that the request makes sense are disabled if the request
-cross the dateline and the dataset is on a (-180, 180) longitude grid.
-- User therefore has more responsibility to check that the request makes sense
-for the dataset being accessed.
-
-Also, several of the internal functions have been refactored, making the code
-in the main functions a little cleaner.
-
-
-`rerddapXtracto` is an <span style="color:blue">R</span> package developed to subset and extract satellite and other oceanographic related data from a remote <span style="color:blue">ERDDAP</span> server. The program can extract data for a moving point in time along a user-supplied set of longitude, latitude, time and depth  (new in this version) points; in a 3D bounding box; or within a polygon (through time). 
-
-New in this version is that a track can now move in (x, y, z, t) space if appropriate for the dataset being accessed.  And two plotting functions have been added,  `plotTrack()` and `plotBox()` that make use of the `plotdap` package.  See the new [rerdapXtracto vignette](https://rmendels.github.io/UsingrerddapXtracto.html).  A lot of the code has been reworked, in particular the handling of time,  and in the formation of the requests to `rerddap`.
+There are also two plotting functions,  `plotTrack()` and `plotBox()` that make use of the `plotdap` package.  See the new [rerdapXtracto vignette](https://rmendels.github.io/UsingrerddapXtracto.html). 
 
 
 
@@ -48,6 +31,18 @@ and two functions for producing maps:
                 mapData = NULL, crs = NULL,
                 animate = FALSE, cumulative = FALSE, name = NA,
                 maxpixels = 10000)`
+
+
+For data requests that cross the dateline for datasets that are
+on a (-180, 180) longitude grid, there are some important caveats:
+
+- Request must be on a (0, 360) longitude grid
+- Several of the checks that the request makes sense are disabled if the request
+cross the dateline and the dataset is on a (-180, 180) longitude grid.
+- User therefore has more responsibility to check that the request makes sense
+for the dataset being accessed.
+
+
 
 
 
