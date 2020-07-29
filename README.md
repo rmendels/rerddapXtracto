@@ -1,8 +1,8 @@
 # rerddapXtracto (Version 1.0.0)
-rerddapXtracto - R package for accessing environmental data using rerddap 
+rerddapXtracto - R package for accessing environmental data using 'rerddap' 
 
 ******
-`rxtracto()` major rewrite of how this function works to cut down on the number of requests and to improve overall speed.
+`rxtracto()` major rewrite of this function to reduce the number of requests made to the ERDDAP server, and to improve overall speed.
 ******
 
 
@@ -34,7 +34,7 @@ and two functions for producing maps:
 
 
 For data requests that cross the dateline for datasets that are
-on a (-180, 180) longitude grid, there ar some important caveats:
+on a (-180, 180) longitude grid, there are some important caveats:
 
 - Request must be on a (0, 360) longitude grid
 - Several of the checks that the request makes sense are disabled if the request

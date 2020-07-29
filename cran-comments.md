@@ -1,11 +1,13 @@
 ## update Version 1.0.0
 
-fixed problem in 'plotBBox' when name is given for colorbar
+rewrite of 'rxtracto()' to improve speed
+fixed warnings in CRAN tests
 
 ## Test environments
 * local OS X install, R 4.0.2
-* rhub check_for_cran Windows Server and Fedora
-* win-builder (devel and release)
+* local Fedora-32 install, R 4.0.2
+* rhub check_for_cran Windows
+* winbuilder (devel and release)
 
 ## R CMD check result
 
