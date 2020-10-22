@@ -1,3 +1,7 @@
+# rerddapXtracto 1.0.1
+
+ Fixed bug in 'rxracto()' request date element of the return structure.
+
 # rerddapXtracto 1.0.0
 
 - Major changes in how 'rxtracto()' works.

@@ -1,25 +1,24 @@
-## update Version 1.0.0
+## update Version 1.0.1
 
-rewrite of 'rxtracto()' to improve speed
-fixed warnings in CRAN tests
+bug fix in  return structure of  'rxtracto()' 
 
 ## Test environments
-* local OS X install, R 4.0.2
+* local OS X install, R 4.0.3
 * local Fedora-32 install, R 4.0.2
 * rhub check_for_cran Windows
 * winbuilder (devel and release)
 
 ## R CMD check result
 
-On Mac OS X  R 4.0.2 I get:
+On Mac OS X  R 4.0.3 I get:
 
-Duration: 1m 58.8s
+Duration: 2m 15.8s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 On Fedora-32, R 4.0.2,  I get:
 
-Duration: 4m 19.1s
+Duration: 3m 20.8s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 

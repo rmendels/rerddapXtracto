@@ -8,5 +8,5 @@
 #'   \item{Longitude}{Longitudes of a boundary polygon}
 #'   \item{Latitude}{Latitudes of a boundary polygon}
 #' }
-#' @source \url{http://sanctuaries.noaa.gov/library/imast_gis.html}
+#' @source \url{https://sanctuaries.noaa.gov/library/imast_gis.html}
 "mbnms"
