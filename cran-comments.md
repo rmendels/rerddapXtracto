@@ -28,10 +28,9 @@ On rhub Windows Server I get:
 * checking examples ... NOTE
 Examples with CPU (user + system) or elapsed time > 5s
             user system elapsed
-rxtracto    0.36   0.05    6.53
-rxtracto_3D 0.11   0.02    5.78
-rxtractogon 0.11   0.00    5.83
-
+rxtracto    0.42   0.11    7.25
+rxtracto_3D 0.13   0.00    6.42
+rxtractogon 0.11   0.00    6.38
 
   
 on winbuilder_release:
