@@ -463,7 +463,7 @@ sodaPlot
 
 ### Irish Marine Institute {#hourly}
 
-The Irish Marine Institute has an <span style="color:red">ERDDAP</span> server at https://erddap.marine.ie/erddap.  Among other datasets, there is hourly output from a model of the North Atlantic ocean, with a variety of ocean related parameters, see https://erddap.marine.ie/erddap/griddap/IMI_NEATL.html.  To obtain sea surface salinity at latest time available for the domain of the model:
+The Irish Marine Institute has an <span style="color:red">ERDDAP</span> server at https://erddap.marine.ie/erddap/.  Among other datasets, there is hourly output from a model of the North Atlantic ocean, with a variety of ocean related parameters, see https://erddap.marine.ie/erddap/griddap/IMI_NEATL.html.  To obtain sea surface salinity at latest time available for the domain of the model:
 
 ```{r NAtlSSS, eval = FALSE, echo = TRUE}
 require("rerddap")

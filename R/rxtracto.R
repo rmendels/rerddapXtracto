@@ -200,6 +200,9 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                                     paste0('median ', parameter),
                                     paste0('mad ', parameter))
   }
+  if (!is.null(working_coords$tcoord1)) {
+      out_dataframe[, 11] <- as.character.Date(tcoord)
+   }
 
   # get unique time periods that actually will be called ..........
 
@@ -407,9 +410,9 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       out_dataframe[ipos, 8] <- ymax
       out_dataframe[ipos, 9] <- zmin
       out_dataframe[ipos, 10] <- zmax
-      if (!is.null(working_coords$tcoord1)) {
-        out_dataframe[ipos, 11] <- as.character.Date(tcoord[i])
-      }
+    #  if (!is.null(working_coords$tcoord1)) {
+    #    out_dataframe[ipos, 11] <- as.character.Date(tcoord[i])
+    # }
       out_dataframe[ipos, 12] <- stats::median(param, na.rm = TRUE)
       out_dataframe[ipos, 13] <- stats::mad(param, na.rm = TRUE)
 

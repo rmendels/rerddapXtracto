@@ -12,7 +12,7 @@ A data frame with 6666 obs. of 2 variables:
 }
 }
 \source{
-\url{http://sanctuaries.noaa.gov/library/imast_gis.html}
+\url{https://sanctuaries.noaa.gov/library/imast_gis.html}
 }
 \usage{
 mbnms
