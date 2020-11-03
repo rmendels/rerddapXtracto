@@ -81,20 +81,5 @@ extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
 extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
-# Dataset that has depth also
-# 3 months of subsurface temperature at 70m depth from SODA 2.2.4
-dataInfo <- rerddap::info('erdSoda331oceanmday')
-parameter = 'temp'
-xName <- 'longitude'
-yName <- 'latitude'
-zName <- 'depth'
-xcoord <- c(230.25, 250.25)
-ycoord <- c(30.25, 43.25)
-zcoord <- c(5.03355, 15.10065)
-tcoord <- c('2010-10-15', '2010-12-15')
-extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-                       zcoord = zcoord, tcoord = tcoord, xName = xName,
-                       yName = yName, zName = zName)
 }
-
 }

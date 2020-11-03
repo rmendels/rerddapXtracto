@@ -23,14 +23,13 @@
 #' xpos <- tagData$lon[1:20]
 #' ypos <- tagData$lat[1:20]
 #' tpos <- tagData$date[1:20]
-#' tpos <- tagData$date[1:20]
 #' zpos <- rep(0., length(xpos))
 #' \donttest{
 #' swchlInfo <- rerddap::info('erdSWchla8day')
 #' swchl <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos,
 #'         ycoord = ypos, tcoord = tpos, zcoord = zpos, xlen = .2, ylen = .2)
 #' }
-#' p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'algae')
+#' suppressWarnings(p <- plotTrack(swchl, xpos, ypos, tpos, plotColor = 'algae'))
 
 plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
                       mapData = NULL, crs = NULL,

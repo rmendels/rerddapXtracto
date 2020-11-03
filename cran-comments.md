@@ -1,6 +1,7 @@
-## update Version 1.0.1
+## update Version 1.0.2
 
-bug fix in  return structure of  'rxtracto()' 
+In response to CRAN problems,  Vignette is now completely static,  willl not fail.
+This is the reason for a second submission in a short time period
 
 ## Test environments
 * local OS X install, R 4.0.3
@@ -12,7 +13,7 @@ bug fix in  return structure of  'rxtracto()'
 
 On Mac OS X  R 4.0.3 I get:
 
-Duration: 2m 15.8s
+Duration: 1m 22.4s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
