@@ -148,13 +148,28 @@ The first step is to obtain information about the dataset of interest from the <
 
 In order for `rerddapXtracto` to have this information, as well as the coordinate variables and their limits, and the parameter names, a call must be made to the function `rerddap::info()` for the appropriate datasetID and baseURL:
 
-```{r info}
-require("rerddap")
+```{r info, echo = TRUE, eval = FALSE}
+require("rerddap", echo = TRUE, eval = FALSE)
 ## base URL does not need to given because it is the default one
 dataInfo <- info('erdMBchla1day')
 dataInfo
 ```
 
+this returns the following information:
+
+```{r dataInfo, echo = TRUE, eval = FALSE}
+<ERDDAP info> erdMBchla1day 
+ Base URL: https://upwell.pfeg.noaa.gov/erddap/ 
+ Dimensions (range):  
+     time: (2006-01-01T12:00:00Z, 2020-10-27T12:00:00Z) 
+     altitude: (0.0, 0.0) 
+     latitude: (-45.0, 65.0) 
+     longitude: (120.0, 320.0) 
+ Variables:  
+     chlorophyll: 
+         Units: mg m-3
+
+```
 
 ### An `rxtracto` example 
 
@@ -233,7 +248,7 @@ topoPlot
 
 The following is an artificial example showing a track moving in (x, y, z, t) space. Since the times of the model output change, the actual times are retrieved, and the last three times used in the example.
 
-```{r extract3D}
+```{r extract3D, echo = TRUE, eval = FALSE}
 require("rerddap")
 urlBase <- "https://erddap.marine.ie/erddap/"
 parameter <- "Sea_water_temperature"
@@ -248,12 +263,33 @@ sstTrack <- rxtracto(dataInfo, parameter = parameter, xcoord = sstLons, ycoord =
 str(sstTrack)
 ```
 
+This returns the following structure information:
+
+```{r extract3D_struct, echo = TRUE, eval = FALSE}
+List of 13
+ $ mean Sea_water_temperature  : num [1:3] 11.7 11.7 11.6
+ $ stdev Sea_water_temperature : num [1:3] 0.0407 0.0555 0.0859
+ $ n                           : int [1:3] 493 491 484
+ $ satellite date              : chr [1:3] "2020-10-31T22:00:00Z" "2020-10-31T23:00:00Z" "2020-11-01T00:00:00Z"
+ $ requested lon min           : num [1:3] -10.3 -10.3 -10.3
+ $ requested lon max           : num [1:3] -10.2 -10.2 -10.2
+ $ requested lat min           : num [1:3] 53.5 53.5 53.5
+ $ requested lat max           : num [1:3] 53.5 53.5 53.5
+ $ requested z min             : num [1:3] 2 6 10
+ $ requested z max             : num [1:3] 2 6 10
+ $ requested date              : chr [1:3] "2020-10-31T22:00:00Z" "2020-10-31T23:00:00Z" "2020-11-01T00:00:00Z"
+ $ median Sea_water_temperature: num [1:3] 11.7 11.7 11.6
+ $ mad Sea_water_temperature   : num [1:3] 0.0208 0.0361 0.0986
+ - attr(*, "row.names")= chr [1:3] "1" "2" "3"
+ - attr(*, "class")= chr [1:2] "list" "rxtractoTrack"
+
+```
 
 ### Crossing the dateline
 
 The following is an artificial example of a track that crosses the date-line,  using the MUR(Multi-scale Ultra-high Resolution) SST analysis:
 
-```{r dateline_track}
+```{r dateline_track, echo = TRUE,  eval = FALSE}
 dataInfo <- rerddap::info('jplMURSST41mday')
 parameter <- 'sst'
 xcoord <- c(179.7, 179.8, 179.9, 180., 180.1, 180.2, 180.3, 180.4)
@@ -267,6 +303,27 @@ extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
 str(extract)
 ```
 
+The returned structure is:
+
+```{r dateline_track_struct, echo = TRUE,  eval = FALSE}
+List of 13
+ $ mean sst         : num [1:8] 11.1 11.1 11.1 11.2 11.1 ...
+ $ stdev sst        : num [1:8] 0.01192 0.00602 0.01025 0.00876 0.01446 ...
+ $ n                : int [1:8] 30 30 35 25 30 30 30 35
+ $ satellite date   : chr [1:8] "2018-03-16T00:00:00Z" "2018-03-16T00:00:00Z" "2018-03-16T00:00:00Z" "2018-03-16T00:00:00Z" ...
+ $ requested lon min: num [1:8] 180 180 180 180 180 ...
+ $ requested lon max: num [1:8] 180 180 180 180 180 ...
+ $ requested lat min: num [1:8] 40 40 40 40 40 ...
+ $ requested lat max: num [1:8] 40 40 40 40 40 ...
+ $ requested z min  : logi [1:8] NA NA NA NA NA NA ...
+ $ requested z max  : logi [1:8] NA NA NA NA NA NA ...
+ $ requested date   : chr [1:8] "2018-03-16" "2018-03-16" "2018-03-16" "2018-03-16" ...
+ $ median sst       : num [1:8] 11.1 11.1 11.1 11.2 11.1 ...
+ $ mad sst          : num [1:8] 0.01416 0.0052 0.01149 0.00887 0.01744 ...
+ - attr(*, "row.names")= chr [1:8] "1" "2" "3" "4" ...
+ - attr(*, "class")= chr [1:2] "list" "rxtractoTrack"
+
+```
 
 ## Using `rxtracto_3D` 
 
@@ -276,7 +333,7 @@ The function `rxtracto_3D()` adds no new capabilities to `rerddap`, but returns 
 
 We examine VIIRS chlorophyll for the “latest” data as of when the vignette was generated:
 
-```{r VIIRSchla, warning = FALSE,  message = FALSE}
+```{r VIIRSchla, echo = TRUE, eval = FALSE}
 require("rerddap")
 require("rerddapXtracto")
 
@@ -304,7 +361,7 @@ The coordinate names of the structure are based on the names given in the `rxtra
 The extracted data can be mapped using using `plotBBox()`:
 
 <span id="transform"></span>
-```{r VIIRSLogPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE}
+```{r VIIRSLogPlot, echo = TRUE, eval = FALSE}
 require("ggplot2")
 require("plotdap")
 myFunc <- function(x) log(x)
@@ -312,7 +369,7 @@ chlalogPlot <- plotBBox(VIIRS, plotColor = 'algae', myFunc = myFunc)
 chlalogPlot
 ```
 
-
+![](VIIRS_chl.png)
 
 ### Crossing the date-line
 
@@ -369,7 +426,7 @@ myplot
 
 The function `rxtractogon()` extracts a time-series of satellite data that are within a user supplied polygon. Two examples are given.  The first extracts chlorophyll within the boundary points of the  Monterey Bay National Marine Sanctuary, available in the `mbnms` dataset which is loaded with the `rerddapXtracto` package.  
 
-```{r mbnmsChla}
+```{r mbnmsChla, echo = TRUE, eval = FALSE}
 require("rerddapXtracto")
 dataInfo <- rerddap::info('erdVH3chlamday')
 parameter = 'chla'
@@ -381,10 +438,24 @@ sanctchl <- rxtractogon(dataInfo, parameter = parameter, xcoord = xpos, ycoord =
 str(sanctchl)
 ```
 
+The returned structure is:
+
+```{r mbnmsChla_struct, echo = TRUE, eval = FALSE}
+List of 6
+ $ chla       : num [1:50, 1:57, 1:2] NA NA NA NA NA NA NA NA NA NA ...
+ $ datasetname: chr "erdVH3chlamday"
+ $ longitude  : num [1:50(1d)] -123 -123 -123 -123 -123 ...
+ $ latitude   : num [1:57(1d)] 35.6 35.6 35.6 35.7 35.7 ...
+ $ altitude   : logi NA
+ $ time       : POSIXlt[1:2], format: "2014-09-15" "2014-10-15"
+ - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
+
+```
+
 The extract (see `str(sanctchl)`) contains two time periods of <span style="color:blue">chlorophyll</span> masked for data only in the sanctuary boundaries.  This example shows how to pull out only a single time period to be used in `plotBBox()`. 
 
 <span id="plot1"></span>
-```{r mbnmsChlaPlot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
+```{r mbnmsChlaPlot, echo = TRUE,  eval = FALSE}
 require("ggplot2")
 require("plotdap")
 myFunc <- function(x) log(x)
@@ -394,6 +465,7 @@ sanctchl1$time <- sanctchl1$time[2]
 sanctchlPlot <- plotBBox(sanctchl1, plotColor = 'algae', myFunc = myFunc)
 sanctchlPlot
 ```
+![](sanctchlPlot.png)
 
 The map of the extract can also be animated through time:
 
@@ -412,7 +484,7 @@ sanctchlPlot <- plotBBox(sanctchl, plotColor = 'algae', myFunc = myFunc, time = 
 
 The MBNMS is famous for containing the Monterey Canyon, which reaches depths of up to 3,600 m (11,800 ft) below surface level at its deepest. `rxtractogon()` can extract the bathymetry data for the MBNMS from the <span style="color:red">ETOPO</span> dataset:
 
-```{r mbnmsBathy, warning = FALSE}
+```{r mbnmsBathy, echo = TRUE,  eval = FALSE}
 require("rerddap")
 dataInfo <- rerddap::info('etopo180')
 xpos <- mbnms$Longitude
@@ -420,24 +492,37 @@ ypos <- mbnms$Latitude
 bathy <- rxtractogon(dataInfo, parameter = 'altitude', xcoord = xpos, ycoord = ypos)
 str(bathy)
 ```
+The returned structure is:
+
+```{r mbnmsBathy_struct, echo = TRUE,  eval = FALSE}
+List of 6
+ $ depth      : num [1:123, 1:141, 1] NA NA NA NA NA NA NA NA NA NA ...
+ $ datasetname: chr "etopo180"
+ $ longitude  : num [1:123(1d)] -123 -123 -123 -123 -123 ...
+ $ latitude   : num [1:141(1d)] 35.5 35.6 35.6 35.6 35.6 ...
+ $ altitude   : logi NA
+ $ time       : logi NA
+ - attr(*, "class")= chr [1:2] "list" "rxtracto3D"
+
+```
 
 Mapping the data to show the canyon:
 
-```{r mbnmsBathyPlot, fig.width = 5, fig.height = 5, fig.align = 'center', warning = FALSE, message = FALSE}
+```{r mbnmsBathyPlot, echo = TRUE, eval = FALSE}
 require("ggplot2")
 require("mapdata")
 myFunc = function(x) -x
 bathyPlot <- suppressMessages((plotBBox(bathy, plotColor = 'dense', myFunc = myFunc, name = 'Depth')))
 bathyPlot
 ```
-
+![](bathyPlot.png)
 
 ## Temperature at 70m in the north Pacific from the SODA model output
 
 This is an example of an extract from a 4-D dataset (results from the "Simple Ocean Data Assimilation (SODA)" model), and illustrate the case where the z-coordinate does not have the default name "altitude".  Water temperature at 70m depth is extracted for the North Pacific Ocean east of the dateline.
 
 
-```{r soda70}
+```{r soda70, echo = TRUE,  eval = FALSE}
 require("rerddap")
 dataInfo <- rerddap::info('erdSoda331oceanmday')
 xpos <- c(185.25, 240.25)
@@ -445,19 +530,18 @@ ypos <- c(20.25, 60.25)
 zpos <- c(76.80285, 76.80285)
 tpos <- c('2010-12-15', '2010-12-15')
 soda70 <- rxtracto_3D(dataInfo, parameter = 'temp', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos, zName = 'depth')
-str(soda70)
 ```
 
 
 
-```{r soda70Plot, fig.width = 6, fig.height = 3, fig.align = 'center', warning = FALSE}
+```{r soda70Plot, echo = TRUE, eval = FALSE}
 require("ggplot2")
 require("plotdap")
 sodaPlot <- plotBBox(soda70, plotColor = 'thermal', name = 'temp_at_70m', maxpixels = 30000)
 sodaPlot
 
 ```
-
+![](soda70.png)
 
 ## Using a different ERDDAP server 
 

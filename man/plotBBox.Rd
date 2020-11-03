@@ -59,5 +59,5 @@ MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
                        tcoord = tcoord, zcoord = zcoord)
 }
 # low resolution selected to keep time to render down
-p <- plotBBox(MBsst, plotColor = 'thermal', maxpixels = 300)
+suppressWarnings(p <- plotBBox(MBsst, plotColor = 'thermal', maxpixels = 300))
 }

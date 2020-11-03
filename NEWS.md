@@ -1,3 +1,7 @@
+# rerddapXtracto 1.0.2
+
+Vignette is now completely static
+
 # rerddapXtracto 1.0.1
 
  Fixed bug in 'rxracto()' request date element of the return structure.
