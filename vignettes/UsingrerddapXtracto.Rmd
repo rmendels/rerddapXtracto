@@ -29,7 +29,10 @@ library(rerddapXtracto)
 
 `rerddapXtracto` is an <span style="color:red">R</span> package developed to subset and extract satellite and other oceanographic related data from any <span style="color:red">ERDDAP</span> server using the <span style="color:red">R</span> package [rerddap](https://cran.r-project.org/package=rerddap) developed by Scott Chamberlain and the wonderful people at [rOpenSci](https://ropensci.org). <span style="color:red">ERDDAP</span> is a simple to use yet powerful web data service developed by Bob Simons. `rerddapXtracto` extends the `rerddap` package by allowing a user to extract data for a moving point in time along a user-supplied set of longitude, latitude, depth and time points;  and also extracting data within a polygon (through time). 
 
-This version is the first to be fully numbered (version 1.0.0). `rerddapXtracto` has been in use long enough,  by a large enough set of users, such that the feature set and function calls are likely to be stable for awhile. However,  this version represents a major rewrite of the internal workings of `rxtracto()`, which is invisible to the user but should provide for faster execution particularly for large tracks. Now,  instead of doing an extract for each point, one extract is done for all points that match to the same time period in the ERDDAP dataset.  For large extracts,  this can make a very large difference in the speed of execution.  This also means that for extracts that do not have a time coordinate,  such as bathymetric data,  only one extract will be made from ERDDAP.  If the data are of high enough resolution and the data request covers a large enough area, it is possible this will exceed the 2GB limit of ERDDAP netcdf files,  and the extract will have to be done in pieces. 
+`rerddapXtracto` version 1.0.0 represented a major rewrite of the internal workings of `rxtracto()`, which were invisible to the user but provided for faster execution particularly for large tracks. Among other improvements. instead of doing an extract for each point, one extract is done for all points that match to the same time period in the ERDDAP dataset.  For large extracts,this can make a very large difference in the speed of execution.  This also means that for extracts that do not have a time coordinate,  such as bathymetric data,  only one extract will be made from ERDDAP.  If the data are of high enough resolution and the data request covers a large enough area, it is possible this will exceed the 2GB limit of ERDDAP netcdf files,  and the extract will have to be done in pieces. 
+
+
+`rerddapXtracto` version 1.1.0 now allows `rxtracto()` to use the new "interpolate" feature in <span style="color:red">ERDDAP</span>. The "interpolate" feature allows for 100 points along the track to be processed at a time,  which can greatly speed-up large extracts. A downside is that "neighbors" are done in terms of pixels,  not coordinate units, so that for high-resolution datasets the "neighborhood" used to make the interpolation can be quite small in terms of coordinate units. Presently the dataset must have at least coordinates of time, latitude and longitude, so that the interpolate feature will not work with 2-D datasets such as bathymetry data.
 
 Features that have been added over the course of development include allowing the z-coordinate to vary in both `rxtracto()` and `rxtracto_3D()`; plotting functions `plotTrack()` and `plotBBox()` that can take the output from `rxtracto()` and `rxtracto_3D()`and produce maps of the data,  including animated maps; the ability to cross the dateline in a request when the ERDDAP dataset has longitudes in the range (-180, 180); an optional progress bar in `rxtracto()`; and the return in `rxtracto()` of values extracted so far should the extract fail partway through the extract. 
 
@@ -44,7 +47,7 @@ Requesting an extract that crosses the dateline for an ERDDAP dataset that is on
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE,  progress_bar = FALSE)`
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', interp = NULL, verbose = FALSE,  progress_bar = FALSE)`
 
 - `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', verbose = FALSE, cache_remove = TRUE)`
 
@@ -324,6 +327,38 @@ List of 13
  - attr(*, "class")= chr [1:2] "list" "rxtractoTrack"
 
 ```
+
+### <span style="color:red">ERDDAP</span> Interpolate service
+
+<span style="color:red">ERDDAP</span> has a new "Interpolate" service which takes a table of coordinate values from a gridded datasets, up to 100 entries at a time, and will interpolate the value at each point based on quite a large list of different interpolation methods, as well as the number of neighbors to use in the interpolation  (see [https://coastwatch.pfeg.noaa.gov/erddap/convert/interpolate.html](https://coastwatch.pfeg.noaa.gov/erddap/convert/interpolate.html). As the "Interpolate" service includes the mean, median and standard deviation of the neighboring points, the service can return similar results as does the usual `rxtracto()` but much more quickly, as 100 observations are processed at a time. This greatly reduces the time it takes to process very large tracks. A downside is that neighbors are defined in terms of pixels,  not in terms of coordinate units as is used in the usual `rxtracto()` call.  For very high-resolution datasets even the largest number of neighbors provided by the service may not be large enough to capture the uncertainty in the actual location of an observation in the track.
+
+The "Interpolate" service requires that the <span style="color:red">ERDDAP</span> server being accessed is at least version 2.10. As of this writing,  the default <span style="color:red">ERDDAP</span> in `rerddap` is at [https://upwell.pfeg.noaa.gov/erddap](https://upwell.pfeg.noaa.gov/erddap), which is not.  Therefore,  as in the example below, you need to make certain of the version of <span style="color:red">ERDDAP</span> used in the call to `rerddap:info()`.
+
+The "interpolate" option is implemented in a new, optional argument to  `rxtracto()`, "interp = NULL".  Since the argument is optional, and has a default value of "NULL", existing calls to `rxtracto()` will not be affected by the change. To use the interpolation option, "interp" must be a set equal to a character array of size 2,  that is
+
+```{r, echo = TRUE,  eval = FALSE}
+interp <- c('interpolation method', 'number of neighbors')
+```
+
+For example, to use the 'Mean' function with 16 neighbors this would be:
+
+```{r, echo = TRUE,  eval = FALSE}
+interp <- c('Mean',  '16')
+```
+
+Note carefully that "Mean" is capitalized,  and that the number of neighbors is passed as a character string,  not as a number. Also the values of "xlen",  "ylen", and "zlen",  if given,  are ignored.  So to use the "interp" option in he first Marlin example,  the call would be:
+
+```{r, echo = TRUE,  eval = FALSE}
+my_interp <- c('Mean',  '16')
+#
+#  use the coastwatch ERDDAP as it is a more recent version
+#
+swchlInfo <- rerddap::info('erdSWchla8day', 
+             url = 'https://coastwatch.pfeg.noaa.gov/erddap/')
+swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll', xcoord = xpos, ycoord = ypos, tcoord = tpos, zcoord = zpos,  interp = my_interp, progress_bar = TRUE)
+
+```
+
 
 ## Using `rxtracto_3D` 
 
