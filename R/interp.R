@@ -84,12 +84,24 @@ erddap_interp <- function(urlbase, datasetid, parameter,
 return(extract)
 }
 
-check_interp <- function(interp_type, xcoord, ycoord, zcoord, tcoord){
+check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
   return_code = 0
   interp_types = c('Nearest', 'Bilinear', 'Mean', 'SD', 'Median ', 'Scaled',
                    'InverseDistance', 'InverseDistance2', 'InverseDistance4',
                    'InverseDistance6')
   neighbors <- c('1', '4', '16', '36', '8', '64', '216')
+  ## check ERDDAP version
+  vers_raw <- httr::GET(paste0(urlbase, 'version'))
+  ver <- httr::content(vers_raw)
+  ver_len <- nchar(ver)
+  ver <- substring(ver, (ver_len - 4), (ver_len -1))
+  ver <- as.numeric(ver)
+  if (ver < 2.10){
+    print('The ERDDAP server must be at least 2.10')
+    print(paste0('The one you have used is version ', ver))
+    return_code = 1
+    return(return_code)
+  }
   if(is.null(tcoord)) {
     print('No time coordinate given')
     print('At present the interpolation option requires time, lat, lon')

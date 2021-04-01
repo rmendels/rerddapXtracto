@@ -128,8 +128,10 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   cross_dateline_180 <- working_coords$cross_dateline_180
   #newTime <- coordLims$newTime
   if (!(is.null(interp))){
-    return_code = check_interp(interp, working_coords$xcoord, working_coords$ycoord,
-                 working_coords$zcoord, working_coords$tcoord)
+    return_code = check_interp(urlbase, interp, working_coords$xcoord,
+                               working_coords$ycoord,
+                               working_coords$zcoord,
+                               working_coords$tcoord)
     if(return_code == 1){
       print("Errors in interpolation information, see above")
       return()
