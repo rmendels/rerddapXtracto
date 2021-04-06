@@ -1,11 +1,10 @@
-## update Version 1.0.2
+##  Version 1.1.0
 
 In response to CRAN problems,  Vignette is now completely static,  willl not fail.
 This is the reason for a second submission in a short time period
 
 ## Test environments
-* local OS X install, R 4.0.3
-* local Fedora-32 install, R 4.0.2
+* local OS X install, R 4.0.5
 * rhub check_for_cran Windows
 * winbuilder (devel and release)
 
@@ -13,13 +12,7 @@ This is the reason for a second submission in a short time period
 
 On Mac OS X  R 4.0.3 I get:
 
-Duration: 1m 22.4s
-
-0 errors ✓ | 0 warnings ✓ | 0 notes ✓
-
-On Fedora-32, R 4.0.2,  I get:
-
-Duration: 3m 20.8s
+Duration: 1m 22.9s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
