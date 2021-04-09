@@ -10,27 +10,28 @@ This is the reason for a second submission in a short time period
 
 ## R CMD check result
 
-On Mac OS X  R 4.0.3 I get:
+On Mac OS X  R 4.0.5 I get:
 
 Duration: 1m 22.9s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
-
-On rhub Windows Server I get:
-
-* checking examples ... NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-            user system elapsed
-rxtracto    0.42   0.11    7.25
-rxtracto_3D 0.13   0.00    6.42
-rxtractogon 0.11   0.00    6.38
-
-  
 on winbuilder_release:
 
-Ok
+Installation time in seconds: 10
+Check time in seconds: 147
+Status: OK
+R version 4.0.5 (2021-03-31)
+
 
 on winbuilder_develop:
 
-Ok
+Installation time in seconds: 9
+Check time in seconds: 140
+Status: OK
+R Under development (unstable) (2021-04-05 r80144)
+
+rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC:
+
+OK
+
