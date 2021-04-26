@@ -1,11 +1,15 @@
 ##  Version 1.1.0
 
-In response to CRAN problems,  Vignette is now completely static,  willl not fail.
-This is the reason for a second submission in a short time period
+Fixing present warnings and errors:
+
+Believe existing problms are fixed. Two are from 3.6.x releases,  the DESCRIPION clearly states requires at least R4.0.0
 
 ## Test environments
 * local OS X install, R 4.0.5
-* rhub check_for_cran Windows
+* rhub check_for_cran Debian
+* rhub check_for_cran Ubuntu
+* rhub macos-highsierra-release-cran
+* rhub solaris-x86-patched-ods
 * winbuilder (devel and release)
 
 ## R CMD check result
@@ -32,6 +36,13 @@ Status: OK
 R Under development (unstable) (2021-04-05 r80144)
 
 rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC:
-
 OK
 
+rhub Debian Linux, R-release, GCC
+OK
+
+rhub macos-highsierra-release-cran
+OK
+
+rhub solaris-x86-patched-ods
+OK
