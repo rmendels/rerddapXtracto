@@ -1,10 +1,14 @@
+# rerddapXtracto 1.1.0
+
+- Added use of the ERDDAP "Interpolate" service to 'rxtracto()'
+
 # rerddapXtracto 1.0.2
 
 Vignette is now completely static
 
 # rerddapXtracto 1.0.1
 
- Fixed bug in 'rxracto()' request date element of the return structure.
+ Fixed bug in 'rxtracto()' request date element of the return structure.
 
 # rerddapXtracto 1.0.0
 

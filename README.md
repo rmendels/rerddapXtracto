@@ -1,5 +1,12 @@
-# rerddapXtracto (Version 1.0.0)
+# rerddapXtracto (Version 1.1.0)
 rerddapXtracto - R package for accessing environmental data using 'rerddap' 
+
+******
+`rxtracto()`option to use the ERDDAP "Interpolate service", which can greatly
+speed up extracts for large tracks.
+******
+
+
 
 ******
 `rxtracto()` major rewrite of this function to reduce the number of requests made to the ERDDAP server, and to improve overall speed.
@@ -14,11 +21,11 @@ There are also two plotting functions,  `plotTrack()` and `plotBox()` that make 
 
 There are three main data extraction functions in the `rerddapXtracto` package: 
 
-- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE, progress_bar = FALSE)`
+- `rxtracto <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0., xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', interp = NULL, verbose = FALSE, progress_bar = FALSE)`
 
-- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+- `rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time',  verbose = FALSE)`
 
-- `rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time', urlbase = 'http://upwell.pfeg.noaa.gov/erddap', verbose = FALSE)`
+- `rxtractogon <- function(dataInfo, parameter, xcoord = NULL, ycoord = NULL, zcoord = NULL, tcoord = NULL, xName = 'longitude', yName = 'latitude', zName = 'altitude', tName = 'time',  verbose = FALSE)`
 
 and two functions for producing maps:
 

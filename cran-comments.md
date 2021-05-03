@@ -1,43 +1,48 @@
-## update Version 1.0.2
+##  Version 1.1.0
 
-In response to CRAN problems,  Vignette is now completely static,  willl not fail.
-This is the reason for a second submission in a short time period
+Fixing present warnings and errors:
+
+Believe existing problms are fixed. Two are from 3.6.x releases,  the DESCRIPION clearly states requires at least R4.0.0
 
 ## Test environments
-* local OS X install, R 4.0.3
-* local Fedora-32 install, R 4.0.2
-* rhub check_for_cran Windows
+* local OS X install, R 4.0.5
+* rhub check_for_cran Debian
+* rhub check_for_cran Ubuntu
+* rhub macos-highsierra-release-cran
+* rhub solaris-x86-patched-ods
 * winbuilder (devel and release)
 
 ## R CMD check result
 
-On Mac OS X  R 4.0.3 I get:
+On Mac OS X  R 4.0.5 I get:
 
-Duration: 1m 22.4s
-
-0 errors ✓ | 0 warnings ✓ | 0 notes ✓
-
-On Fedora-32, R 4.0.2,  I get:
-
-Duration: 3m 20.8s
+Duration: 1m 22.9s
 
 0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
-
-On rhub Windows Server I get:
-
-* checking examples ... NOTE
-Examples with CPU (user + system) or elapsed time > 5s
-            user system elapsed
-rxtracto    0.42   0.11    7.25
-rxtracto_3D 0.13   0.00    6.42
-rxtractogon 0.11   0.00    6.38
-
-  
 on winbuilder_release:
 
-Ok
+Installation time in seconds: 10
+Check time in seconds: 147
+Status: OK
+R version 4.0.5 (2021-03-31)
+
 
 on winbuilder_develop:
 
-Ok
+Installation time in seconds: 9
+Check time in seconds: 140
+Status: OK
+R Under development (unstable) (2021-04-05 r80144)
+
+rhub Ubuntu Linux 20.04.1 LTS, R-release, GCC:
+OK
+
+rhub Debian Linux, R-release, GCC
+OK
+
+rhub macos-highsierra-release-cran
+OK
+
+rhub solaris-x86-patched-ods
+OK

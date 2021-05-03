@@ -14,7 +14,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   goodtry <- -1
   while ((tryn <= numtries) & (goodtry == -1)) {
     tryn <- tryn + 1
-    griddapExtract <- try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE)
+    griddapExtract <- suppressMessages(try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE))
     if (!class(griddapExtract)[1] == "try-error") {
       goodtry <- 1
     } else{

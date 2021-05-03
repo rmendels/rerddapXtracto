@@ -18,6 +18,10 @@
 #' @param yName - character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")
 #' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
 #' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
+#' @param interp - array (size 2) of character strings - c(interpolation type, neighborhood)
+#'                 Uses the new ERDDAP interpoation option to get values
+#'                 See Vignette for details
+#'                 Default is Null, do not use the interpolation option
 #' @param verbose - logical variable (default FALSE)
 #'                   if the the URL request should be verbose
 #' @param progress_bar - logical variable (default FALSE)
@@ -67,6 +71,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
                   xName = 'longitude', yName = 'latitude', zName = 'altitude',
                   tName = 'time',
+                  interp = NULL,
                   verbose = FALSE, progress_bar = FALSE) {
 
   #### Check Passed Info ------------------------------------------
@@ -122,6 +127,22 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   dataInfo1 <- working_coords$dataInfo1
   cross_dateline_180 <- working_coords$cross_dateline_180
   #newTime <- coordLims$newTime
+  if (!(is.null(interp))){
+    return_code = check_interp(urlbase, interp, working_coords$xcoord,
+                               working_coords$ycoord,
+                               working_coords$zcoord,
+                               working_coords$tcoord)
+    if(return_code == 1){
+      print("Errors in interpolation information, see above")
+      return()
+    }
+    extract <- erddap_interp(urlbase, attr(dataInfo1, "datasetid"), parameter,
+                             working_coords$xcoord, working_coords$ycoord,
+                             working_coords$zcoord, working_coords$tcoord,
+                             interp, verbose, progress_bar)
+    extract <- structure(extract, class = c('list', 'rxtractoTrack'))
+    return(extract)
+  }
 
   # deal with xlen = constant v. vector -----------------------
 

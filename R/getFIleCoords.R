@@ -30,7 +30,7 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
     while ((tryn <= numtries) & (goodtry == -1)) {
       tryn <- tryn + 1
       r1 <- try( httr::GET(myURL), silent = TRUE)
-      if (!class(r1)[1] == "try-error") {
+      if (r1$status_code == 200) {
         goodtry <- 1
       } else{
         Sys.sleep(tryn * 0.5)
