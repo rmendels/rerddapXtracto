@@ -18,6 +18,7 @@ rxtracto(
   yName = "latitude",
   zName = "altitude",
   tName = "time",
+  interp = NULL,
   verbose = FALSE,
   progress_bar = FALSE
 )
@@ -50,6 +51,11 @@ decimal degrees N; -90 to 90)}
 \item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
 
 \item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
+
+\item{interp}{- array (size 2) of character strings - c(interpolation type, neighborhood)
+Uses the new ERDDAP interpoation option to get values
+See Vignette for details
+Default is Null, do not use the interpolation option}
 
 \item{verbose}{- logical variable (default FALSE)
 if the the URL request should be verbose}
