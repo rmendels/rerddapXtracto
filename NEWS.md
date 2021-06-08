@@ -1,3 +1,6 @@
+# rerddapXtracto 1.1.1
+Fixed problem with 'rxtracto()' example
+
 # rerddapXtracto 1.1.0
 
 - Added use of the ERDDAP "Interpolate" service to 'rxtracto()'
