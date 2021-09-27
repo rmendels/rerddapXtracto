@@ -30,7 +30,9 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
     while ((tryn <= numtries) & (goodtry == -1)) {
       tryn <- tryn + 1
       r1 <- try( httr::GET(myURL), silent = TRUE)
-      if (r1$status_code == 200) {
+      if (class(r1) == 'try-error') {
+        Sys.sleep(tryn * 0.5)
+       } else if (r1$status_code == 200) {
         goodtry <- 1
       } else{
         Sys.sleep(tryn * 0.5)
@@ -40,7 +42,8 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
     if (goodtry == -1) {
       print('error in trying to retrieve the dataset coordinate variables')
       print(paste('failed on dimension ', dataCoords[i] ))
-      stop('check on the ERDDAP server that the dataset is active')
+      print('check on the ERDDAP server that the dataset is active')
+      return(-999)
     }
     if (dataCoords[i] == "time" ) {
       coordVals <- suppressMessages(readr::read_csv(r1$content,

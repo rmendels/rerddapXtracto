@@ -1,6 +1,7 @@
 data_extract_read <- function(dataInfo, callDims, urlbase,
                               xName, yName, zName, tName, parameter,
-                              erddapXcoord, erddapYcoord, erddapTcoord, erddapZcoord,
+                              erddapXcoord, erddapYcoord, erddapTcoord,
+                              erddapZcoord,
                               verbose, cache_remove) {
 
   griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
@@ -18,7 +19,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
     if (!class(griddapExtract)[1] == "try-error") {
       goodtry <- 1
     } else{
-      rerddap::cache_delete_all()
+      suppressWarnings(try(rerddap::cache_delete_all()))
       # rerddap::cache_list()
       Sys.sleep(tryn * 0.5)
     }
@@ -72,7 +73,9 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
 
   # remove netcdf file from cache
   if (cache_remove) {
-    rerddap::cache_delete(griddapExtract)
+    if(exists('griddapExtract')) {
+    suppressWarnings(try(rerddap::cache_delete(griddapExtract), silent = TRUE))
+    }
   }
   # create output list ------------------------------------------------------
 

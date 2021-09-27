@@ -3,13 +3,13 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   #  check that a valid rerddap info structure is being passed
   if (!(methods::is(dataInfo, "info"))) {
     print("error - dataInfo is not a valid info structure from rerddap")
-    return()
+    return(-999)
   }
 
   #  check that the dataset is a grid
   if (!("Grid" %in% dataInfo$alldata$NC_GLOBAL$value)) {
     print("error - dataset is not a Grid")
-    return()
+    return(-999)
   }
 
 
@@ -29,7 +29,8 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
     print('Requested coordinate names do no match dataset coordinate names')
     print(paste('Requested coordinate names:', names(callDims)))
     print(paste('Dataset coordinate names:', allCoords))
-    stop(sprintf("Execution halted"), call. = FALSE)
+    #stop(sprintf("Execution halted"), call. = FALSE)
+    return(-999)
   }
   if (!(length(callDims) == length(allCoords))) {
     print("Ranges not given for all of the dataset dimensions")
@@ -37,7 +38,9 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
     print(names(callDims))
     print("Dataset Coordinates: ")
     print(allCoords)
-    stop(sprintf("Execution halted"), call. = FALSE)
+    #stop(sprintf("Execution halted"), call. = FALSE)
+    print("Execution halted")
+    return(-999)
   }
 
   # check that the field given part of the dataset
@@ -46,7 +49,9 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
     cat("Parameter given: ", parameter)
     cat("Dataset Parameters: ",
         allvars[(length(allCoords) + 1):length(allvars)])
-    stop("execution halted", call. = FALSE)
+    #stop(sprintf("Execution halted"), call. = FALSE)
+    print("Execution halted")
+    return(-999)
   }
   #  check that the base url ends in /
   lenURL <- nchar(urlbase)
@@ -55,9 +60,15 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
   }
 
   # check that urlbase connects to an ERDDAP
-  myHTTP <- httr::HEAD(urlbase)
+  suppressMessages(try(myHTTP <- httr::HEAD(urlbase), silent = TRUE))
+  if (!exists('myHTTP')) {
+    print('failed to connect to given ERDDAP')
+    return(-1000)
+  }
   if (!(myHTTP$status_code == 200)) {
-    stop("urlbase did not resolve to a valid server", call. = FALSE)
+    print('error in accessing ERDDAP server')
+#  stop("urlbase did not resolve to a valid server", call. = FALSE)
+  return(-1000)
   }
 
 

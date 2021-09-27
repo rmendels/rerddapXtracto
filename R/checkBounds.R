@@ -62,8 +62,8 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
 
 
   if (returnCode != 0) {
-      stop("Coordinates out of dataset bounds - see messages above")
+      print("Coordinates out of dataset bounds - see messages above")
   }
 
-  # return(returnCode)
+  return(returnCode)
 }
