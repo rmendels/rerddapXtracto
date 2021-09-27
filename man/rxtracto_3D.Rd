@@ -47,7 +47,7 @@ decimal degrees N; -90 to 90)}
 \item{cache_remove}{- logical variable (default TRUE) whether to delete 'rerddap' cache}
 }
 \value{
-structure with data and dimensions:
+If successful a structure with data and dimensions:
 \itemize{
   \item extract$data - the data array dimensioned (lon,lat,time)
   \item extract$varname - the name of the parameter extracted
@@ -56,6 +56,7 @@ structure with data and dimensions:
   \item extract$latitude - the latitudes always going south to north
   \item extract$time - the times of the extracts
   }
+  else an error string
 }
 \description{
 \code{rxtracto_3D} uses the R program 'rerddap' to extract environmental data

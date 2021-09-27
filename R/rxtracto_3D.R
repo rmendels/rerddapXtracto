@@ -19,7 +19,7 @@
 #' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
 #' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @param cache_remove - logical variable (default TRUE) whether to delete 'rerddap' cache
-#' @return structure with data and dimensions:
+#' @return If successful a structure with data and dimensions:
 #' \itemize{
 #'   \item extract$data - the data array dimensioned (lon,lat,time)
 #'   \item extract$varname - the name of the parameter extracted
@@ -28,6 +28,7 @@
 #'   \item extract$latitude - the latitudes always going south to north
 #'   \item extract$time - the times of the extracts
 #'   }
+#'   else an error string
 #' @examples
 #' # toy example to show use
 #' # and keep execution time low
@@ -61,6 +62,13 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL,
  dataInfo1 <- dataInfo
  urlbase <- dataInfo1$base_url
  urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
+ if (is.numeric(urlbase)) {
+   if (urlbase == -999) {
+     return("error in inputs")
+   } else {
+     return('url is not a valid erddap server')
+   }
+ }
 
 
 
@@ -68,8 +76,8 @@ rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL,
 # get the actual coordinate values for the dataset
 allCoords <- dimvars(dataInfo1)
 dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"), allCoords, urlbase)
-if (length(dataCoordList) == 0) {
-   stop("Error retrieving coordinate variable")
+if (is.numeric(dataCoordList) ) {
+   return("Error retrieving coordinate variable")
 }
 
 
@@ -109,7 +117,10 @@ names(dimargs) <- c(xName, yName, zName, tName)
 dimargs <- Filter(Negate(is.null), dimargs)
 
 #check that coordinate bounds are contained in the dataset
-checkBounds(dataCoordList, dimargs, cross_dateline_180)
+bound_check <- checkBounds(dataCoordList, dimargs, cross_dateline_180)
+if (bound_check != 0){
+  return( 'error in given bounds')
+}
 
 
 # Find dataset coordinates closest to requested coordinates ---------------
@@ -136,7 +147,7 @@ if (cross_dateline_180) {
     text1 <- "There was an error in the url call, perhaps a time out."
     text2 <- "See message on screen and URL called"
     print(paste(text1, text2))
-    stop("stopping download")
+    return("URL cal error")
   }
   # lower_bound <- round(min(dataCoordList$longitude), 3)
   lower_bound <- min(dataCoordList$longitude) + 0.0001
@@ -150,7 +161,7 @@ if (cross_dateline_180) {
     text1 <- "There was an error in the url call, perhaps a time out."
     text2 <- "See message on screen and URL called"
     print(paste(text1, text2))
-    stop("stopping download")
+    return("URL cal error")
   }
   extract2$longitude = make360(extract2$longitude)
   # extract <- list(NA, NA, NA, NA, NA, NA)
@@ -184,7 +195,7 @@ if (!is.list(extract)) {
   text1 <- "There was an error in the url call, perhaps a time out."
   text2 <- "See message on screen and URL called"
   print(paste(text1, text2))
-  stop("stopping download")
+  return("URL call error")
 }
 
 extract <- structure(extract, class = c('list', 'rxtracto3D'))

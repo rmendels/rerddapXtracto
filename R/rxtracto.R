@@ -26,7 +26,7 @@
 #'                   if the the URL request should be verbose
 #' @param progress_bar - logical variable (default FALSE)
 #'                   should a progress bar be displayed
-#' @return A dataframe containing:
+#' @return  If success a dataframe containing:
 #' \itemize{
 #'  \item column 1 = mean of data within search radius
 #'  \item column 2 = standard deviation of data within search radius
@@ -40,6 +40,7 @@
 #'  \item column 10 = median of data within search radius
 #'  \item column 11 = median absolute deviation of data within search radius
 #'  }
+#'   else an error string
 #' @examples
 #' # toy example to show use
 #' # but keep execution time down
@@ -109,6 +110,13 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     }
   }
   urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
+  if (is.numeric(urlbase)) {
+    if (urlbase == -999) {
+      return("error in inputs")
+    } else {
+      return('url is not a valid erddap server')
+    }
+  }
 
   # Check and readjust coordinate variables ---------------------------------
 
@@ -117,8 +125,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   # get the actual coordinate values from ERDDAP
   dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"),
                                  allCoords, urlbase)
-  if (length(dataCoordList) == 0) {
-    stop("Error retrieving coordinate variable")
+  if (is.numeric(dataCoordList)) {
+    return("Error retrieving coordinate variable")
   }
 
   # remap coordinates as needed,  so requested longtiudes are same as dataset
@@ -134,7 +142,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                                working_coords$tcoord)
     if(return_code == 1){
       print("Errors in interpolation information, see above")
-      return()
+      return("Errors in interpolation information")
     }
     extract <- erddap_interp(urlbase, attr(dataInfo1, "datasetid"), parameter,
                              working_coords$xcoord, working_coords$ycoord,
@@ -196,7 +204,10 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   names(dimargs) <- c(xName, yName, zName, tName)
   dimargs <- Filter(Negate(is.null), dimargs)
   #check that coordinate bounds are contained in the dataset
-  checkBounds(dataCoordList, dimargs, cross_dateline_180)
+  bound_check <-  checkBounds(dataCoordList, dimargs, cross_dateline_180)
+  if (bound_check != 0){
+    return( 'error in given bounds')
+  }
 
 
   # create structures to store request --------------------------------------
@@ -296,7 +307,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
                                     xName, yName, zName, tName, parameter,
                                     xcoord_temp, erddapCoords$erddapYcoord,
-                                    erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                                    erddapCoords$erddapTcoord,
+                                    erddapCoords$erddapZcoord,
                                     verbose, cache_remove = TRUE)
       if (!is.list(extract1)) {
         text1 <- "There was an error in the url call, perhaps a time out."
@@ -304,8 +316,12 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         print(paste(text1, text2))
         print("Returning incomplete download")
         out_dataframe <- out_dataframe[1:(i - 1), ]
-        remove('paramdata')
-        rerddap::cache_delete(extract1)
+        if (exists('paramdata')) {
+          suppressWarnings(try(remove('paramdata'), silent = TRUE))
+        }
+        if (exists('extract1')) {
+          suppressWarnings(try(rerddap::cache_delete(extract1), silent = TRUE))
+        }
         return(out_dataframe)
       }
       # lower_bound <- round(min(dataCoordList$longitude), 3)
@@ -314,7 +330,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
                                     xName, yName, zName, tName, parameter,
                                     xcoord_temp, erddapCoords$erddapYcoord,
-                                    erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                                    erddapCoords$erddapTcoord,
+                                    erddapCoords$erddapZcoord,
                                     verbose, cache_remove = TRUE)
       if (!is.list(extract2)) {
         text1 <- "There was an error in the url call, perhaps a time out."
@@ -322,8 +339,12 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         print(paste(text1, text2))
         print("Returning incomplete download")
         out_dataframe <- out_dataframe[1:(i - 1), ]
-        remove('paramdata')
-        rerddap::cache_delete(extract2)
+        if (exists('paramdata')) {
+          suppressWarnings(try(remove('paramdata'), silent = TRUE))
+        }
+        if (exists('extract2')) {
+          suppressWarnings(try(rerddap::cache_delete(extract1), silent = TRUE))
+        }
         return(out_dataframe)
       }
       extract2$longitude = make360(extract2$longitude)
@@ -349,8 +370,10 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     }else {
       extract <- data_extract_read(dataInfo1, callDims, urlbase,
                                    xName, yName, zName, tName, parameter,
-                                   erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
-                                   erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                                   erddapCoords$erddapXcoord,
+                                   erddapCoords$erddapYcoord,
+                                   erddapCoords$erddapTcoord,
+                                   erddapCoords$erddapZcoord,
                                    verbose, cache_remove = TRUE)
 
       if (!is.list(extract)) {
@@ -359,8 +382,12 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         print(paste(text1, text2))
         print("Returning incomplete download")
         out_dataframe <- out_dataframe[1:(i - 1), ]
-        remove('paramdata')
-        rerddap::cache_delete(extract)
+        if (exists('paramdata')) {
+          suppressWarnings(try(remove('paramdata'), silent = TRUE))
+        }
+        if (exists('extract')) {
+          suppressWarnings(try(rerddap::cache_delete(extract1), silent = TRUE))
+        }
         if (progress_bar) {
           close(pb)
         }

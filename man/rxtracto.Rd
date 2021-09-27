@@ -64,7 +64,7 @@ if the the URL request should be verbose}
 should a progress bar be displayed}
 }
 \value{
-A dataframe containing:
+If success a dataframe containing:
 \itemize{
  \item column 1 = mean of data within search radius
  \item column 2 = standard deviation of data within search radius
@@ -78,6 +78,7 @@ A dataframe containing:
  \item column 10 = median of data within search radius
  \item column 11 = median absolute deviation of data within search radius
  }
+  else an error string
 }
 \description{
 \code{rxtracto_new} uses the R program 'rerddap' to extract environmental

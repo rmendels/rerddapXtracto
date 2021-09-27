@@ -1,3 +1,8 @@
+# rerddapXtracto 1.1.2
+ Fixed problem with CRAN Solaris checks
+ Functions now will always return a result
+ Either the data requsted or an error string
+
 # rerddapXtracto 1.1.1
 Fixed problem with 'rxtracto()' example
 
