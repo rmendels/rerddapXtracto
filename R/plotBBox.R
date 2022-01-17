@@ -121,24 +121,26 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
   myplot
 }
 
-meltnc <- function(resp ){
+meltnc <- function(resp, xName = 'longitude', yName = 'latitude', tName = 'time'){
   ##  modified from rerddap::ncdf4_get
   rows <- length(resp[[1]])
   # if no time coordinate, use expand.grid to expand ut lat-lon grid
   if (is.null(resp$time)) {
-    exout <- do.call("expand.grid", list(longitude = resp$longtiude,
-                                         latitude = resp$latitude))
+    exout <- do.call("expand.grid", list(x = resp[[xName]],
+                                         y = resp[[yName]]))
+    names(exout) <- c(xName, yName)
      # meta <- dplyr::arrange_(exout, names(exout)[1])
     meta <- dplyr::arrange(exout, names(exout)[1])
   } else {
     # need to expand grid along all three dimensions to melt to data frame
-    time <- as.character(resp$time)
-    time <- suppressWarnings(rep(time, each = rows/length(resp$time)))
-    lat <- rep(rep(resp$latitude, each = length(resp$longitude)),
-               length(resp$time))
-    lon <- rep(rep(resp$longitude, times = length(resp$latitude)),
-               times = length(resp$time))
-    meta <- data.frame(time, lat, lon, stringsAsFactors = FALSE)
+    time <- as.character(resp[[tName]])
+    time <- suppressWarnings(rep(time, each = rows/length(resp[[tName]])))
+    y <- rep(rep(resp[[yName]], each = length(resp[[xName]])),
+               length(resp[[tName]]))
+    x <- rep(rep(resp[[xName]], times = length(resp[[yName]])),
+               times = length(resp[[tName]]))
+    meta <- data.frame(time, x, y, stringsAsFactors = FALSE)
+    names(meta) <- c(tName, xName, yName)
   }
 
   # make data.frame
@@ -148,11 +150,12 @@ meltnc <- function(resp ){
   alldf <- if (NROW(meta) > 0) cbind(meta, df) else df
 
   #  Fool plotdap that there is a summary
-  summary_time <- list(vals = as.numeric(resp$time))
-  summary_lons <- list(vals = resp$longitude)
-  summary_lats <- list(vals = resp$latitude)
-  dims <- list(time = summary_time, longitude = summary_lons,
-               latitude = summary_lats)
+  summary_time <- list(vals = as.numeric(resp[[tName]]))
+  summary_x <- list(vals = resp[[xName]])
+  summary_y <- list(vals = resp[[yName]])
+  dims <- list(time = summary_time, x = summary_x,
+               y = summary_y)
+  names(dims) <- c(tName, xName, yName)
   summary <- list(dims)
   names(summary) <- 'dim'
   # output a list that looks like an rerddap list
