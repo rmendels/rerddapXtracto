@@ -27,10 +27,22 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
       max_dimargs <- max(as.numeric(dimargs[[cIndex]]))
       # get actual dataset bounds by converting to number
       temp_time <- parsedate::parse_iso_8601(dataCoordList[[i]])
+      # check for NA
+      if(any(is.na(temp_time))){
+        print('invalid time give')
+        print('execution will halt')
+        returnCode <- 1
+      }
       min_coord <- min( as.numeric(temp_time))
       max_coord <- max( as.numeric(temp_time))
     } else {
-      # get user requested bounds
+      #  check for not a number
+      if(any(!is.finite(dimargs[[cIndex]]))){
+        print(paste0('non-numeric entry in  ', names(dimargs)[cIndex]))
+        print('execution will halt')
+        returnCode <- 1
+      }
+        # get user requested bounds
       min_dimargs <- min(dimargs[[cIndex]])
       max_dimargs <- max(dimargs[[cIndex]])
       # get actual dataset bounds
