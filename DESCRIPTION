@@ -4,7 +4,7 @@ Title: Extracts Environmental Data from 'ERDDAP' Web Services
 Version: 1.1.2
 Date: 2022-01-18
 Authors@R: c(
-     person(""Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre")),
+     person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre")),
     person("Marie", "Auger-Methe", role = "ctb")
     )
 Description: Contains three functions that access
