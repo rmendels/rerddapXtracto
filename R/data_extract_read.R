@@ -16,7 +16,8 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   while ((tryn <= numtries) & (goodtry == -1)) {
     tryn <- tryn + 1
     griddapExtract <- suppressMessages(try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE))
-    if (!class(griddapExtract)[1] == "try-error") {
+    # if (!class(griddapExtract)[1] == "try-error") {
+    if (!methods::is(griddapExtract, "try-error")) {
       goodtry <- 1
     } else{
       suppressWarnings(try(rerddap::cache_delete_all()))
@@ -40,7 +41,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
 
 
   datafileID <- try(ncdf4::nc_open(griddapExtract$summary$filename), silent = TRUE)
-  if (class(datafileID) == "try-error") {
+  if (methods::is(datafileID, "try-error")) {
     print('error in trying to open netcdf file')
     print('check check above for any errors')
     print('stopping execution  - will return what has been downloaded so far')
