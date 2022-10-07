@@ -31,7 +31,7 @@ Imports:
     parsedate,
     plotdap (>= 0.0.5),
     readr,
-    rerddap (>= 0.6.0),
+    rerddap (>= 0.8.0),
     sf,
     sp,
     stats,
