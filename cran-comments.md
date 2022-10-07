@@ -1,4 +1,4 @@
-##  Version 1.1.2
+##  Version 1.1.3
 
 Fixed CRAN check problem wiht ploBBox and plotTrack examples
 Improved handling of try()
