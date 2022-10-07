@@ -1,3 +1,7 @@
+# rerddapXtracto 1.1.3
+
+Fixed minor bug in ploBBox example
+
 # rerddapXtracto 1.1.2
  Fixed problem with CRAN Solaris checks
  Functions now will always return a result
