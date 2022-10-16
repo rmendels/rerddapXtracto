@@ -28,17 +28,15 @@
 #'   }
 #'   else an error string
 #' @examples
-#' # toy example to show use
-#' # and keep execution time low
-#' \donttest{
-#' dataInfo <- rerddap::info('erdHadISST')
-#' }
+#' ## toy example to show use
+#' ## and keep execution time low
+#' # dataInfo <- rerddap::info('erdHadISST')
 #' parameter <- 'sst'
 #' tcoord <- c("2016-06-15")
 #' xcoord <- mbnms$Longitude[1:3]
 #' ycoord <- mbnms$Latitude[1:3]
-#' sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
-#'                          ycoord = ycoord,  tcoord= tcoord)
+#' # sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
+#' #                          ycoord = ycoord,  tcoord= tcoord)
 #' \donttest{
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
@@ -121,11 +119,11 @@ if (length(dim(extract[[1]])) == 4) {
 	}
 
 #Parse grid lats and longs
-x.vals <- matrix(rep(extract$longitude, length(extract$latitude)),
-                 ncol = length(extract$latitude))
-y.vals <- sort(rep(extract$latitude, length(extract$longitude)))
-y.vals <- matrix(y.vals, nrow = length(extract$latitude),
-                 ncol = length(extract$longitude))
+x.vals <- matrix(rep(extract[[xName]], length(extract[[yName]])),
+                 ncol = length(extract[[yName]]))
+y.vals <- sort(rep(extract[[yName]], length(extract[[xName]])))
+y.vals <- matrix(y.vals, nrow = length(extract[[yName]]),
+                 ncol = length(extract[[xName]]))
 # deal with polygon crossing 180
 ew.sign <- sign(mypoly$x)
 if (length(unique(ew.sign)) > 1) {
@@ -136,7 +134,7 @@ if (length(unique(ew.sign)) > 1) {
 
 # create new array masked by polygon
 in.poly <- matrix(sp::point.in.polygon(x.vals, y.vals, mypoly$x, mypoly$y),
-                  ncol = length(extract$longitude))
+                  ncol = length(extract[[xName]]))
 in.poly[in.poly > 1] <- 1
 in.poly[in.poly == 0] <- NA
 dim(in.poly) <- dim(extract[[1]][, , 1])

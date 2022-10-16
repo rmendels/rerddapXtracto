@@ -1,6 +1,6 @@
 ##  Version 1.1.3
 
-Fixed CRAN check problem wiht ploBBox and plotTrack examples
+Fixed CRAN check problem with ploBBox and plotTrack examples
 Improved handling of try()
 
 ## Test environments
@@ -10,5 +10,5 @@ Improved handling of try()
 * mac-builder
 
 
-Examples are as small as I cna get them.
+Examples are as small as I can get them.
 

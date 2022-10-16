@@ -72,17 +72,15 @@ from an 'ERDDAP' server in a polygon through time.
 }
 
 \examples{
-# toy example to show use
-# and keep execution time low
-\donttest{
-dataInfo <- rerddap::info('erdHadISST')
-}
+## toy example to show use
+## and keep execution time low
+# dataInfo <- rerddap::info('erdHadISST')
 parameter <- 'sst'
 tcoord <- c("2016-06-15")
 xcoord <- mbnms$Longitude[1:3]
 ycoord <- mbnms$Latitude[1:3]
-sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
-                         ycoord = ycoord,  tcoord= tcoord)
+# sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
+#                          ycoord = ycoord,  tcoord= tcoord)
 \donttest{
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
