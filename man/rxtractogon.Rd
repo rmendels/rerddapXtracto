@@ -81,14 +81,13 @@ xcoord <- mbnms$Longitude[1:3]
 ycoord <- mbnms$Latitude[1:3]
 # sanctSST <- rxtractogon (dataInfo, parameter=parameter, xcoord = xcoord,
 #                          ycoord = ycoord,  tcoord= tcoord)
-\donttest{
+#
+## MBMS bathymetry example
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
 dataInfo <- rerddap::info('etopo180')
 parameter = 'altitude'
 xName <- 'longitude'
 yName <- 'latitude'
-bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord,
-                      ycoord = ycoord)
-}
+# bathy <- rxtractogon (dataInfo, parameter = parameter, xcoord = xcoord, ycoord = ycoord)
 }

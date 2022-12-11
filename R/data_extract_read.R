@@ -7,7 +7,6 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   griddapCmd <- makeCmd(dataInfo, urlbase, xName, yName, zName, tName, parameter,
                         erddapXcoord, erddapYcoord, erddapTcoord, erddapZcoord,
                         verbose)
-  #print(griddapCmd)
   # Get the data ------------------------------------------------------------
 
   numtries <- 10

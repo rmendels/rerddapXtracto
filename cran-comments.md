@@ -1,3 +1,7 @@
+##  Version 1.1.4
+
+Resolves problem of files in user's cache
+
 ##  Version 1.1.3
 
 Fixed CRAN check problem with ploBBox and plotTrack examples

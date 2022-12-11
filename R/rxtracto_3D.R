@@ -41,12 +41,11 @@
 #' # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
 #' #                        tcoord = tcoord)
 #'
-#' \donttest{
-#' # 2-D example getting bathymetry
+#' ## bathymetry example
+#' ## 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
-#'}
+#' # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL,
                         ycoord = NULL, zcoord = NULL, tcoord = NULL,
                         xName = 'longitude', yName = 'latitude',
