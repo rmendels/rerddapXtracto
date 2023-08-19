@@ -1,4 +1,7 @@
 # rerddapXtracto 1.1.4
+Fixed issue with package level documentation not working correctly.
+
+# rerddapXtracto 1.1.4
 
 Cache use changes
 

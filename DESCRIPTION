@@ -1,8 +1,8 @@
 Package: rerddapXtracto
 Type: Package
 Title: Extracts Environmental Data from 'ERDDAP' Web Services
-Version: 1.1.4
-Date: 2022-12-13
+Version: 1.1.5
+Date: 2023-08-19
 Authors@R: c(
      person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre")),
     person("Marie", "Auger-Methe", role = "ctb")

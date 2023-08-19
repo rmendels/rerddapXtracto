@@ -3,6 +3,7 @@
 \docType{package}
 \name{rerddapXtracto}
 \alias{rerddapXtracto}
+\alias{rerddapXtracto-package}
 \title{rerddapXtracto: Routines to simplify data extraction using ERD's ERDDAP web service.}
 \description{
 The rerddapXtracto package subsets and extracts satellite and other oceanographic related data
@@ -31,3 +32,21 @@ functions are given  in the included vignette "UsingrerddapXtracto". The dataset
 in the vignette are included in the "data" directory.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/rmendels/rerddapXtracto}
+  \item Report bugs at \url{https://github.com/rmendels/rerddapXtracto/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Roy Mendelssohn \email{roy.mendelssohn@noaa.gov}
+
+Other contributors:
+\itemize{
+  \item Marie Auger-Methe [contributor]
+}
+
+}
+\keyword{internal}
