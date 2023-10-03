@@ -85,26 +85,23 @@ If success a dataframe containing:
 data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
 }
 \examples{
-# toy example to show use
-# but keep execution time down
-\donttest{
-dataInfo <- rerddap::info('erdHadISST')
-}
+## toy example to show use
+## but keep execution time down
+##
+# dataInfo <- rerddap::info('erdHadISST')
+##
 parameter <- 'sst'
 xcoord <- c(-130.5)
 ycoord <- c(40.5)
 tcoord <- c('2006-01-16')
-xlen <- 0.01
-ylen <- 0.01
-extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
-                    ycoord = ycoord, tcoord= tcoord,
-                    xlen = xlen, ylen = ylen)
-\donttest{
-# 2-D example getting bathymetry
+# extract <- rxtracto(dataInfo, parameter = parameter, xcoord = xcoord,
+#                   ycoord = ycoord, tcoord= tcoord
+#                   )
+##
+## bathymetry example
+## 2-D example getting bathymetry
 dataInfo <- rerddap::info('etopo360')
 parameter <- 'altitude'
-extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-                    xlen = xlen, ylen = ylen)
-}
+# extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 
 }

@@ -32,7 +32,7 @@ library(rerddapXtracto)
 `rerddapXtracto` version 1.0.0 represented a major rewrite of the internal workings of `rxtracto()`, which were invisible to the user but provided for faster execution particularly for large tracks. Among other improvements. instead of doing an extract for each point, one extract is done for all points that match to the same time period in the ERDDAP dataset.  For large extracts,this can make a very large difference in the speed of execution.  This also means that for extracts that do not have a time coordinate,  such as bathymetric data,  only one extract will be made from ERDDAP.  If the data are of high enough resolution and the data request covers a large enough area, it is possible this will exceed the 2GB limit of ERDDAP netCDF files,  and the extract will have to be done in pieces. 
 
 
-`rerddapXtracto` version 1.1.0 now allows `rxtracto()` to use the new "interpolate" service in <span style="color:red">ERDDAP</span>. The "interpolate" service allows for 100 points along the track to be processed at a time,  which can greatly speed-up large extracts. A downside is that "neighbors" are done in terms of pixels,  not coordinate units, so that for high-resolution datasets the "neighborhood" used to make the interpolation can be quite small in terms of coordinate units. Presently the dataset must have at least coordinates of time, latitude and longitude, so that the interpolate feature will not work with 2-D datasets such as bathymetry data.
+`rerddapXtracto` version 1.1.0 and above now allow `rxtracto()` to use the new "interpolate" service in <span style="color:red">ERDDAP</span>. The "interpolate" service allows for 100 points along the track to be processed at a time,  which can greatly speed-up large extracts. A downside is that "neighbors" are done in terms of pixels,  not coordinate units, so that for high-resolution datasets the "neighborhood" used to make the interpolation can be quite small in terms of coordinate units. Presently the dataset must have at least coordinates of time, latitude and longitude, so that the interpolate feature will not work with 2-D datasets such as bathymetry data.
 
 Features that have been added over the course of development include allowing the z-coordinate to vary in both `rxtracto()` and `rxtracto_3D()`; plotting functions `plotTrack()` and `plotBBox()` that can take the output from `rxtracto()` and `rxtracto_3D()`and produce maps of the data,  including animated maps; the ability to cross the dateline in a request when the ERDDAP dataset has longitudes in the range (-180, 180); an optional progress bar in `rxtracto()`; and the return in `rxtracto()` of values extracted so far should the extract fail partway through the extract. 
 
@@ -58,6 +58,12 @@ and two functions for producing maps:
 - `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA,  shape = 20, size = .5)`
 
 - `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA, maxpixels = 10000)`
+
+New since version 1.1.6 is a helper function to convert output from `rxtracto_3D()` and `rxtractogon()` to "tidy"  long-form:
+
+- `tidy_grid <- function(response)`
+
+This makes it easier to use the output in packages such as `ggplot2`.
 
 The data extraction functions require information about the dataset obtained by the function `rerddap::info()`, and possibly having to give the names of the coordinate variables, as these can not be assumed  (for example the zcoord could be in sigma coordinates).  More specifically:
 
@@ -226,10 +232,18 @@ myPlot <- plotTrack(swchl1, xpos, ypos, tpos, plotColor = 'algae',
 
 ![marlin Track Animation](chla.gif)
 
+Output from `rxtracto()` can readily be converted to a form for use in the "tidyverse" by converting the output to a dataframe,  to wit:
+
+```{r tidy_track, echo = TRUE, eval = FALSE}
+
+swchl1_tidy <- as.data.frame(swchl1)
+
+```
+
 
 ### Topography data
 
-This example demonstrates how to pass a function to `plotTrack` to transform the data before plotting,  how to change the name shown on the colorbar, and how to call `plotTrack()` if the dataset does not have a time coordinate. 
+This example demonstrates how to pass a function to `plotTrack()` to transform the data before plotting,  how to change the name shown on the colorbar, and how to call `plotTrack()` if the dataset does not have a time coordinate. 
 
 <span id="name"></span>
 ```{r topotag, eval = FALSE, echo = TRUE}
@@ -411,6 +425,24 @@ chlalogPlot
 ```
 
 ![](VIIRS_chl.png)
+
+To convert the output to "tidy" long-form:
+
+```{r viirs_tidy, echo = TRUE,  eval = FALSE}
+VIIRS_tidy <- tidy_grid(VIIRS)
+```
+produces the structure:
+
+```{r viirs_tidy_str, echo = TRUE,  eval = FALSE}
+'data.frame':	8833 obs. of  4 variables:
+ $ time     : POSIXlt, format: "2017-04-15" "2017-04-15" ...
+ $ latitude : num [1:8833(1d)] 36 36.1 36.1 36.1 36.2 ...
+ $ longitude: num [1:8833(1d)] -125 -125 -125 -125 -125 ...
+ $ chla     : num  0.194 0.193 0.186 0.18 0.163 ...
+
+```
+
+
 
 ### Crossing the date-line
 

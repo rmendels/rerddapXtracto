@@ -30,24 +30,22 @@
 #'   }
 #'   else an error string
 #' @examples
-#' # toy example to show use
-#' # and keep execution time low
-#' \donttest{
-#' dataInfo <- rerddap::info('erdHadISST')
-#' }
+#' ## toy example to show use
+#' ## and keep execution time low
+#' ##
+#' # dataInfo <- rerddap::info('erdHadISST')
 #' parameter <- 'sst'
 #' xcoord <- c(-130.5, -130.5)
 #' ycoord <- c(40.5, 40.5)
 #' tcoord <- c('2006-01-16', '2006-01-16')
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-#'                        tcoord = tcoord)
+#' # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+#' #                        tcoord = tcoord)
 #'
-#' \donttest{
-#' # 2-D example getting bathymetry
+#' ## bathymetry example
+#' ## 2-D example getting bathymetry
 #' dataInfo <- rerddap::info('etopo360')
 #' parameter <- 'altitude'
-#' extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
-#'}
+#' # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL,
                         ycoord = NULL, zcoord = NULL, tcoord = NULL,
                         xName = 'longitude', yName = 'latitude',

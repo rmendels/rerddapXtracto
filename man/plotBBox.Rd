@@ -18,7 +18,7 @@ plotBBox(
 )
 }
 \arguments{
-\item{resp}{data frame returned from 'rxtracto()'}
+\item{resp}{data frame returned from 'rxtracto_3D'()' or 'rxtractogon()'}
 
 \item{plotColor}{the color to use in plot from 'cmocean'}
 
@@ -44,20 +44,20 @@ for animation}
 a 'plotdap' plot
 }
 \description{
-\code{plotBox} is a function to plot the results from
-'rxtracto()' and 'xtracto()'
+\code{plotBBox} is a function to plot the results from
+'rxtracto_3D'()' and 'rxtractogon()'
 }
 \examples{
 ## example code to download data for plotBBox
-# dataInfo <- rerddap::info('erdMBsstd1day')
-# parameter <- 'sst'
-# xcoord <- c(230, 232)
-# ycoord <- c(33, 35)
-# tcoord <- c('2006-01-15', '2006-01-15')
-# zcoord <- c(0., 0.)
-# MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
-#                      tcoord = tcoord, zcoord = zcoord)
-# #
-# low resolution selected to keep time to render down
-suppressWarnings(p <- plotBBox(MBsst, plotColor = 'thermal', maxpixels = 300))
+## dataInfo <- rerddap::info('erdMBsstd1day')
+## parameter <- 'sst'
+## xcoord <- c(230, 230.1)
+## ycoord <- c(33, 33.1)
+## tcoord <- c('2006-01-15', '2006-01-15')
+## zcoord <- c(0., 0.)
+## MBsst <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord,
+##                      tcoord = tcoord, zcoord = zcoord)
+##
+## low resolution selected to keep time to render down
+# suppressWarnings(p <- plotBBox(MBsst, maxpixels = 50))
 }
