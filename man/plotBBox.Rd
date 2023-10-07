@@ -18,7 +18,7 @@ plotBBox(
 )
 }
 \arguments{
-\item{resp}{data frame returned from 'rxtracto()'}
+\item{resp}{data frame returned from 'rxtracto_3D'()' or 'rxtractogon()'}
 
 \item{plotColor}{the color to use in plot from 'cmocean'}
 
@@ -44,8 +44,8 @@ for animation}
 a 'plotdap' plot
 }
 \description{
-\code{plotBox} is a function to plot the results from
-'rxtracto()' and 'xtracto()'
+\code{plotBBox} is a function to plot the results from
+'rxtracto_3D'()' and 'rxtractogon()'
 }
 \examples{
 ## example code to download data for plotBBox

@@ -1,10 +1,10 @@
 #' plot result of 'rxtracto_3D'
 #'
-#' \code{plotBox} is a function to plot the results from
-#' 'rxtracto()' and 'xtracto()'
+#' \code{plotBBox} is a function to plot the results from
+#' 'rxtracto_3D'()' and 'rxtractogon()'
 #'
 #' @export
-#' @param resp data frame returned from 'rxtracto()'
+#' @param resp data frame returned from 'rxtracto_3D'()' or 'rxtractogon()'
 #' @param plotColor the color to use in plot from 'cmocean'
 #' @param time a function to map multi-time to one, or else identity
 #'  for animation

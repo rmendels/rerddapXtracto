@@ -1,5 +1,5 @@
-##  Version 1.1.5
-fixes the issue with package-level documentation not workng correctly
+##  Version 1.1.6
+adds helper function to convert grid output to long-format
 
 ## Test environments
 * local OS X install, R 4.3.1

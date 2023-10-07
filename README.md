@@ -1,5 +1,9 @@
-# rerddapXtracto (Version 1.1.3)
+# rerddapXtracto (Version 1.1.6)
 rerddapXtracto - R package for accessing environmental data using 'rerddap' 
+
+******
+`tidy_grid()`function to convert result of 'rxtracto_3D()' or 'rxtractogon()' to "tidy"" long-format
+******
 
 ******
 `rxtracto()`option to use the ERDDAP "Interpolate service", which can greatly
@@ -38,6 +42,10 @@ and two functions for producing maps:
                 mapData = NULL, crs = NULL,
                 animate = FALSE, cumulative = FALSE, name = NA,
                 maxpixels = 10000)`
+                
+and function to convert result of 'rxtracto_3D()' or 'rxtractogon()' to "tidy"" long-format:
+
+- 'tidy_grid(response)`
 
 
 For data requests that cross the dateline for datasets that are

@@ -1,4 +1,8 @@
-# rerddapXtracto 1.1.4
+# rerddapXtracto 1.1.6
+
+Added helper function to convert grid output to "tidy" long-format
+
+# rerddapXtracto 1.1.5
 Fixed issue with package level documentation not working correctly.
 
 # rerddapXtracto 1.1.4
