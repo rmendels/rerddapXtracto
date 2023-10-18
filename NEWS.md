@@ -1,3 +1,7 @@
+# rerddapXtracto 1.1.7
+ 
+removed archived packages maptools and rgdal from Suggests
+
 # rerddapXtracto 1.1.6
 
 Added helper function to convert grid output to "tidy" long-format

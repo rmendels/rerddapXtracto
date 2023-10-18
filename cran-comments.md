@@ -1,5 +1,6 @@
-##  Version 1.1.6
-adds helper function to convert grid output to long-format
+##  Version 1.1.7
+
+removed maptools and rgdal from Suggests
 
 ## Test environments
 * local OS X install, R 4.3.1
