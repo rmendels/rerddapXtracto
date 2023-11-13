@@ -295,8 +295,10 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     # cross_dateline_180_local tests for the spefic location
     # along the track
     cross_dateline_180_local <- FALSE
-    lon_signs <- sign(erddapCoords$erddapXcoord)
-    if (lon_signs[1] != lon_signs[2]) {cross_dateline_180_local <- TRUE}
+    if (xName == 'longitude') {
+      lon_signs <- sign(erddapCoords$erddapXcoord)
+      if (lon_signs[1] != lon_signs[2]) {cross_dateline_180_local <- TRUE}
+    }
     if (cross_dateline_180_local) {
       # upper_bound <- round(max(dataCoordList$longitude), 3)
       upper_bound <- max(dataCoordList$longitude) - 0.0001
@@ -400,6 +402,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     } else {
       loc_loop <- seq(1, length(xcoord))
     }
+    ##print(loc_loop)
     for (ipos in loc_loop) {
       xIndex <- array(NA_integer_, dim = 2)
       yIndex <- array(NA_integer_, dim = 2)
@@ -407,10 +410,14 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       xmin <- xcoord[ipos] - (xrad[ipos]/2)
       ymax <- ycoord[ipos] + (yrad[ipos]/2)
       ymin <- ycoord[ipos] - (yrad[ipos]/2)
-      xIndex[1] <- which.min(abs(extract$longitude - xmin))
-      xIndex[2] <- which.min(abs(extract$longitude - xmax))
-      yIndex[1] <- which.min(abs(extract$latitude - ymin))
-      yIndex[2] <- which.min(abs(extract$latitude - ymax))
+      #xIndex[1] <- which.min(abs(extract$longitude - xmin))
+      #xIndex[2] <- which.min(abs(extract$longitude - xmax))
+      #yIndex[1] <- which.min(abs(extract$latitude - ymin))
+      #yIndex[2] <- which.min(abs(extract$latitude - ymax))
+      xIndex[1] <- which.min(abs(extract[[xName]] - xmin))
+      xIndex[2] <- which.min(abs(extract[[xName]] - xmax))
+      yIndex[1] <- which.min(abs(extract[[yName]] - ymin))
+      yIndex[2] <- which.min(abs(extract[[yName]] - ymax))
       #
       # if a zcoord get its limits
       #
@@ -418,8 +425,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         zIndex <- array(NA_integer_, dim = 2)
         zmax <- zcoord[ipos] + (zrad[ipos]/2)
         zmin <- zcoord[ipos] - (zrad[ipos]/2)
-        zIndex[1] <- which.min(abs(extract[[5]] - zmin))
-        zIndex[2] <- which.min(abs(extract[[5]] - zmax))
+        zIndex[1] <- which.min(abs(extract[[zName]] - zmin))
+        zIndex[2] <- which.min(abs(extract[[zName]] - zmax))
         # if z-coordinate and time coordinate,  include in extract
         if (!is.null(working_coords$tcoord1)) {
           param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2],

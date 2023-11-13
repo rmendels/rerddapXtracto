@@ -1,5 +1,10 @@
-# rerddapXtracto (Version 1.1.6)
+# rerddapXtracto (Version 1.2.0)
 rerddapXtracto - R package for accessing environmental data using 'rerddap' 
+
+******
+`rxtracto()`now works in coordinate space for projected data
+******
+
 
 ******
 `tidy_grid()`function to convert result of 'rxtracto_3D()' or 'rxtractogon()' to "tidy"" long-format
