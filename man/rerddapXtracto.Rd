@@ -46,6 +46,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Marie Auger-Methe [contributor]
+  \item Sunny Bak-Hospital [contributor]
 }
 
 }

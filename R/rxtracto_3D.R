@@ -196,7 +196,11 @@ if (!is.list(extract)) {
   return("URL call error")
 }
 
-extract <- structure(extract, class = c('list', 'rxtracto3D'))
+extract <- structure(extract,
+                     class = c('list', 'rxtracto3D'),
+                     base_url = urlbase,
+                     datasetid = attributes(dataInfo)$datasetid
+                     )
 
 }
 

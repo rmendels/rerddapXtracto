@@ -1,9 +1,10 @@
-##  Version 1.1.7
+##  Version 1.2.7
 
-removed maptools and rgdal from Suggests
+'rxtracto()' now works in coordinate space for projected data
+
 
 ## Test environments
-* local OS X install, R 4.3.1
+* local OS X install, R 4.3.2
 * rhub 
 * win-buider
 * mac-builder

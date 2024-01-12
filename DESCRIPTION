@@ -1,12 +1,13 @@
 Package: rerddapXtracto
 Type: Package
 Title: Extracts Environmental Data from 'ERDDAP' Web Services
-Version: 1.1.7
-Date: 2023-10-18
+Version: 1.2.0
+Date: 2024-1-12
 Authors@R: c(
      person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre")),
-    person("Marie", "Auger-Methe", role = "ctb")
-    )
+     person("Marie", "Auger-Methe", role = "ctb"),
+     person("Sunny", "Bak-Hospital", role = "ctb")
+     )
 Description: Contains three functions that access
     environmental data from any 'ERDDAP' data web service. The rxtracto() function extracts
     data along a trajectory for a given "radius" around the point. The
@@ -40,6 +41,7 @@ Suggests:
     cmocean,
     gganimate,
     knitr,
+    lubridate,
     mapdata,
     rmarkdown
 RoxygenNote: 7.2.3

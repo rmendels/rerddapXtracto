@@ -1,3 +1,7 @@
+# rerddapXtracto 1.2.0
+ 
+'rxtracto()' now works in coordinate space for projected data
+
 # rerddapXtracto 1.1.7
  
 removed archived packages maptools and rgdal from Suggests

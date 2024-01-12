@@ -465,7 +465,12 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
 
 
   }
-  out_dataframe <- structure(out_dataframe, class = c('list', 'rxtractoTrack'))
+  out_dataframe <- structure(out_dataframe,
+                             class = c('list', 'rxtractoTrack'),
+                             base_url = urlbase,
+                             datasetid = attributes(dataInfo)$datasetid
+
+                             )
   if (progress_bar) {
     close(pb)
   }
