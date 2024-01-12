@@ -400,7 +400,7 @@ head(PB_Argos_subset, 4)
 
 ```
 
-The dataset info can be used to find the dataset projection (note this uses EPSG codes for the CRS, which can be found at <https://spatialreference.org/ref/epsg>):
+The dataset info can be used to find the dataset projection (note this uses EPSG codes for the CRS, which can be found at <https://spatialreference.org/ref/epsg/>):
 
 ```{r, echo = TRUE,  eval = FALSE}
 url=  'https://polarwatch.noaa.gov/erddap/'
