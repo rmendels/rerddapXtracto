@@ -1,3 +1,7 @@
+# rerddapXtracto 1.2.1
+
+fixed bug in 'rxtracto()' with projected data
+
 # rerddapXtracto 1.2.0
  
 'rxtracto()' now works in coordinate space for projected data

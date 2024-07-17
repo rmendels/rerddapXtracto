@@ -422,8 +422,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         zIndex <- array(NA_integer_, dim = 2)
         zmax <- zcoord[ipos] + (zrad[ipos]/2)
         zmin <- zcoord[ipos] - (zrad[ipos]/2)
-        zIndex[1] <- which.min(abs(extract[[5]] - zmin))
-        zIndex[2] <- which.min(abs(extract[[5]] - zmax))
+        zIndex[1] <- which.min(abs(extract[[zName]] - zmin))
+        zIndex[2] <- which.min(abs(extract[[zName]] - zmax))
         # if z-coordinate and time coordinate,  include in extract
         if (!is.null(working_coords$tcoord1)) {
           param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2],
