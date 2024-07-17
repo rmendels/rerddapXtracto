@@ -1,9 +1,9 @@
-#' Extract environmental data along a trajectory from an 'ERDDAP' server using 'rerddap'.
+#' Extract environmental data along a trajectory from an 'ERDDAP™' server using 'rerddap'.
 #'
 #' \code{rxtracto_new} uses the R program 'rerddap' to extract environmental
 #' data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
 #' @export
-#' @param dataInfo - the return from an 'rerddap::info' call to an 'ERDDAP' server
+#' @param dataInfo - the return from an 'rerddap::info' call to an 'ERDDAP™' server
 #' @param parameter - character string containing the name of the parameter to extract
 #' @param xcoord - a real array with the x-coordinates of the trajectory (if longitude in #'   decimal degrees East, either 0-360 or -180 to 180)
 #' @param ycoord -  a real array with the y-coordinate of the trajectory (if latitude in
@@ -14,10 +14,10 @@
 #' @param xlen - real array defining the longitude box around the given point (xlen/2 around the point)
 #' @param ylen - real array defining the latitude box around the given point (ylen/2 around the point)
 #' @param zlen - real array defining the depth or altitude box around the given point (zlen/2 around the point)
-#' @param xName - character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")
-#' @param yName - character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")
-#' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
-#' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
+#' @param xName - character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")
+#' @param yName - character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")
+#' @param zName - character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")
+#' @param tName - character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")
 #' @param interp - array (size 2) of character strings - c(interpolation type, neighborhood)
 #'                 Uses the new ERDDAP interpoation option to get values
 #'                 See Vignette for details
@@ -119,7 +119,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
 
   # get the list of coordinates from the info call
   allCoords <- dimvars(dataInfo1)
-  # get the actual coordinate values from ERDDAP
+  # get the actual coordinate values from ERDDAP™
   dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"),
                                  allCoords, urlbase)
   if (is.numeric(dataCoordList)) {
@@ -407,10 +407,14 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       xmin <- xcoord[ipos] - (xrad[ipos]/2)
       ymax <- ycoord[ipos] + (yrad[ipos]/2)
       ymin <- ycoord[ipos] - (yrad[ipos]/2)
-      xIndex[1] <- which.min(abs(extract$longitude - xmin))
-      xIndex[2] <- which.min(abs(extract$longitude - xmax))
-      yIndex[1] <- which.min(abs(extract$latitude - ymin))
-      yIndex[2] <- which.min(abs(extract$latitude - ymax))
+      #xIndex[1] <- which.min(abs(extract$longitude - xmin))
+      #xIndex[2] <- which.min(abs(extract$longitude - xmax))
+      #yIndex[1] <- which.min(abs(extract$latitude - ymin))
+      #yIndex[2] <- which.min(abs(extract$latitude - ymax))
+      xIndex[1] <- which.min(abs(extract[[xName]] - xmin))
+      xIndex[2] <- which.min(abs(extract[[xName]] - xmax))
+      yIndex[1] <- which.min(abs(extract[[yName]] - ymin))
+      yIndex[2] <- which.min(abs(extract[[yName]] - ymax))
       #
       # if a zcoord get its limits
       #
@@ -418,8 +422,8 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
         zIndex <- array(NA_integer_, dim = 2)
         zmax <- zcoord[ipos] + (zrad[ipos]/2)
         zmin <- zcoord[ipos] - (zrad[ipos]/2)
-        zIndex[1] <- which.min(abs(extract[[5]] - zmin))
-        zIndex[2] <- which.min(abs(extract[[5]] - zmax))
+        zIndex[1] <- which.min(abs(extract[[zName]] - zmin))
+        zIndex[2] <- which.min(abs(extract[[zName]] - zmax))
         # if z-coordinate and time coordinate,  include in extract
         if (!is.null(working_coords$tcoord1)) {
           param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2],
