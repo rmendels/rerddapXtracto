@@ -2,7 +2,7 @@
 % Please edit documentation in R/rxtracto.R
 \name{rxtracto}
 \alias{rxtracto}
-\title{Extract environmental data along a trajectory from an 'ERDDAP' server using 'rerddap'.}
+\title{Extract environmental data along a trajectory from an 'ERDDAP™' server using 'rerddap'.}
 \usage{
 rxtracto(
   dataInfo,
@@ -24,7 +24,7 @@ rxtracto(
 )
 }
 \arguments{
-\item{dataInfo}{- the return from an 'rerddap::info' call to an 'ERDDAP' server}
+\item{dataInfo}{- the return from an 'rerddap::info' call to an 'ERDDAP™' server}
 
 \item{parameter}{- character string containing the name of the parameter to extract}
 
@@ -44,13 +44,13 @@ decimal degrees N; -90 to 90)}
 
 \item{zlen}{- real array defining the depth or altitude box around the given point (zlen/2 around the point)}
 
-\item{xName}{- character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")}
+\item{xName}{- character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")}
 
-\item{yName}{- character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")}
+\item{yName}{- character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")}
 
-\item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
+\item{zName}{- character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")}
 
-\item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
+\item{tName}{- character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")}
 
 \item{interp}{- array (size 2) of character strings - c(interpolation type, neighborhood)
 Uses the new ERDDAP interpoation option to get values

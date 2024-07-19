@@ -2,8 +2,8 @@
 % Please edit documentation in R/rerddapXtracto.R
 \docType{package}
 \name{rerddapXtracto}
-\alias{rerddapXtracto}
 \alias{rerddapXtracto-package}
+\alias{rerddapXtracto}
 \title{rerddapXtracto: Routines to simplify data extraction using ERD's ERDDAP web service.}
 \description{
 The rerddapXtracto package subsets and extracts satellite and other oceanographic related data
