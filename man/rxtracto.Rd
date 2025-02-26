@@ -100,7 +100,8 @@ tcoord <- c('2006-01-16')
 ##
 ## bathymetry example
 ## 2-D example getting bathymetry
-dataInfo <- rerddap::info('etopo360')
+## Wrap rerddap::info('etopo360') call in function that insures proper finish if it fails
+dataInfo <- safe_info('etopo360')
 parameter <- 'altitude'
 # extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 

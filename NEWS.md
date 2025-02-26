@@ -1,3 +1,7 @@
+# rerddapXtracto 1.2.2
+
+Added function so that all rerddap::info() calls are safe to use in examples
+
 # rerddapXtracto 1.2.1
 
 fixed bug in 'rxtracto()' with projected data

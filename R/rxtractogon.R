@@ -1,9 +1,9 @@
-#' Extract environmental data in a polygon using 'ERDDAP' and 'rerddap'.
+#' Extract environmental data in a polygon using 'ERDDAP™' and 'rerddap'.
 #'
 #' \code{rxtractogon} uses the R program 'rerddap' to extract environmental data
-#' from an 'ERDDAP' server in a polygon through time.
+#' from an 'ERDDAP™' server in a polygon through time.
 #' @export
-#' @param dataInfo - the return from an 'rerddap:info' call to an 'ERDDAP' server
+#' @param dataInfo - the return from an 'rerddap:info' call to an 'ERDDAP™' server
 #' @param parameter - character string containing the name of the parameter to extract
 #' @param xcoord - array giving longitudes (in decimal
 #'   degrees East, either 0-360 or -180 to 180) of polygon
@@ -11,10 +11,10 @@
 #'   degrees N; -90 to 90)of polygon
 #' @param tcoord - 2-array of minimum and maximum times as 'YYYY-MM-DD'
 #' @param zcoord -  a real number with the z-coordinate(usually altitude or depth)
-#' @param xName - character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")
-#' @param yName - character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")
-#' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
-#' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
+#' @param xName - character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")
+#' @param yName - character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")
+#' @param zName - character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")
+#' @param tName - character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")
 #' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @param cache_remove - logical variable (default TRUE) whether to delete 'rerddap' cache
 #' @return If successful a structure with data and dimensions
@@ -41,7 +41,8 @@
 #' ## MBMS bathymetry example
 #' xcoord <- mbnms$Longitude
 #' ycoord <- mbnms$Latitude
-#' dataInfo <- rerddap::info('etopo180')
+#' ## Wrap rerddap::info('etopo180') call in function that insures proper finish if it fails
+#' dataInfo <- safe_info('etopo180')
 #' parameter = 'altitude'
 #' xName <- 'longitude'
 #' yName <- 'latitude'

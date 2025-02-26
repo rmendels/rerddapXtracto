@@ -2,7 +2,7 @@
 % Please edit documentation in R/rxtractogon.R
 \name{rxtractogon}
 \alias{rxtractogon}
-\title{Extract environmental data in a polygon using 'ERDDAP' and 'rerddap'.}
+\title{Extract environmental data in a polygon using 'ERDDAP™' and 'rerddap'.}
 \usage{
 rxtractogon(
   dataInfo,
@@ -20,7 +20,7 @@ rxtractogon(
 )
 }
 \arguments{
-\item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}
+\item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP™' server}
 
 \item{parameter}{- character string containing the name of the parameter to extract}
 
@@ -34,13 +34,13 @@ degrees N; -90 to 90)of polygon}
 
 \item{tcoord}{- 2-array of minimum and maximum times as 'YYYY-MM-DD'}
 
-\item{xName}{- character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")}
+\item{xName}{- character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")}
 
-\item{yName}{- character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")}
+\item{yName}{- character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")}
 
-\item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
+\item{zName}{- character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")}
 
-\item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
+\item{tName}{- character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")}
 
 \item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 
@@ -60,7 +60,7 @@ If successful a structure with data and dimensions
 }
 \description{
 \code{rxtractogon} uses the R program 'rerddap' to extract environmental data
-from an 'ERDDAP' server in a polygon through time.
+from an 'ERDDAP™' server in a polygon through time.
 }
 \section{Details}{
 
@@ -85,7 +85,8 @@ ycoord <- mbnms$Latitude[1:3]
 ## MBMS bathymetry example
 xcoord <- mbnms$Longitude
 ycoord <- mbnms$Latitude
-dataInfo <- rerddap::info('etopo180')
+## Wrap rerddap::info('etopo180') call in function that insures proper finish if it fails
+dataInfo <- safe_info('etopo180')
 parameter = 'altitude'
 xName <- 'longitude'
 yName <- 'latitude'

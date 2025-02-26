@@ -1,11 +1,11 @@
-#' Extract environmental data in a 3-dimensional box from an 'ERDDAP' server using 'rerddap'.
+#' Extract environmental data in a 3-dimensional box from an 'ERDDAP™' server using 'rerddap'.
 #'
 #' \code{rxtracto_3D} uses the R program 'rerddap' to extract environmental data
 #' from an 'ERDDAP' server in an (x,y,z, time) bounding box.
 #' The same call could be made directly in rerddap,
 #' but function is maintained as it is used in the polygon routine.
 #' @export
-#' @param dataInfo - the return from an 'rerddap:info' call to an 'ERDDAP' server
+#' @param dataInfo - the return from an 'rerddap:info' call to an 'ERDDAP™' server
 #' @param parameter - character string containing the name of the parameter to extract
 #' @param xcoord - a real array with the x-coordinates of the trajectory (if longitude in #'   decimal degrees East, either 0-360 or -180 to 180)
 #' @param ycoord -  a real array with the y-coordinate of the trajectory (if latitude in
@@ -13,17 +13,17 @@
 #' @param zcoord -  a real array with the z-coordinate (usually altitude or depth)
 #' @param tcoord - a character array with the times of the trajectory in
 #'   "YYYY-MM-DD" - for now restricted to be time.
-#' @param xName - character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")
-#' @param yName - character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")
-#' @param zName - character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")
-#' @param tName - character string with name of the tcoord in the 'ERDDAP' dataset (default "time")
+#' @param xName - character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")
+#' @param yName - character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")
+#' @param zName - character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")
+#' @param tName - character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")
 #' @param verbose - logical variable (default FALSE) if the the URL request should be verbose
 #' @param cache_remove - logical variable (default TRUE) whether to delete 'rerddap' cache
 #' @return If successful a structure with data and dimensions:
 #' \itemize{
 #'   \item extract$data - the data array dimensioned (lon,lat,time)
 #'   \item extract$varname - the name of the parameter extracted
-#'   \item extract$datasetname - ERDDAP dataset name
+#'   \item extract$datasetname - ERDDAP™ dataset name
 #'   \item extract$longitude - the longitudes on some scale as request
 #'   \item extract$latitude - the latitudes always going south to north
 #'   \item extract$time - the times of the extracts
@@ -43,7 +43,8 @@
 #'
 #' ## bathymetry example
 #' ## 2-D example getting bathymetry
-#' dataInfo <- rerddap::info('etopo360')
+#' ## Wrap rerddap::info('etopo360') call in function that insures proper finish if it fails
+#' dataInfo <- safe_info('etopo360')
 #' parameter <- 'altitude'
 #' # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 rxtracto_3D <- function(dataInfo, parameter = NULL, xcoord = NULL,

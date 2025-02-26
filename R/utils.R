@@ -209,4 +209,26 @@ removeLast <- function(isotime, tcoord1) {
 }
 
 
+#' Wrap rerddap::info() so that it will fail gracefully
+#' \code{safe_info} uses tryCatch() to deal with unavailable response
+#' @export
+#' @param dataset_id  ERDDAP dataset_id
+#' @param url base ERDDAP URL
+#' @return If success,  dataset information,  otherwise message and end
+#' @examples
+#' dataInfo <- safe_info('etopo360')
+#'
+safe_info <- function(dataset_id, url = 'https://upwell.pfeg.noaa.gov/erddap/') {
+  result <- tryCatch(
+    {
+      rerddap::info(dataset_id)
+    },
+    error = function(e) {
+      message("The resource '", dataset_id, "' is not available at the moment. Skipping...")
+      return(NULL)
+    }
+  )
+  return(result)
+}
+
 

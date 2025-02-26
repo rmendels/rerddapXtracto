@@ -1,6 +1,7 @@
-##  Version 1.2.1
+##  Version 1.2.2
 
-fixed bug in 'rxtracto()' with projected data
+Fixes recent problem to that calls in the examples are safe
+
 
 
 ## Test environments

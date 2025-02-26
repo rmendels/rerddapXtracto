@@ -2,7 +2,7 @@
 % Please edit documentation in R/rxtracto_3D.R
 \name{rxtracto_3D}
 \alias{rxtracto_3D}
-\title{Extract environmental data in a 3-dimensional box from an 'ERDDAP' server using 'rerddap'.}
+\title{Extract environmental data in a 3-dimensional box from an 'ERDDAP™' server using 'rerddap'.}
 \usage{
 rxtracto_3D(
   dataInfo,
@@ -20,7 +20,7 @@ rxtracto_3D(
 )
 }
 \arguments{
-\item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP' server}
+\item{dataInfo}{- the return from an 'rerddap:info' call to an 'ERDDAP™' server}
 
 \item{parameter}{- character string containing the name of the parameter to extract}
 
@@ -34,13 +34,13 @@ decimal degrees N; -90 to 90)}
 \item{tcoord}{- a character array with the times of the trajectory in
 "YYYY-MM-DD" - for now restricted to be time.}
 
-\item{xName}{- character string with name of the xcoord in the 'ERDDAP' dataset (default "longitude")}
+\item{xName}{- character string with name of the xcoord in the 'ERDDAP™' dataset (default "longitude")}
 
-\item{yName}{- character string with name of the ycoord in the 'ERDDAP' dataset (default "latitude")}
+\item{yName}{- character string with name of the ycoord in the 'ERDDAP™' dataset (default "latitude")}
 
-\item{zName}{- character string with name of the zcoord in the 'ERDDAP' dataset (default "altitude")}
+\item{zName}{- character string with name of the zcoord in the 'ERDDAP™' dataset (default "altitude")}
 
-\item{tName}{- character string with name of the tcoord in the 'ERDDAP' dataset (default "time")}
+\item{tName}{- character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")}
 
 \item{verbose}{- logical variable (default FALSE) if the the URL request should be verbose}
 
@@ -51,7 +51,7 @@ If successful a structure with data and dimensions:
 \itemize{
   \item extract$data - the data array dimensioned (lon,lat,time)
   \item extract$varname - the name of the parameter extracted
-  \item extract$datasetname - ERDDAP dataset name
+  \item extract$datasetname - ERDDAP™ dataset name
   \item extract$longitude - the longitudes on some scale as request
   \item extract$latitude - the latitudes always going south to north
   \item extract$time - the times of the extracts
@@ -78,7 +78,8 @@ tcoord <- c('2006-01-16', '2006-01-16')
 
 ## bathymetry example
 ## 2-D example getting bathymetry
-dataInfo <- rerddap::info('etopo360')
+## Wrap rerddap::info('etopo360') call in function that insures proper finish if it fails
+dataInfo <- safe_info('etopo360')
 parameter <- 'altitude'
 # extract <- rxtracto_3D(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 }
