@@ -24,7 +24,7 @@ erddap_interp <- function(urlbase, datasetid, parameter,
     pb <- utils::txtProgressBar(min = 0, max = length(start_loc), style = 3)
     i_pb <- 0
   }
-  for (i in seq(1, length(start_loc))) {
+  for (i in seq_len(length(start_loc))) {
     if (progress_bar){
       i_pb <- i_pb + 1
       utils::setTxtProgressBar(pb, i_pb)

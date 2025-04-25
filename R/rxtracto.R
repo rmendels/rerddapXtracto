@@ -186,7 +186,7 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     tcoord1 <- parsedate::parse_iso_8601(working_coords$tcoord1, default_tz = "UTC")
     tcoordLim <- c(min(tcoord1), max(tcoord1))
     req_time_index <- array(NA_integer_, dim = length(tcoord1))
-    for (i in seq(1, length(tcoord1))) {
+    for (i in seq_len(length(tcoord1))) {
       temp_time <- parsedate::parse_iso_8601(tcoord1[i], default_tz = "UTC")
       req_time_index[i] <- which.min(abs(udtTime - temp_time))
 
