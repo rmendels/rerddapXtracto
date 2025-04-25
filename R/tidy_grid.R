@@ -4,40 +4,58 @@
 #'
 #' @export
 #' @param response data frame returned from 'rxtracto_3D'()' or 'rxtractogon()'
+#' @param as_tibble whether to return as tibble or datafrome
 #' @return a dataframe in long-format
 #'
 #' @examples
 #' MBsst_tidy <-tidy_grid(MBsst)
 
 
-tidy_grid <- function(response){
-  if (!('rxtracto3D' %in% class(response))) {
-    print('given extract is not valid rxtracto_3D() output')
-    print("class of the responseonse is not' 'rxtracto3D' ")
-    stop('execution halted')
+tidy_grid <- function(response, as_tibble = TRUE) {
+  if (!inherits(response, "rxtracto3D")) {
+    stop("`response` must be an object of class 'rxtracto3D'")
   }
-  no_dims <- length(response) - 2
-  dims <- names(response)[3 : length(response)]
 
-  lat_name = ifelse('lat' %in% dims, 'lat', 'latitude')
-  lon_name = ifelse('lon' %in% dims, 'lon', 'longitude')
-  out <- list()
-  for (i in seq_along(dims)) {
-    if (!(is.na(response[[i + 2]][1])))
-    out[[dims[i]]] <- response[[i + 2]]
+  # 1) Name of data‐array
+  var_name   <- names(response)[1]
+
+  # 2) Figure out which slots are real coordinates (not all-NA)
+  coord_names <- setdiff(names(response), c(var_name, "datasetname"))
+  coord_names <- coord_names[
+    vapply(response[coord_names], function(x) !all(is.na(x)), logical(1))
+  ]
+
+  # 3) Pull those vectors out
+  coords     <- response[coord_names]
+
+  # 4) Cartesian product of coords
+  grid_df    <- expand.grid(
+    coords,
+    KEEP.OUT.ATTRS = FALSE,
+    stringsAsFactors = FALSE
+  )
+
+  # 5) Flatten the array values
+  values     <- as.vector(response[[var_name]])
+
+  # 6) Bind them back together
+  out_df     <- cbind(
+    grid_df,
+    stats::setNames(list(values), var_name),
+    stringsAsFactors = FALSE
+  )
+
+  # 7) Keep datasetname as an attribute (not repeated in every row)
+  attr(out_df, "datasetname") <- response$datasetname
+
+  # 8) Optionally convert to tibble
+  if (as_tibble) {
+    if (!requireNamespace("tibble", quietly = TRUE)) {
+      stop("Please install the 'tibble' package to use `as_tibble = TRUE`")
+    }
+    out_df <- tibble::as_tibble(out_df)
+    attr(out_df, "datasetname") <- response$datasetname
   }
-  vars <- names(response)[1]
-  outvars <- list()
-  outvars[[ vars[1] ]] <- as.vector(response[[1]])
-  df <- do.call("cbind.data.frame", outvars)
-  rows <- length(outvars[[1]])
 
-  out <- out[length(out):1]
-  meta <- expand.grid(out, stringsAsFactors = FALSE)
-  # make data.frame
-  alldf <- if (NROW(meta) > 0) cbind(meta, df) else df
-
-  # output
-  return(alldf)
+  out_df
 }
-

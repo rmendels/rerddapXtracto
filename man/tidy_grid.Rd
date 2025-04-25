@@ -4,10 +4,12 @@
 \alias{tidy_grid}
 \title{convert result of 'rxtracto_3D' or 'rxtractogon' to tidy long-format}
 \usage{
-tidy_grid(response)
+tidy_grid(response, as_tibble = TRUE)
 }
 \arguments{
 \item{response}{data frame returned from 'rxtracto_3D'()' or 'rxtractogon()'}
+
+\item{as_tibble}{whether to return as tibble or datafrome}
 }
 \value{
 a dataframe in long-format
