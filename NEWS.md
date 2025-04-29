@@ -1,3 +1,9 @@
+
+# rerddapXtracto 1.2.3
+
+fixed serious bug in 'tidy_grid()'
+improved safety for loops
+
 # rerddapXtracto 1.2.2
 
 Added function so that all rerddap::info() calls are safe to use in examples
