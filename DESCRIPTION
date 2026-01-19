@@ -1,8 +1,8 @@
 Package: rerddapXtracto
 Type: Package
 Title: Extracts Environmental Data from 'ERDDAP™' Web Services
-Version: 1.2.3
-Date: 2025-04-25
+Version: 1.2.4
+Date: 2026-01-19
 Authors@R: c(
      person("Roy", "Mendelssohn", email = "roy.mendelssohn@noaa.gov", role = c("aut","cre")),
      person("Marie", "Auger-Methe", role = "ctb"),
@@ -30,9 +30,9 @@ Imports:
     methods,
     ncdf4,
     parsedate,
-    plotdap (>= 0.0.5),
+    plotdap (>= 1.1.1),
     readr,
-    rerddap (>= 0.8.0),
+    rerddap (>= 1.2.2),
     sf,
     sp,
     stats,
@@ -45,7 +45,7 @@ Suggests:
     lubridate,
     mapdata,
     rmarkdown
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Encoding: UTF-8
 LazyData: TRUE
 VignetteBuilder: knitr

@@ -59,17 +59,22 @@ checkInput <- function(dataInfo, parameter, urlbase, callDims) {
     urlbase <- paste0(urlbase, '/')
   }
 
-  # check that urlbase connects to an ERDDAP
-  suppressMessages(try(myHTTP <- httr::HEAD(urlbase), silent = TRUE))
-  if (!exists('myHTTP')) {
-    print('failed to connect to given ERDDAP')
+  # check that urlbase connects to an ERDDAP™
+  # https://coastwatch.pfeg.noaa.gov/erddap/info/index.html?page=1&itemsPerPage=3
+  #test_url <- paste0(urlbase, 'info/index.html?page=1&itemsPerPage=3')
+  # suppressMessages(try(myHTTP <- httr::GET(test_url), silent = TRUE))
+  #suppressMessages(try(myHTTP <- httr::HEAD(urlbase), silent = TRUE))
+  #if (!exists('myHTTP')) {
+  try(myHTTP <- rerddap::version(urlbase), silent = TRUE)
+  if (!(substr(myHTTP, 1, 6) == 'ERDDAP')){
+    print('failed to connect to given ERDDAP(TM), program will stop')
     return(-1000)
   }
-  if (!(myHTTP$status_code == 200)) {
-    print('error in accessing ERDDAP server')
-#  stop("urlbase did not resolve to a valid server", call. = FALSE)
-  return(-1000)
-  }
+  #if (!(myHTTP$status_code == 200)) {
+  #  print('error in accessing ERDDAP server')
+  #  stop("urlbase did not resolve to a valid server", call. = FALSE)
+  #return(-1000)
+  #}
 
 
   return(urlbase)

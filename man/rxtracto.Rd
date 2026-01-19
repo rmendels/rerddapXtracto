@@ -53,7 +53,7 @@ decimal degrees N; -90 to 90)}
 \item{tName}{- character string with name of the tcoord in the 'ERDDAP™' dataset (default "time")}
 
 \item{interp}{- array (size 2) of character strings - c(interpolation type, neighborhood)
-Uses the new ERDDAP interpoation option to get values
+Uses the new ERDDAP™ interpoation option to get values
 See Vignette for details
 Default is Null, do not use the interpolation option}
 
@@ -81,8 +81,8 @@ If success a dataframe containing:
   else an error string
 }
 \description{
-\code{rxtracto_new} uses the R program 'rerddap' to extract environmental
-data from an 'ERDDAP' server along a (x,y,z, time) trajectory.
+\code{rxtracto} uses the R program 'rerddap' to extract environmental
+data from an 'ERDDAP™' server along a (x,y,z, time) trajectory.
 }
 \examples{
 ## toy example to show use

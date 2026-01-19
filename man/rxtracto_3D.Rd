@@ -60,7 +60,7 @@ If successful a structure with data and dimensions:
 }
 \description{
 \code{rxtracto_3D} uses the R program 'rerddap' to extract environmental data
-from an 'ERDDAP' server in an (x,y,z, time) bounding box.
+from an 'ERDDAP™' server in an (x,y,z, time) bounding box.
 The same call could be made directly in rerddap,
 but function is maintained as it is used in the polygon routine.
 }

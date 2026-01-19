@@ -1,3 +1,9 @@
+# rerddapXtracto 1.2.4
+
+ - refactor of 'rxtracto()' for better maintainability and speed
+ - added interactive graphic example
+ - formatting tweaks
+
 
 # rerddapXtracto 1.2.3
 
@@ -45,7 +51,7 @@ Fixed problem with 'rxtracto()' example
 
 # rerddapXtracto 1.1.0
 
-- Added use of the ERDDAP "Interpolate" service to 'rxtracto()'
+- Added use of the ERDDAP™ "Interpolate" service to 'rxtracto()'
 
 # rerddapXtracto 1.0.2
 
@@ -88,11 +94,11 @@ Added maptools and rgdal to Suggests to be consistent with of plotdap v0.0.4
 
 # rerddapXtracto 0.4.3
 
-- fixed vignette to reflect new datasetID at IFREMER ERDDAP
+- fixed vignette to reflect new datasetID at IFREMER ERDDAP™
 
 # rerddapXtracto 0.4.2
 
-- fixed vignette to reflect new datasetID at IFREMER ERDDAP
+- fixed vignette to reflect new datasetID at IFREMER ERDDAP™
 - removed 'plotdap' message when MBMS map is built
 
 # rerddapXtracto 0.4.1

@@ -1,7 +1,7 @@
 #' Extract environmental data in a 3-dimensional box from an 'ERDDAP™' server using 'rerddap'.
 #'
 #' \code{rxtracto_3D} uses the R program 'rerddap' to extract environmental data
-#' from an 'ERDDAP' server in an (x,y,z, time) bounding box.
+#' from an 'ERDDAP™' server in an (x,y,z, time) bounding box.
 #' The same call could be made directly in rerddap,
 #' but function is maintained as it is used in the polygon routine.
 #' @export
@@ -162,14 +162,14 @@ if (cross_dateline_180) {
     print(paste(text1, text2))
     return("URL cal error")
   }
-  extract2$longitude = make360(extract2$longitude)
+  extract2$longitude <- make360(extract2$longitude)
   # extract <- list(NA, NA, NA, NA, NA, NA)
   extract <- vector("list", 6)
   lat_len <- length(extract1$latitude)
   time_len <- length(extract1$time)
   lon_len <- length(extract1$longitude) + length(extract2$longitude)
   temp_array <- array(NA_real_, dim = c(lon_len, lat_len, time_len))
-  temp_array[1:length(extract1$longitude), ,] <- extract1[[1]]
+  temp_array[seq_along(extract1$longitude), ,] <- extract1[[1]]
   temp_array[(length(extract1$longitude) + 1):lon_len, ,] <- extract2[[1]]
   names(extract) <- names(extract1)
   extract[[1]] <- temp_array
@@ -204,4 +204,3 @@ extract <- structure(extract,
                      )
 
 }
-

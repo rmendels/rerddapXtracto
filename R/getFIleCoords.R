@@ -1,18 +1,18 @@
 #
-# Get Coordinate  (Dimension) Data from ERDDAP Dataset
+# Get Coordinate  (Dimension) Data from ERDDAP(TM) Dataset
 #
 #  'getFileCoords()' is an internal function that gets the coordinate
 # (dimension) variables of the requested dataset
 #
 # dataStruct - A structure describing the dataset from erddapStruct.rda
-# urlbase  - A character string giving the base URL of the ERDDAP server
+# urlbase  - A character string giving the base URL of the ERDDAP(TM) server
 # return - A list containing the values of the coordinate variables
 #
 
 
 
 getfileCoords <- function(datasetID, dataCoords, urlbase) {
-# get actual coordinate values from ERDDAP as csv
+# get actual coordinate values from ERDDAP™ as csv
 # skip headers
   coordList <- list()
   for (i in seq_len(length(dataCoords))) {
@@ -43,7 +43,7 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
     if (goodtry == -1) {
       print('error in trying to retrieve the dataset coordinate variables')
       print(paste('failed on dimension ', dataCoords[i] ))
-      print('check on the ERDDAP server that the dataset is active')
+      print('check on the ERDDAP(TM) server that the dataset is active')
       return(-999)
     }
     if (dataCoords[i] == "time" ) {

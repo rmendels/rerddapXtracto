@@ -9,3 +9,6 @@
 ^myStruct\.Rdata$
 ^w\.Rdata$
 ^\.git$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

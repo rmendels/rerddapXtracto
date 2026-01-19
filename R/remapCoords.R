@@ -8,9 +8,9 @@ remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase, xlen = 0., 
   zcoord1 <- unlist(callDims[3])
   tcoord1 <- callDims[4]
   tcoord1 <- tcoord1[[1]]
-  cross_dateline_180 = FALSE
+  cross_dateline_180 <- FALSE
 
-  # if the xcoord is longitude, map to longitude range of ERDDAP dataset
+  # if the xcoord is longitude, map to longitude range of ERDDAP™ dataset
   if ('longitude' %in% names(callDims)) {
     lonVal <- dataInfo$alldata$longitude[dataInfo$alldata$longitude$attribute_name
                                          == "actual_range", "value"]
@@ -22,7 +22,7 @@ remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase, xlen = 0., 
         temp_coord1 <- min(xcoord1) - xlen_max
         temp_coord2 <- max(xcoord1) + xlen_max
         if ((temp_coord1 < 180.) && (temp_coord2 > 180.)) {
-          cross_dateline_180 = TRUE
+          cross_dateline_180 <- TRUE
         }
         #  else put the request on (-180,  180)
         else {

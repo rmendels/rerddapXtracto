@@ -34,7 +34,7 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
                             ycoordLim, tcoordLim, zcoordLim,
                             xName, yName, tName, zName, cross_dateline_180) {
 
-  # make ERDDAP call to actual closest coordinate
+  # make ERDDAP™ call to actual closest coordinate
   # for rxtracto the indices of the call need to be stored
   # so that two successive locations less than grid size will not repeat same call
   newxIndex <-  rep(NA_integer_, 2)
@@ -230,5 +230,4 @@ safe_info <- function(dataset_id, url = 'https://upwell.pfeg.noaa.gov/erddap/') 
   )
   return(result)
 }
-
 

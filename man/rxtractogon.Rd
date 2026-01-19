@@ -51,7 +51,7 @@ If successful a structure with data and dimensions
 \itemize{
   \item extract$data - the masked data array dimensioned (lon,lat,time)
   \item extract$varname - the name of the parameter extracted
-  \item extract$datasetname - ERDDAP dataset name
+  \item extract$datasetname - ERDDAP™ dataset name
   \item extract$longitude - the longitudes on some scale as request
   \item extract$latitude - the latitudes always going south to north
   \item extract$time - the times of the extracts

@@ -4,10 +4,10 @@
 \name{rerddapXtracto}
 \alias{rerddapXtracto-package}
 \alias{rerddapXtracto}
-\title{rerddapXtracto: Routines to simplify data extraction using ERD's ERDDAP web service.}
+\title{rerddapXtracto: Routines to simplify data extraction using ERD's ERDDAP™ web service.}
 \description{
 The rerddapXtracto package subsets and extracts satellite and other oceanographic related data
-from any ERDDAP server using the R package "rerddap"developed by Scott Chamberlain and the
+from any ERDDAP™ server using the R package "rerddap"developed by Scott Chamberlain and the
 wonderful people at "rOpenSci".
 }
 \details{
@@ -23,7 +23,7 @@ The package contains three main functions:
 \item \code{rxtractogon} - Extracts an environmental variable in a spatial
 polygon through time.
  }
- These functions require a call be made to  \code{rerddap:info()} for the appropriate ERDDAP server
+ These functions require a call be made to  \code{rerddap:info()} for the appropriate ERDDAP™ server
  and datasetID.
 #'
  @section Details:

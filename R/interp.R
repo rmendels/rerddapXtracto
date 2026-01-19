@@ -29,7 +29,7 @@ erddap_interp <- function(urlbase, datasetid, parameter,
       i_pb <- i_pb + 1
       utils::setTxtProgressBar(pb, i_pb)
     }
-    data_line = ''
+    data_line <-  ''
     for (j in seq(start_loc[i], end_loc[i])){
        temp_line <- paste0(tcoord[j], ',', ycoord[j], ',', xcoord[j], '%0A')
       if (!is.null(zcoord)) {
@@ -38,7 +38,7 @@ erddap_interp <- function(urlbase, datasetid, parameter,
       #if (!is.null(tcoord)) {
       #  temp_line <- paste0(tcoord[j], ',', temp_line)
       #}
-      data_line = paste0(data_line, temp_line)
+      data_line <- paste0(data_line, temp_line)
     }
     end_line <- paste0('&requestCSV=', datasetid, '/', parameter, '/',
                        interp_type[1], '/', interp_type[2])
@@ -85,28 +85,28 @@ return(extract)
 }
 
 check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
-  return_code = 0
-  interp_types = c('Nearest', 'Bilinear', 'Mean', 'SD', 'Median ', 'Scaled',
+  return_code <- 0
+  interp_types <- c('Nearest', 'Bilinear', 'Mean', 'SD', 'Median ', 'Scaled',
                    'InverseDistance', 'InverseDistance2', 'InverseDistance4',
                    'InverseDistance6')
   neighbors <- c('1', '4', '16', '36', '8', '64', '216')
-  ## check ERDDAP version
+  ## check ERDDAP™ version
   vers_raw <- httr::GET(paste0(urlbase, 'version'))
   ver <- httr::content(vers_raw)
   ver_len <- nchar(ver)
   ver <- substring(ver, (ver_len - 4), (ver_len -1))
   ver <- as.numeric(ver)
   if (ver < 2.10){
-    print('The ERDDAP server must be at least 2.10')
+    print('The ERDDAP(TM) server must be at least 2.10')
     print(paste0('The one you have used is version ', ver))
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
   if(is.null(tcoord)) {
     print('No time coordinate given')
     print('At present the interpolation option requires time, lat, lon')
     print('A future version may allow for just lat, lon')
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
   if(!length(interp_type) == 2) {
@@ -116,7 +116,7 @@ check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
     print('the second a string giving the size of the spatial neighborhood')
     print('you have passed:')
     print(interp_type)
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
   if(!(interp_type[1] %in% interp_types)) {
@@ -124,20 +124,20 @@ check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
     print(paste0('You passed ', interp_type[1]))
     print('Must be one of:')
     print(interp_types)
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
   if(!(interp_type[2] %in% neighbors)){
     print('Number of neighbors must be one of:')
     print(neighbors)
     print(paste0('You passed ', interp_type[2]))
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
   if((interp_type[1] == 'Bilinear') && (!interp_type[2] == 4)) {
     print('Bilinear Interpolation selected but neighbor value must be 4')
     print(paste0('Neighbor value given ', interp_type[2]))
-    return_code = 1
+    return_code <- 1
     return(return_code)
   }
  #if((length(dataCoordList) == 2) && (interp_type[2] %in% neighbor_3d)) {

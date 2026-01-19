@@ -161,4 +161,3 @@ meltnc <- function(resp, xName = 'longitude', yName = 'latitude', tName = 'time'
   # output a list that looks like an rerddap list
   list(summary = summary, data = alldf)
 }
-
