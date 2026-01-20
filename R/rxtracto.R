@@ -350,7 +350,6 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
       if (grepl('etopo',attributes(dataInfo)$datasetid)) {
         parameter1 <- "depth"
       }
-      print(rerddap::cache_list())
       out_dataframe <- populate_dataframe(out_dataframe, ipos, requesttime, working_coords, param,
                                      xmin, xmax, ymin, ymax, zmin, zmax)
       }
