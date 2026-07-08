@@ -20,3 +20,7 @@ BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageRoxygenize: rd,collate,namespace
+
+PythonType: conda
+PythonVersion: 3.14.0
+PythonPath: ~/.local/share/mamba/envs/work/bin/python3.14

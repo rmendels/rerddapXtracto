@@ -1,3 +1,7 @@
+# rerddapXtracto 1.2.5
+
+Fixed problem with one example on Debian
+
 # rerddapXtracto 1.2.4
 
  - refactor of 'rxtracto()' for better maintainability and speed

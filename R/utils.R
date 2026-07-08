@@ -218,16 +218,42 @@ removeLast <- function(isotime, tcoord1) {
 #' @examples
 #' dataInfo <- safe_info('etopo360')
 #'
+#safe_info <- function(dataset_id, url = 'https://upwell.pfeg.noaa.gov/erddap/') {
+#  result <- tryCatch(
+#    {
+#      rerddap::info(dataset_id)
+#    },
+#   error = function(e) {
+#      message("The resource '", dataset_id, "' is not available at the moment. Skipping...")
+#     return(NULL)
+#    }
+#  )
+#  return(result)
+#}
+
 safe_info <- function(dataset_id, url = 'https://upwell.pfeg.noaa.gov/erddap/') {
-  result <- tryCatch(
+  # Test URL accessibility first
+  myURL <- paste0(url, 'info/', dataset_id, '/index.html')
+  url_test <- tryCatch(
     {
-      rerddap::info(dataset_id)
+      response <- httr::HEAD(myURL, httr::timeout(15))
+      # If we get here, connection worked - check status
+      httr::status_code(response) < 400
     },
     error = function(e) {
-      message("The resource '", dataset_id, "' is not available at the moment. Skipping...")
-      return(NULL)
+      # Timeout or connection failure ends up here
+      # message("Cannot reach ERDDAP server: ", conditionMessage(e))
+      FALSE
     }
   )
-  return(result)
+
+  if (!url_test) {
+    # message("The resource '", dataset_id, "' is not available. Skipping...")
+    return(NULL)
+  }
+
+  # URL is reachable, proceed with info call
+  rerddap::info(dataset_id, url = url)
 }
+
 

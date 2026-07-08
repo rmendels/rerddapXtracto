@@ -1,8 +1,6 @@
-##  Version 1.2.4
+##  Version 1.2.5
 
-- refactor of 'rxtracto()'
-- interactive plotting example
-- format and speed tweaks
+Fixes problem on Debian with one of the examples
 
 
 ## Test environments

@@ -12,3 +12,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^CRAN-SUBMISSION$
+^CLAUDE\.md$
+
