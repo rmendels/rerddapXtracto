@@ -14,7 +14,7 @@ remapCoords <- function(dataInfo, callDims, dataCoordList,  urlbase, xlen = 0., 
   if ('longitude' %in% names(callDims)) {
     lonVal <- dataInfo$alldata$longitude[dataInfo$alldata$longitude$attribute_name
                                          == "actual_range", "value"]
-    lonVal2 <- as.numeric(strtrim1(strsplit(lonVal, ",")[[1]]))
+    lonVal2 <- as.numeric(strtrim1(strsplit(lonVal, ",", fixed = TRUE)[[1]]))
     #grid is -180, 180
     if (min(lonVal2) < 0.) {
         # check to see if the request crosses dateline on

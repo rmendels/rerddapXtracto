@@ -15,22 +15,14 @@ getfileCoords <- function(datasetID, dataCoords, urlbase) {
 # get actual coordinate values from ERDDAP™ as csv
 # skip headers
   coordList <- list()
-  for (i in seq_len(length(dataCoords))) {
-#    myURL <- paste0(urlbase, 'griddap/', datasetID, '.csvp?',
-#                    dataCoords[i], '[0:1:last]')
+  for (i in seq_along(dataCoords)) {
     myURL <- paste0(urlbase, 'griddap/', datasetID, '.csvp?', dataCoords[i])
-    #    coordVals <- utils::read.csv(myURL, skip = 2, header = FALSE,
-#    stringsAsFactors = FALSE)
-#    coordVals <- coordVals[, 1]
-#    coordList[[i]] <- coordVals
-
     numtries <- 10
     tryn <- 0
     goodtry <- -1
     while ((tryn <= numtries) & (goodtry == -1)) {
       tryn <- tryn + 1
       r1 <- try( httr::GET(myURL), silent = TRUE)
-      # if (class(r1) == 'try-error') {
       if (methods::is(r1, 'try-error')) {
         Sys.sleep(tryn * 0.5)
        } else if (r1$status_code == 200) {

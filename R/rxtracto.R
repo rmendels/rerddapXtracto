@@ -62,10 +62,6 @@
 #' parameter <- 'altitude'
 #' # extract <- rxtracto(dataInfo, parameter, xcoord = xcoord, ycoord = ycoord)
 #'
-
-
-
-
 rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   zcoord = NULL, tcoord = NULL, xlen = 0., ylen = 0., zlen = 0.,
                   xName = 'longitude', yName = 'latitude', zName = 'altitude',
@@ -73,41 +69,13 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
                   interp = NULL,
                   verbose = FALSE, progress_bar = FALSE) {
 
-  #### Check Passed Info ------------------------------------------
+  # Check passed info -------------------------------------------------------
 
   rerddap::cache_setup(temp_dir = TRUE)
   callDims <- list(xcoord, ycoord, zcoord, tcoord)
   names(callDims) <- c(xName, yName, zName, tName)
-  dataInfo1 <- dataInfo
-  urlbase <- dataInfo1$base_url
-  # Check that the non-null input vectors are the same length
-  dimLengths <- lapply(callDims, length)
-  dimLengths[dimLengths == 0] <- NULL
-  dimLengths1 <- Filter(Negate(is.null), dimLengths)
-  lengthTest <- all(vapply(dimLengths1, function(x) x == dimLengths1[1],
-                           logical(1)))
-  if (!lengthTest) {
-    print("The length of the non-empty coordinates do not agree")
-    names(dimLengths) <- c(xName, yName, zName, tName)
-    print(dimLengths)
-    stop("Correct Input Vectors")
-  }
-
-  # check "radius" input
-  if ( (length(xlen) > 1) && (length(xlen) != length(xcoord))) {
-    stop('xlen is of size greater than one but not equal to length of xccoord')
-  }
-  if ( (length(ylen) > 1) && (length(ylen) != length(ycoord))) {
-    stop('ylen is of size greater than one but not equal to length of yccoord')
-  }
-  if ( (!is.null(zcoord)) && length(xlen)  > 1) {
-    if (length(zlen) == 1)  {
-      message('warning - zlen has a single value')
-      message('xlen and ylen have length greater than 1')
-      message('zlen will be extended to be same length with repeated value')
-    }
-  }
-  urlbase <- checkInput(dataInfo1, parameter, urlbase, callDims)
+  check_track_lengths(callDims, xcoord, ycoord, zcoord, xlen, ylen, zlen)
+  urlbase <- checkInput(dataInfo, parameter, dataInfo$base_url, callDims)
   if (is.numeric(urlbase)) {
     if (urlbase == -999) {
       return("error in inputs")
@@ -119,85 +87,79 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
   # Check and readjust coordinate variables ---------------------------------
 
   # get the list of coordinates from the info call
-  allCoords <- dimvars(dataInfo1)
+  allCoords <- dimvars(dataInfo)
   # get the actual coordinate values from ERDDAP™
-  dataCoordList <- getfileCoords(attr(dataInfo1, "datasetid"),
-                                 allCoords, urlbase)
+  dataCoordList <- getfileCoords(attr(dataInfo, "datasetid"), allCoords, urlbase)
   if (is.numeric(dataCoordList)) {
     return("Error retrieving coordinate variable")
   }
 
   # remap coordinates as needed,  so requested longtiudes are same as dataset
   # and deal with latitude running north-south
-  working_coords <- remapCoords(dataInfo1, callDims, dataCoordList, urlbase, xlen, ylen)
-  dataInfo1 <- working_coords$dataInfo1
+  working_coords <- remapCoords(dataInfo, callDims, dataCoordList, urlbase, xlen, ylen)
   cross_dateline_180 <- working_coords$cross_dateline_180
-  #newTime <- coordLims$newTime
+  has_time <- !is.null(working_coords$tcoord1)
+  has_z <- !is.null(working_coords$zcoord1)
+
   # ERDDAP™ interpolation true
   if (!(is.null(interp))){
     # check that the info is correct to perform the interpolation
-    return_code <- check_interp(urlbase, interp, working_coords$xcoord,
-                               working_coords$ycoord,
-                               working_coords$zcoord,
-                               working_coords$tcoord)
+    return_code <- check_interp(urlbase, interp, working_coords$xcoord1,
+                               working_coords$ycoord1,
+                               working_coords$zcoord1,
+                               working_coords$tcoord1)
     if(return_code == 1){
       print("Errors in interpolation information, see above")
       return("Errors in interpolation information")
     }
     # interpolate along the track
-    extract <- erddap_interp(urlbase, attr(dataInfo1, "datasetid"), parameter,
-                             working_coords$xcoord, working_coords$ycoord,
-                             working_coords$zcoord, working_coords$tcoord,
+    extract <- erddap_interp(urlbase, attr(dataInfo, "datasetid"), parameter,
+                             working_coords$xcoord1, working_coords$ycoord1,
+                             working_coords$zcoord1, working_coords$tcoord1,
                              interp, verbose, progress_bar)
     extract <- structure(extract, class = c('list', 'rxtractoTrack'))
     return(extract)
   }
 
-  # deal with xlen = constant v. vector -----------------------
+  # one "radius" per track location -----------------------------------------
 
-  if (length(xlen) == 1) {
-    xrad <- rep(xlen, length(xcoord))
-    yrad <- rep(ylen, length(ycoord))
-    zrad <- rep(zlen, length(zcoord))
-  } else {
-    xrad <- xlen
-    yrad <- ylen
-    if ( (!is.null(zcoord)) && (length(zlen) == 1)) {
-        zrad <- rep(zlen, length(zcoord))
-    } else {
-        zrad <- zlen
-    }
-  }
+  xrad <- rep_len(xlen, length(xcoord))
+  yrad <- rep_len(ylen, length(ycoord))
+  zrad <- rep_len(zlen, length(zcoord))
 
-  # correct xcoord and ycoord by given "radius" ----------------
+  # correct xcoord and ycoord by given "radius" ------------------------------
 
   xcoordLim <- c(min(working_coords$xcoord1 - (xrad/2)),
                 max(working_coords$xcoord1 + (xrad/2)))
   ycoordLim <- c(min(working_coords$ycoord1 - (yrad/2)),
                 max(working_coords$ycoord1 + (yrad/2)))
   zcoordLim <- NULL
-  if (!is.null(working_coords$zcoord1)) {
+  if (has_z) {
     zcoordLim <- c(min(working_coords$zcoord1 - (zrad/2)),
                   max(working_coords$zcoord1 + (zrad/2)))
   }
   # not only get time limits but convert to an R date
   # so numerical value for comparison is available
   tcoordLim <- NULL
-  if (!is.null(working_coords$tcoord1)) {
+  isoTime <- NULL
+  udtTime <- NULL
+  req_time_index <- NULL
+  unique_req_time_index <- NULL
+  if (has_time) {
     isoTime <- dataCoordList$time
     udtTime <- parsedate::parse_iso_8601(isoTime, default_tz = "UTC")
     tcoord1 <- parsedate::parse_iso_8601(working_coords$tcoord1, default_tz = "UTC")
     tcoordLim <- c(min(tcoord1), max(tcoord1))
     req_time_index <- array(NA_integer_, dim = length(tcoord1))
-    for (i in seq_len(length(tcoord1))) {
+    for (i in seq_along(tcoord1)) {
       temp_time <- parsedate::parse_iso_8601(tcoord1[i], default_tz = "UTC")
       req_time_index[i] <- which.min(abs(udtTime - temp_time))
-
     }
     # unique_req_time_index contains the unique times where extracts
     # need to be made
     unique_req_time_index <- unique(req_time_index)
   }
+
   # Check request is within dataset bounds ----------------------------------
 
   # create list with requested coordinate limits, check that all are in bounds
@@ -210,163 +172,219 @@ rxtracto <- function(dataInfo, parameter = NULL, xcoord=NULL, ycoord = NULL,
     return( 'error in given bounds')
   }
 
+  # Extract along the track -------------------------------------------------
 
-  # create structures to store request --------------------------------------
   out_dataframe <- create_out_dataframe(parameter, dimargs, working_coords, xcoord, tcoord)
 
-
-  # get unique time periods that actually will be called ..........
-
-  outer_loop_info <- set_outer_loop(unique_req_time_index, working_coords, progress_bar )
-  outer_loop <- outer_loop_info$outer_loop
-  pb <- outer_loop_info$pb
-  i_pb <- outer_loop_info$i_pb
+  # one extract per dataset time period,  or a single extract if no time
+  outer_loop <- if (has_time) unique_req_time_index else 1L
+  pb <- NULL
+  if (isTRUE(progress_bar)) {
+    pb <- utils::txtProgressBar(min = 0, max = length(outer_loop), style = 3)
+  }
+  i_pb <- 0
+  last_ipos <- 0L
   for (iloop in outer_loop) {
-    if (progress_bar){
+    if (!is.null(pb)) {
       i_pb <- i_pb + 1
       utils::setTxtProgressBar(pb, i_pb)
-     }
-
-    # this_time_index contains  the indexes of which extracts all occur
-    # at a given time
-    temp_tcoord <- NA
-    if (!is.null(working_coords$tcoord1)) {
-      this_time_index <- which(req_time_index == iloop)
-      #temp_tcoord <- working_coords$tcoord1[unique_req_time_index[iloop]]
-    } else {
-      this_time_index <- seq(1, length(xcoord))
     }
+
+    # the track locations that use this extract
+    track_index <- if (has_time) which(req_time_index == iloop) else seq_along(xcoord)
+
     # define bounding box
-    bbox <- define_bbox(iloop, req_time_index, working_coords, xrad, yrad, zrad)
+    bbox <- define_bbox(track_index, working_coords, xrad, yrad, zrad)
     erddapList <- findERDDAPcoord(dataCoordList, isoTime, udtTime,
                                   c(bbox$xmin, bbox$xmax), c(bbox$ymin, bbox$ymax),
                                   c(udtTime[iloop],udtTime[iloop]), c(bbox$zmin, bbox$zmax),
                                   xName, yName, tName, zName, cross_dateline_180)
-    newIndex <- erddapList$newIndex
     erddapCoords <- erddapList$erddapCoords
     requesttime <- erddapCoords$erddapTcoord[1]
-    # cross_dateline_180 tests if the request ever crosses dateline
-    # cross_dateline_180_local tests for the spefic location
-    # along the track
-    cross_dateline_180_local <- FALSE
-    lon_signs <- sign(erddapCoords$erddapXcoord)
-    if (lon_signs[1] != lon_signs[2]) {cross_dateline_180_local <- TRUE}
-    if (!cross_dateline_180_local) {
-      extract <- data_extract_read(dataInfo1, callDims, urlbase,
-                                   xName, yName, zName, tName, parameter,
-                                   erddapCoords$erddapXcoord,
-                                   erddapCoords$erddapYcoord,
-                                   erddapCoords$erddapTcoord,
-                                   erddapCoords$erddapZcoord,
-                                   verbose, cache_remove = TRUE)
 
-      if (!is.list(extract)) {
-        write_extract_error(out_dataframe, ipos, progress_bar, pb)
-      }
-     }else {
-          # crossing dataline ofr (-180, 180) dataset
-          # need to do two extracts and combine results
+    # cross_dateline_180 tests if the request ever crosses dateline.
+    # This box crosses only if its west limit maps east of its east limit
+    # once put on (-180, 180).
+    crosses_dateline <- cross_dateline_180 &&
+      (erddapCoords$erddapXcoord[1] > erddapCoords$erddapXcoord[2])
+    extract <- read_extract(dataInfo, callDims, urlbase,
+                            xName, yName, zName, tName, parameter,
+                            erddapCoords, dataCoordList, crosses_dateline,
+                            verbose)
+    if (!is.list(extract)) {
+      out_dataframe <- write_extract_error(out_dataframe, last_ipos)
+      break
+    }
 
-          # extract to the west of the dateline
-          # upper_bound <- round(max(dataCoordList$longitude), 3)
-          # mus fuzz the lomgidues to be a little away form the dataline
-          upper_bound <- max(dataCoordList$longitude) - 0.0001
-          xcoord_temp <- c(erddapCoords$erddapXcoord[1], upper_bound)
-          extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
-                                        xName, yName, zName, tName, parameter,
-                                        xcoord_temp, erddapCoords$erddapYcoord,
-                                        erddapCoords$erddapTcoord,
-                                        erddapCoords$erddapZcoord,
-                                        verbose, cache_remove = TRUE)
-          if (!is.list(extract1)) {
-            write_extract_error(out_dataframe, ipos, progress_bar, pb)
-          }
-          # extract east of the dateline
-          # add fuzz so not exactly at 180
-          # lower_bound <- round(min(dataCoordList$longitude), 3)
-          lower_bound <- min(dataCoordList$longitude) + 0.0001
-          xcoord_temp <- c(lower_bound, erddapCoords$erddapXcoord[2])
-          extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
-                                        xName, yName, zName, tName, parameter,
-                                        xcoord_temp, erddapCoords$erddapYcoord,
-                                        erddapCoords$erddapTcoord,
-                                        erddapCoords$erddapZcoord,
-                                        verbose, cache_remove = TRUE)
-          if (!is.list(extract2)) {
-            write_extract_error(out_dataframe, ipos, progress_bar, pb)
-          }
-          extract <- combine_extracts(extract1, extract2)
-        }
     # done extract now loop over the appropriate locations
     # populate the dataframe
-    #extract[[1]] <- drop(extract[[1]])
-    if (!is.null(working_coords$tcoord1)) {
-      loc_loop <- this_time_index
-    } else {
-      loc_loop <- seq(1, length(xcoord))
-    }
-    for (ipos in loc_loop) {
-      xIndex <- array(NA_integer_, dim = 2)
-      yIndex <- array(NA_integer_, dim = 2)
-      xmax <- xcoord[ipos] + (xrad[ipos]/2)
+    for (ipos in track_index) {
       xmin <- xcoord[ipos] - (xrad[ipos]/2)
-      ymax <- ycoord[ipos] + (yrad[ipos]/2)
+      xmax <- xcoord[ipos] + (xrad[ipos]/2)
       ymin <- ycoord[ipos] - (yrad[ipos]/2)
-      xIndex[1] <- which.min(abs(extract[[xName]] - xmin))
-      xIndex[2] <- which.min(abs(extract[[xName]] - xmax))
-      yIndex[1] <- which.min(abs(extract[[yName]] - ymin))
-      yIndex[2] <- which.min(abs(extract[[yName]] - ymax))
-      #
-      # if a zcoord get its limits
-      #
+      ymax <- ycoord[ipos] + (yrad[ipos]/2)
       zmin <- NA
       zmax <- NA
-      if (!is.null(working_coords$zcoord1)) {
-        zIndex <- array(NA_integer_, dim = 2)
-        zmax <- zcoord[ipos] + (zrad[ipos]/2)
+      if (has_z) {
         zmin <- zcoord[ipos] - (zrad[ipos]/2)
-        zIndex[1] <- which.min(abs(extract[[zName]] - zmin))
-        zIndex[2] <- which.min(abs(extract[[zName]] - zmax))
-        # if z-coordinate and time coordinate,  include in extract
-        if (!is.null(working_coords$tcoord1)) {
-          param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2],
-                              zIndex[1]: zIndex[2], 1]
-        #  just z-coordinate
-        } else {
-          param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2],
-                                zIndex[1]: zIndex[2]]
-        }
-      # no z-coordinate
-      } else {
-        # time coordinate
-        if (!is.null(working_coords$tcoord1)) {
-          param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2], 1]
-        # no time coordinate
-        } else {
-          param <- extract[[1]][xIndex[1]:xIndex[2], yIndex[1]: yIndex[2]]
-        }
+        zmax <- zcoord[ipos] + (zrad[ipos]/2)
       }
-      parameter1 <- parameter
-      if (grepl('etopo',attributes(dataInfo)$datasetid)) {
-        parameter1 <- "depth"
-      }
+      param <- subset_track_point(extract, xName, yName, zName,
+                                  xmin, xmax, ymin, ymax, zmin, zmax,
+                                  has_z, has_time)
       out_dataframe <- populate_dataframe(out_dataframe, ipos, requesttime, working_coords, param,
                                      xmin, xmax, ymin, ymax, zmin, zmax)
-      }
-
-
+    }
+    last_ipos <- max(last_ipos, track_index)
   }
+
   # done loops, give the dataframe needed info
   out_dataframe <- structure(out_dataframe,
                              class = c('list', 'rxtractoTrack'),
                              base_url = urlbase,
                              datasetid = attributes(dataInfo)$datasetid
                              )
-   # close progress_bar if there is on
-  if (progress_bar) {
+  # close progress_bar if there is one
+  if (!is.null(pb)) {
     close(pb)
   }
   return(out_dataframe)
+}
+
+# Check that the track coordinates and "radius" inputs have consistent lengths
+#
+# "check_track_lengths()" stops with a message if they do not
+#
+# callDims - named list of the requested coordinates
+# xcoord, ycoord, zcoord - the requested coordinates
+# xlen, ylen, zlen - the requested "radius" around each location
+check_track_lengths <- function(callDims, xcoord, ycoord, zcoord, xlen, ylen, zlen) {
+  # Check that the non-null input vectors are the same length
+  dimLengths <- lengths(callDims)
+  dimLengths <- dimLengths[dimLengths > 0]
+  if (length(unique(dimLengths)) > 1) {
+    print("The length of the non-empty coordinates do not agree")
+    print(dimLengths)
+    stop("Correct Input Vectors")
+  }
+
+  # check "radius" input
+  if ( (length(xlen) > 1) && (length(xlen) != length(xcoord))) {
+    stop('xlen is of size greater than one but not equal to length of xccoord')
+  }
+  if ( (length(ylen) > 1) && (length(ylen) != length(ycoord))) {
+    stop('ylen is of size greater than one but not equal to length of yccoord')
+  }
+  if ( (!is.null(zcoord)) && (length(zlen) > 1) && (length(zlen) != length(zcoord))) {
+    stop('zlen is of size greater than one but not equal to length of zcoord')
+  }
+  if ( (!is.null(zcoord)) && length(xlen)  > 1) {
+    if (length(zlen) == 1)  {
+      message('warning - zlen has a single value')
+      message('xlen and ylen have length greater than 1')
+      message('zlen will be extended to be same length with repeated value')
+    }
+  }
+  invisible(NULL)
+}
+
+# read the data for one bounding box
+#
+# "read_extract()" makes one ERDDAP™ request,  or two if the box crosses the
+# dateline on a (-180, 180) dataset,  and combines the two results
+#
+# erddapCoords - the ERDDAP™ coordinate limits from findERDDAPcoord()
+# dataCoordList - the dataset coordinate values
+# crosses_dateline - logical,  does this box cross the dateline
+# return - list with the extract,  or -1 if a request failed
+read_extract <- function(dataInfo, callDims, urlbase,
+                         xName, yName, zName, tName, parameter,
+                         erddapCoords, dataCoordList, crosses_dateline,
+                         verbose, cache_remove = TRUE) {
+  read_lon_range <- function(lon_limits) {
+    data_extract_read(dataInfo, callDims, urlbase,
+                      xName, yName, zName, tName, parameter,
+                      lon_limits, erddapCoords$erddapYcoord,
+                      erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
+                      verbose, cache_remove)
+  }
+  if (!crosses_dateline) {
+    return(read_lon_range(erddapCoords$erddapXcoord))
+  }
+  # extract to the west of the dateline
+  # fuzz the longitudes to be a little away from the dateline
+  extract1 <- read_lon_range(c(erddapCoords$erddapXcoord[1],
+                               max(dataCoordList$longitude) - 0.0001))
+  if (!is.list(extract1)) {
+    return(extract1)
+  }
+  # extract east of the dateline
+  extract2 <- read_lon_range(c(min(dataCoordList$longitude) + 0.0001,
+                               erddapCoords$erddapXcoord[2]))
+  if (!is.list(extract2)) {
+    return(extract2)
+  }
+  combine_extracts(extract1, extract2)
+}
+
+# combine extracts when crossing the dateline
+#
+# "combine_extracts()" combines the two extracts made when crossing the dateline.
+# Longitude is the first dimension of the data array,  which can have
+# 2 to 4 dimensions depending on if there is a z-coordinate and a time coordinate
+# If the dataset has grid points at both -180 and 180 (e.g. etopo180),  both
+# extracts contain the 180 column,  so the duplicate in extract2 is dropped
+#
+# extract1 - extract on one side of the dateline
+# extract2 - extract on other side of the dataline
+# return - list with combined extract
+combine_extracts <- function(extract1, extract2) {
+  dim1 <- dim(extract1[[1]])
+  # select everything in the other dimensions
+  other_dims <- rep(list(TRUE), length(dim1) - 1)
+  lon1 <- extract1$longitude
+  lon2 <- make360(extract2$longitude)
+  data2 <- extract2[[1]]
+  if (isTRUE(abs(lon1[length(lon1)] - lon2[1]) < 1e-6)) {
+    keep <- seq_along(lon2)[-1]
+    lon2 <- lon2[keep]
+    data2 <- do.call(`[`, c(list(data2), list(keep), other_dims, list(drop = FALSE)))
+  }
+  lon_len1 <- length(lon1)
+  lon_len2 <- length(lon2)
+  combined <- array(NA_real_, dim = c(lon_len1 + lon_len2, dim1[-1]))
+  combined <- do.call(`[<-`, c(list(combined), list(seq_len(lon_len1)), other_dims,
+                               list(value = extract1[[1]])))
+  combined <- do.call(`[<-`, c(list(combined), list(lon_len1 + seq_len(lon_len2)), other_dims,
+                               list(value = data2)))
+  extract <- extract1
+  extract[[1]] <- combined
+  extract$longitude <- c(lon1, lon2)
+  return(extract)
+}
+
+# get the data for one track location out of the extract
+#
+# "subset_track_point()" finds the part of the extract closest to the requested
+# limits.  The data array is (x, y, [z], [time]),  and there is only one time
+# in an extract
+#
+# return - the data values within the limits
+subset_track_point <- function(extract, xName, yName, zName,
+                               xmin, xmax, ymin, ymax, zmin, zmax,
+                               has_z, has_time) {
+  nearest_range <- function(values, lower, upper) {
+    which.min(abs(values - lower)):which.min(abs(values - upper))
+  }
+  index <- list(nearest_range(extract[[xName]], xmin, xmax),
+                nearest_range(extract[[yName]], ymin, ymax))
+  if (has_z) {
+    index <- c(index, list(nearest_range(extract[[zName]], zmin, zmax)))
+  }
+  if (has_time) {
+    index <- c(index, list(1))
+  }
+  do.call(`[`, c(list(extract[[1]]), index))
 }
 
 # create the data frame to store the results along the track
@@ -407,88 +425,23 @@ create_out_dataframe <- function(parameter, dimargs, working_coords, xcoord, tco
   return(out_dataframe)
 }
 
-# Set the outer loop values
+# Print error message when an extract failed and trim the output
 #
-# 'set_outer_loop' is an internal function that sets the outer_loop values
-#  (for example unique times) depending on if time is a coordinate) or not
-#  Also initializes the progress bar if requested.
-#
-#  unique_req_time_index - unique time indexes
-#  working_coords - the coordinates to be used
-#  progress_bar  - Logical if progress bar is requested
-#  return outer_loop
-set_outer_loop <- function(unique_req_time_index, working_coords, pb_test) {
-  pb <- NULL
-  i_pb <- 0
-  if (!is.null(working_coords$tcoord1)) {
-    outer_loop <- unique_req_time_index
-    if (isTRUE(pb_test)){
-      pb <- utils::txtProgressBar(min = 0, max = length(outer_loop), style = 3)
-    }
-  } else{
-    outer_loop <- seq(1,1)
-    if (isTRUE(pb_test)){
-      pb <- utils::txtProgressBar(min = 0, max = length(working_coords$xcoord1), style = 3)
-    }
-  }
-  outer_loop_info <- list(outer_loop = outer_loop, pb = pb, i_pb = i_pb)
-  return(outer_loop_info)
-}
-
-
-# Print error message when adding to output failed
-#
-# 'write_extract_error' is an internal function that prints out errors in the outer_loop
+# 'write_extract_error' is an internal function that reports an error in the
+# outer loop.  Rows are kept up through the furthest position filled so far.
+# If the track times are not in order,  rows inside that range whose time
+# period was not reached are NA.
 #
 #  out_dataframe - output dataframe up to the point of the error
-# ipos last position to have a succesful extract
-#  progress_bar  - Logical if progress bar is requested
-# pb - the actual progress bar to close
-#  return out_dataframe and stop
-write_extract_error <- function(out_dataframe, ipos, progress_bar, pb) {
+#  last_ipos - furthest position along the track with a successful extract
+#  return out_dataframe
+write_extract_error <- function(out_dataframe, last_ipos) {
   text1 <- "There was an error in the url call, perhaps a time out."
   text2 <- "See message on screen and URL called"
   print(paste(text1, text2))
   print("Returning incomplete download")
-  out_dataframe <- out_dataframe[1:(ipos), ]
-  if (exists('paramdata')) {
-    suppressWarnings(try(remove('paramdata'), silent = TRUE))
-  }
-  suppressWarnings(try(rerddap::cache_delete_all, silent = TRUE))
-  if (progress_bar) {
-    close(pb)
-  }
-  return(out_dataframe)
-}
-
-# combine extracts when crossing the dateline
-#
-# "combine_extracts()" combines the two extracts made when crossing the dateline
-# extract1 - extract on one side of the dateline
-# extract2 - extract on other side of the dataline
-# return - list with combined extract
-combine_extracts <- function(extract1, extract2) {
-  extract2$longitude <- make360(extract2$longitude)
-  # extract <- list(NA, NA, NA, NA, NA, NA)
-  extract <- vector("list", 6)
-  lat_len <- length(extract1$latitude)
-  time_len <- length(extract1$time)
-  lon_len <- length(extract1$longitude) + length(extract2$longitude)
-  temp_array <- array(NA_real_, dim = c(lon_len, lat_len, time_len))
-  temp_array[1:length(extract1$longitude), ,] <- extract1[[1]]
-  temp_array[(length(extract1$longitude) + 1):lon_len, ,] <- extract2[[1]]
-  names(extract) <- names(extract1)
-  extract[[1]] <- temp_array
-  extract$datasetname <- extract1$datasetname
-  extract$latitude <- extract1$latitude
-  extract$altitude <- ifelse(is.null(extract1$altitude), NA, extract1$altitude)
-  if (is.null(extract1$time)) {
-    extract$time <- NA
-  } else{
-    extract$time <-  extract1$time
-  }
-  extract$longitude <- c(extract1$longitude, extract2$longitude)
-  return(extract)
+  suppressWarnings(try(rerddap::cache_delete_all(), silent = TRUE))
+  return(out_dataframe[seq_len(last_ipos), ])
 }
 
 # populate the dataframe with the most recent extract along the track
@@ -506,30 +459,19 @@ populate_dataframe <- function(out_dataframe, ipos, requesttime, working_coords,
   out_dataframe[ipos, 8] <- ymax
   out_dataframe[ipos, 9] <- zmin
   out_dataframe[ipos, 10] <- zmax
-  #  if (!is.null(working_coords$tcoord1)) {
-  #    out_dataframe[ipos, 11] <- as.character.Date(tcoord[i])
-  # }
   out_dataframe[ipos, 12] <- stats::median(param, na.rm = TRUE)
   out_dataframe[ipos, 13] <- stats::mad(param, na.rm = TRUE)
   return(out_dataframe)
 }
 
-# define the boungin box for all track locations that have the same time in the ERDDAP™ dataset
-define_bbox <- function(iloop, req_time_index, working_coords, xrad, yrad, zrad) {
-  # this_time_index contains  the indexes of which extracts all occur
-  # at a given time
-  temp_tcoord <- NA
-  if (!is.null(working_coords$tcoord1)) {
-    this_time_index <- which(req_time_index == iloop)
-    #temp_tcoord <- working_coords$tcoord1[unique_req_time_index[iloop]]
-  } else {
-    this_time_index <- seq(1, length(working_coords$xcoord1))
-  }
-  # define bounding box
-  time_ypos <- working_coords$ycoord1[this_time_index]
-  time_xpos <- working_coords$xcoord1[this_time_index]
-  time_xrad <- max(xrad[this_time_index])
-  time_yrad <- max(yrad[this_time_index])
+# define the bounding box for all track locations that have the same time in the ERDDAP™ dataset
+#
+# track_index - the track locations that use this extract
+define_bbox <- function(track_index, working_coords, xrad, yrad, zrad) {
+  time_xpos <- working_coords$xcoord1[track_index]
+  time_ypos <- working_coords$ycoord1[track_index]
+  time_xrad <- max(xrad[track_index])
+  time_yrad <- max(yrad[track_index])
   xmin <- min(time_xpos) - (time_xrad/2)
   xmax <- max(time_xpos) + (time_xrad/2)
   ymin <- min(time_ypos) - (time_yrad/2)
@@ -538,10 +480,10 @@ define_bbox <- function(iloop, req_time_index, working_coords, xrad, yrad, zrad)
   zmin <- NA
   zmax <- NA
   if (!is.null(working_coords$zcoord1)) {
-    time_zpos <- working_coords$zcoord1[this_time_index]
-    time_zrad <- max(zrad[this_time_index])
-    zmax <- time_zpos + (time_zrad/2)
-    zmin <- time_zpos - (time_zrad/2)
+    time_zpos <- working_coords$zcoord1[track_index]
+    time_zrad <- max(zrad[track_index])
+    zmin <- min(time_zpos) - (time_zrad/2)
+    zmax <- max(time_zpos) + (time_zrad/2)
   }
   return(list(xmin = xmin, xmax = xmax,
               ymin = ymin, ymax = ymax,

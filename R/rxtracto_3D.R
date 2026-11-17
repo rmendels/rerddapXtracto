@@ -131,65 +131,14 @@ erddapList <- findERDDAPcoord(dataCoordList, isoTime, udtTime,
 erddapCoords <- erddapList$erddapCoords
 
 
-# Construct the griddap() command from the input --------------------------
+# Read the data,  making two requests and combining them if the request
+# crosses the dateline on a (-180, 180) dataset --------------------------
+# read_extract() and combine_extracts() are defined in rxtracto.R
 
-if (cross_dateline_180) {
-  # upper_bound <- round(max(dataCoordList$longitude), 3)
-  upper_bound <- max(dataCoordList$longitude) - 0.0001
-  xcoord_temp <- c(erddapCoords$erddapXcoord[1], upper_bound)
-  extract1 <- data_extract_read(dataInfo1, callDims, urlbase,
-                               xName, yName, zName, tName, parameter,
-                               xcoord_temp, erddapCoords$erddapYcoord,
-                               erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
-                               verbose, cache_remove )
-  if (!is.list(extract1)) {
-    text1 <- "There was an error in the url call, perhaps a time out."
-    text2 <- "See message on screen and URL called"
-    print(paste(text1, text2))
-    return("URL cal error")
-  }
-  # lower_bound <- round(min(dataCoordList$longitude), 3)
-  lower_bound <- min(dataCoordList$longitude) + 0.0001
-  xcoord_temp <- c(lower_bound, erddapCoords$erddapXcoord[2])
-  extract2 <- data_extract_read(dataInfo1, callDims, urlbase,
-                                xName, yName, zName, tName, parameter,
-                                xcoord_temp, erddapCoords$erddapYcoord,
-                                erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
-                                verbose, cache_remove )
-  if (!is.list(extract2)) {
-    text1 <- "There was an error in the url call, perhaps a time out."
-    text2 <- "See message on screen and URL called"
-    print(paste(text1, text2))
-    return("URL cal error")
-  }
-  extract2$longitude <- make360(extract2$longitude)
-  # extract <- list(NA, NA, NA, NA, NA, NA)
-  extract <- vector("list", 6)
-  lat_len <- length(extract1$latitude)
-  time_len <- length(extract1$time)
-  lon_len <- length(extract1$longitude) + length(extract2$longitude)
-  temp_array <- array(NA_real_, dim = c(lon_len, lat_len, time_len))
-  temp_array[seq_along(extract1$longitude), ,] <- extract1[[1]]
-  temp_array[(length(extract1$longitude) + 1):lon_len, ,] <- extract2[[1]]
-  names(extract) <- names(extract1)
-  extract[[1]] <- temp_array
-  extract$datasetname <- extract1$datasetname
-  extract$latitude <- extract1$latitude
-  extract$altitude <- ifelse(is.null(extract1$altitude), NA, extract1$altitude)
-  if (is.null(extract1$time)) {
-    extract$time <- NA
-  } else{
-    extract$time <-  extract1$time
-  }
-  extract$longitude <- c(extract1$longitude, extract2$longitude)
-}else {
-  extract <- data_extract_read(dataInfo1, callDims, urlbase,
-                               xName, yName, zName, tName, parameter,
-                               erddapCoords$erddapXcoord, erddapCoords$erddapYcoord,
-                               erddapCoords$erddapTcoord, erddapCoords$erddapZcoord,
-                               verbose, cache_remove )
-
-}
+extract <- read_extract(dataInfo1, callDims, urlbase,
+                        xName, yName, zName, tName, parameter,
+                        erddapCoords, dataCoordList, cross_dateline_180,
+                        verbose, cache_remove)
 if (!is.list(extract)) {
   text1 <- "There was an error in the url call, perhaps a time out."
   text2 <- "See message on screen and URL called"

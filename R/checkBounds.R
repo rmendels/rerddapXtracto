@@ -28,7 +28,7 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
       # get actual dataset bounds by converting to number
       temp_time <- parsedate::parse_iso_8601(dataCoordList[[i]])
       # check for NA
-      if(any(is.na(temp_time))){
+       if(anyNA(temp_time)){
         print('invalid time give')
         print('execution will halt')
         returnCode <- 1
@@ -37,7 +37,7 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
       max_coord <- max( as.numeric(temp_time))
     } else {
       #  check for not a number
-      if(any(!is.finite(dimargs[[cIndex]]))){
+      if(!any(is.finite(dimargs[[cIndex]]))){
         print(paste0('non-numeric entry in  ', names(dimargs)[cIndex]))
         print('execution will halt')
         returnCode <- 1
@@ -51,7 +51,7 @@ checkBounds <- function(dataCoordList, dimargs, cross_dateline_180) {
     }
     # if cross_dateline_180 = TRUE will not check longitude bound
     # for the nonce.  Too many issues.
-    if (!(names(dimargs)[cIndex] == 'longitude')) {
+    if (names(dimargs)[cIndex] != 'longitude') {
       if ((min_dimargs < min_coord) |  (max_dimargs > max_coord)) {
         # time is treated differently because it is printed out differently
         if (names(dimargs)[cIndex] == 'time') {

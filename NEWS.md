@@ -1,3 +1,10 @@
+# rerddapXtracto 1.3.0
+
+- Contour plots added to 'plotBBox()' 
+- updates to vignette 
+- many refactors to the code
+
+
 # rerddapXtracto 1.2.5
 
 Fixed problem with one example on Debian

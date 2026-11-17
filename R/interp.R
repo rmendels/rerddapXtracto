@@ -2,14 +2,10 @@ erddap_interp <- function(urlbase, datasetid, parameter,
                           xcoord, ycoord, zcoord, tcoord,
                           interp_type, verbose, progress_bar){
   base_dir <- paste0(urlbase, 'convert/interpolate.csv?TimeLatLonTable=')
-  #header_line <- 'latitude,longitude%0A'
-  header_line <- 'time,latitude,longitude%0A'
+   header_line <- 'time,latitude,longitude%0A'
   if (!is.null(zcoord)) {
     header_line <- paste0('altitude', ',', header_line)
   }
-  #if (!is.null(tcoord)) {
-  #  header_line <- paste0('time', ',', header_line)
-  #}
   series_length <- length(xcoord)
   start_loc <- seq(1, series_length, 100)
   temp_length <- length(start_loc)
@@ -24,7 +20,7 @@ erddap_interp <- function(urlbase, datasetid, parameter,
     pb <- utils::txtProgressBar(min = 0, max = length(start_loc), style = 3)
     i_pb <- 0
   }
-  for (i in seq_len(length(start_loc))) {
+  for (i in seq_along(start_loc)) {
     if (progress_bar){
       i_pb <- i_pb + 1
       utils::setTxtProgressBar(pb, i_pb)
@@ -35,15 +31,11 @@ erddap_interp <- function(urlbase, datasetid, parameter,
       if (!is.null(zcoord)) {
         temp_line <- paste0(zcoord[j], ',', temp_line)
       }
-      #if (!is.null(tcoord)) {
-      #  temp_line <- paste0(tcoord[j], ',', temp_line)
-      #}
       data_line <- paste0(data_line, temp_line)
     }
     end_line <- paste0('&requestCSV=', datasetid, '/', parameter, '/',
                        interp_type[1], '/', interp_type[2])
     my_url <- paste0(base_dir, header_line, data_line, end_line)
-    #r1 <-  httr::GET(my_url, verbose())
     numtries <- 10
     tryn <- 0
     goodtry <- -1
@@ -109,7 +101,7 @@ check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
     return_code <- 1
     return(return_code)
   }
-  if(!length(interp_type) == 2) {
+  if (length(interp_type) != 2) {
     print('error in interpolation request')
     print('interpolation type must be of length two')
     print('the first element a string of the type of interpolation to use')
@@ -134,15 +126,11 @@ check_interp <- function(urlbase, interp_type, xcoord, ycoord, zcoord, tcoord){
     return_code <- 1
     return(return_code)
   }
-  if((interp_type[1] == 'Bilinear') && (!interp_type[2] == 4)) {
+  if ((interp_type[1] == 'Bilinear') && (interp_type[2] != 4)) {
     print('Bilinear Interpolation selected but neighbor value must be 4')
     print(paste0('Neighbor value given ', interp_type[2]))
     return_code <- 1
     return(return_code)
   }
- #if((length(dataCoordList) == 2) && (interp_type[2] %in% neighbor_3d)) {
- #   print('3-D interpolation chosen but there are only 2 coordinates')
- #   stop()
- # }
   return(return_code)
 }

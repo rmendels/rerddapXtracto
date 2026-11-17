@@ -44,6 +44,8 @@ Since the z-coordinate is not limited to be at a set location, for `rxtracto_3D(
 
 The plotting function `plotTrack()` for tracks and `plotBBox()` for grids use the [R]{style="color:red"} package `plotdap`, originally developed for producing maps from data extracted using `rerddap`. The plotting functions now allow for user defined continental outlines (important if crossing the dateline), a user defined crs, as well as animation. When more control of a plot is desired, `ggplot2` (or other map plotting packages) can be used directly. Several examples in this vignette demonstrate the use of `ggplot2`.
 
+New in version 1.3.0 `plotBBox()` can now produce contour plots.  See below as well as the `'plotdap'` documentation.
+
 Requesting an extract that crosses the dateline for an ERDDAP™ dataset that is on a (-180, 180) longitude grid must be done with care. The requested longitudes must be in the range (0, 360) and several checks that the request is within the bounds of the dataset are disabled. This is particularly important when using `rxtracto()`, where the observed longitude point may not cross the dateline but the bounding box defined by "xlen" may cross it.
 
 ### The Main `rerddapXtracto` functions
@@ -60,7 +62,7 @@ and two functions for producing maps:
 
 -   `plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA,  shape = 20, size = .5)`
 
--   `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA, maxpixels = 10000)`
+-   `plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA, mapData = NULL, crs = NULL, animate = FALSE, cumulative = FALSE, name = NA, maxpixels = 10000, contours = FALSE, contour_opts = NULL)`
 
 New since version 1.1.6 is a helper function to convert output from `rxtracto_3D()` and `rxtractogon()` to "tidy" long-form:
 
@@ -131,7 +133,7 @@ library("plotdap")
 
 There are some fine points that need to be understood to properly use the plotting functions, in particular `plotBBox()`. Both `plotTrack()` and `plotBBox()` rearrange the output so that the functions `plotdap::add_tabledap()` and `plotdap::add_griddap()` think that the output is from `rerddap`, and then make the appropriate `plotdap` call. When the data that are passed to `add_griddap()` has multiple time periods, there are two options. The first option is to set the parameter "time" to a function that reduces the data to one dimension in the time coordinate (such as the mean), or else to set "time" equal to "identity" and set "animate" to be "TRUE" which will produce a time animation of the results. If an animation is requested and the option "cumulative" is set to be "TRUE", then the animation will be cumulative. This is a nice feature for displaying tracks through time. The function `plotBBox()` works the same way, except that the default function is `mean(na.rm = TRUE)`. The following link to examples that show how to use different features of the plotting functions:
 
--   [Setting the color palette](#colorPalette) shows how to use the "plotColor" option. The "plotColor" parameter can be the name of any of the colors included in the `cmocean` package. The `cmocean` colormaps were designed by Kristen Thyng (see <https://matplotlib.org/cmocean/> and <https://github.com/matplotlib/cmocean>), and were initially developed for Python)
+-   [Setting the color palette](#colorPalette) shows how to use the "plotColor" option. The "plotColor" parameter can be the name of any of the colors included in the `cmocean` package. The `cmocean` colormaps were designed by Kristen Thyng (see `https://matplotlib.org/cmocean/` and `https://github.com/matplotlib/cmocean`), and were initially developed for Python)
 
 -   [Plot one time period](#plot1) example shows how to manipulate an existing output from `rxtracto_3D()` or `rextractogon()` to plot just one time period.
 
@@ -147,8 +149,8 @@ There are some fine points that need to be understood to properly use the plotti
 
 The first step is to obtain information about the dataset of interest from the [ERDDAP™]{style="color:red"} server being used. The needed information include:
 
--   baseURL of the [ERDDAP™]{style="color:red"} server (the default is <https://upwell.pfeg.noaa.gov/erddap>)
--   the datasetID of the data to be accessed (for example the 1-day composite of chlorophyll from MODIS Aqua has a datasetID of 'erdMBchla1day' - see <https://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html>)
+-   baseURL of the [ERDDAP™]{style="color:red"} server (the default is `https://upwell.pfeg.noaa.gov/erddap`)
+-   the datasetID of the data to be accessed (for example the 1-day composite of chlorophyll from MODIS Aqua has a datasetID of 'erdMBchla1day' - see `https://upwell.pfeg.noaa.gov/erddap/griddap/erdMBchla1day.html`)
 -   the parameter name (in this case "chlorophyll")
 
 In order for `rerddapXtracto` to have this information, as well as the coordinate variables and their limits, and the parameter names, a call must be made to the function `rerddap::info()` for the appropriate datasetID and baseURL:
@@ -340,9 +342,9 @@ List of 13
 
 ### [ERDDAP™]{style="color:red"} Interpolate service
 
-[ERDDAP™]{style="color:red"} has a new "Interpolate" service which takes a table of coordinate values from a gridded dataset, up to 100 entries at a time, and will interpolate the value at each point based on quite a large list of different interpolation methods, as well as the number of neighbors to use in the interpolation (see <https://coastwatch.pfeg.noaa.gov/erddap/convert/interpolate.html>. As the "Interpolate" service includes the mean, median and standard deviation of the neighboring points, the service can return similar results as does the usual `rxtracto()` but much more quickly, as 100 observations are processed at a time. This greatly reduces the time it takes to process very large tracks. A downside is that neighbors are defined in terms of pixels, not in terms of coordinate units as is used in the usual `rxtracto()` call. For very high-resolution datasets even the largest number of neighbors provided by the service may not be large enough to capture the uncertainty in the actual location of an observation in the track.
+[ERDDAP™]{style="color:red"} has a new "Interpolate" service which takes a table of coordinate values from a gridded dataset, up to 100 entries at a time, and will interpolate the value at each point based on quite a large list of different interpolation methods, as well as the number of neighbors to use in the interpolation (see `https://coastwatch.pfeg.noaa.gov/erddap/convert/interpolate.html`). As the "Interpolate" service includes the mean, median and standard deviation of the neighboring points, the service can return similar results as does the usual `rxtracto()` but much more quickly, as 100 observations are processed at a time. This greatly reduces the time it takes to process very large tracks. A downside is that neighbors are defined in terms of pixels, not in terms of coordinate units as is used in the usual `rxtracto()` call. For very high-resolution datasets even the largest number of neighbors provided by the service may not be large enough to capture the uncertainty in the actual location of an observation in the track.
 
-The "Interpolate" service requires that the [ERDDAP™]{style="color:red"} server being accessed is at least version 2.10. As of this writing, the default [ERDDAP™]{style="color:red"} in `rerddap` is at <https://upwell.pfeg.noaa.gov/erddap>, which is not. Therefore, as in the example below, you need to make certain of the version of [ERDDAP™]{style="color:red"} used in the call to `rerddap:info()`.
+The "Interpolate" service requires that the [ERDDAP™]{style="color:red"} server being accessed is at least version 2.10. As of this writing, the default [ERDDAP™]{style="color:red"} in `rerddap` is at `https://upwell.pfeg.noaa.gov/erddap`, which is not. Therefore, as in the example below, you need to make certain of the version of [ERDDAP™]{style="color:red"} used in the call to `rerddap:info()`.
 
 The "interpolate" option is implemented in a new, optional argument to `rxtracto()`, "interp = NULL". Since the argument is optional, and has a default value of "NULL", existing calls to `rxtracto()` will not be affected by the change. To use the interpolation option, "interp" must be a set equal to a character array of size 2, that is
 
@@ -360,6 +362,11 @@ Note carefully that "Mean" is capitalized, and that the number of neighbors is p
 
 ```{r, echo = TRUE,  eval = FALSE}
 my_interp <- c('Mean',  '16')
+tagData <- Marlintag38606
+xpos <- tagData$lon
+ypos <- tagData$lat
+tpos <- tagData$date
+zpos <- rep(0., length(xpos))
 #
 #  use the coastwatch ERDDAP™ as it is a more recent version
 #
@@ -373,7 +380,7 @@ swchl1 <- rxtracto(swchlInfo, parameter = 'chlorophyll',
 
 ### Tracks along projected data and Polar Bears
 
-`rxtracto()` can now extract tracks from projected [ERDDAP™]{style="color:red"} datasets if the proper data transformations are done first. Here we cover one possible way of transforming the data in order to work with `rxtracto()` by extracting sea ice concentration along a polar bear track. The polar bear track is in the included 'PB_Argos' dataset, which is described in the paper "Auger-Méthé, M., Newman, K., Cole, D., Empacher, F., Gryba, R., King, A. A., Leos-Barajas, V., Mills Flemming, J., Nielsen, A., Petris, G., and Thomas, L.. 2021. A guide to state--space modeling of ecological time series. Ecological Monographs 91(4):e01470. 10.1002/ecm.1470" and is used by permission of the authors. The dataset was obtained from <https://datadryad.org/dataset/doi:10.5061/dryad.4qrfj6q96>.
+`rxtracto()` can now extract tracks from projected [ERDDAP™]{style="color:red"} datasets if the proper data transformations are done first. Here we cover one possible way of transforming the data in order to work with `rxtracto()` by extracting sea ice concentration along a polar bear track. The polar bear track is in the included 'PB_Argos' dataset, which is described in the paper "Auger-Méthé, M., Newman, K., Cole, D., Empacher, F., Gryba, R., King, A. A., Leos-Barajas, V., Mills Flemming, J., Nielsen, A., Petris, G., and Thomas, L.. 2021. A guide to state--space modeling of ecological time series. Ecological Monographs 91(4):e01470. 10.1002/ecm.1470" and is used by permission of the authors. The dataset was obtained from `https://datadryad.org/dataset/doi:10.5061/dryad.4qrfj6q96`.
 
 One caveat is that while the vector parameters "xlen", "ylen" and "zlen" can still be used with projected data, to be sensible these values must also be in projected units, and for many projections in order to have a consistent box the values will have to vary with each latitude-longitude pair. With the present version of `rxtracto()` it is up to the user to make this calculation, though the steps below should provide some idea of how to do so. In the example, "xlen", "ylen" are zero.
 
@@ -387,7 +394,8 @@ Given a "track" with latitude and longitude values and a projected dataset, the 
 
 -   If desired, transform the projected coordinates back into latitude and longitude.
 
-The dataset to be used is sea ice concentration from the NOAA/National Snow and Ice Data Center availabe from the Polarwatch [ERDDAP]{style="color:red"} at <https://polarwatch.noaa.gov/erddap/griddap/nsidcG02202v4nh1day.html> .
+The dataset to be used is sea ice concentration from the NOAA/National Snow and Ice Data Center availabe from the [ERDDAP]{style="color:red"} at `https://coastwatch.pfeg.noaa.gov/erddap/griddap/nsidcG02202v4nh1day.html` .
+
 
 The first step is to extract the first 100 datapoints from the PB_Argos dataset.
 
@@ -407,12 +415,12 @@ head(PB_Argos_subset, 4)
 
 ```
 
-The dataset info can be used to find the dataset projection (note this uses EPSG codes for the CRS, which can be found at <https://spatialreference.org/ref/epsg/>):
+The dataset info can be used to find the dataset projection (note this uses EPSG codes for the CRS, which can be found at `https://spatialreference.org/ref/epsg/`):
 
 ```{r, echo = TRUE,  eval = FALSE}
-url=  'https://polarwatch.noaa.gov/erddap/'
+url=  'https://coastwatch.pfeg.noaa.gov/erddap/'
 datasetid = 'nsidcG02202v4nh1day'
-dataInfo <- rerddap::info(datasetid, url)
+dataInfo <- rerddap::info(datasetid, url = url)
 proj_crs_code_index <- which(dataInfo$alldata$NC_GLOBAL$attribute_name == "proj_crs_code" )
 proj_crs_code <- dataInfo$alldata$NC_GLOBAL$value[proj_crs_code_index]
 proj_crs_code
@@ -594,6 +602,40 @@ myplot
 
 ![](mur_dateline.png)
 
+### Contour plots in `plotBBox()`
+
+Building on the VIIRS chlorophyll example above we can make a default contour plot:
+
+```{r,  echo = TRUE, eval = FALSE}
+myFunc <- function(x) log(x)
+chlalogPlot1 <- plotBBox(VIIRS, plotColor = 'algae', myFunc = myFunc, contours = TRUE)
+chlalogPlot1
+
+```
+
+![](contour1.png)
+Options to control the formatting of the contours include:
+
+- n_breaks - the number of breaks in the contours - default 10
+- breaks - optional list of length n_breaks of where to set the breaks
+- color - the color of the contour lines - default "black"
+- linewidth - the width of the contour line- default 0.3
+- alpha - the alpha value of the contour line - default 1
+
+The options are passed in the list "contour_opts", so to modify the previous plot to have 15 red contours with a linewidth of 0.1:
+
+```{r, echo = TRUE, eval = FALSE}
+myFunc <- function(x) log(x)
+my_opts = list(n_breaks = 15, color = "red", linewidth = 0.1)
+chlalogPlot2 <- plotBBox(VIIRS, plotColor = 'algae', myFunc = myFunc, contours = TRUE, contour_opts = my_opts )
+```
+
+![](contour2.png)
+
+
+
+
+
 ## Using `rxtractogon`
 
 The function `rxtractogon()` extracts a time-series of satellite data that are within a user supplied polygon. Two examples are given. The first extracts chlorophyll within the boundary points of the Monterey Bay National Marine Sanctuary, available in the `mbnms` dataset which is loaded with the `rerddapXtracto` package.
@@ -682,12 +724,25 @@ Mapping the data to show the canyon:
 ```{r mbnmsBathyPlot, echo = TRUE, eval = FALSE}
 require("ggplot2")
 require("mapdata")
-myFunc = function(x) -x
+myFunc <- function(x) -x
 bathyPlot <- suppressMessages((plotBBox(bathy, plotColor = 'dense', myFunc = myFunc, name = 'Depth')))
 bathyPlot
 ```
 
 ![](bathyPlot.png)
+To show the bathymetry contours:
+
+```{r, echo = TRUE,  eval = FALSE}
+require("ggplot2")
+require("mapdata")
+myFunc <- function(x) -x
+my_opts <- list(n_breaks = 15, linewidth = 0.1)
+bathyPlot1 <- suppressMessages((plotBBox(bathy, plotColor = 'dense', myFunc = myFunc, name = 'Depth', contours = TRUE, contour_opts = my_opts)))
+bathyPlot1
+
+```
+
+![](bathy_contour.png)
 
 ## Temperature at 70m in the north Pacific from the SODA model output
 
@@ -717,7 +772,7 @@ sodaPlot
 
 ### Irish Marine Institute {#hourly}
 
-The Irish Marine Institute has an [ERDDAP™]{style="color:red"} server at <https://erddap.marine.ie/erddap/>. Among other datasets, there is hourly output from a model of the North Atlantic ocean, with a variety of ocean related parameters, see <https://erddap.marine.ie/erddap/griddap/IMI_NEATL.html>. To obtain sea surface salinity at latest time available for the domain of the model:
+The Irish Marine Institute has an [ERDDAP™]{style="color:red"} server at `https://erddap.marine.ie/erddap/`. Among other datasets, there is hourly output from a model of the North Atlantic ocean, with a variety of ocean related parameters, see `https://erddap.marine.ie/erddap/griddap/IMI_NEATL.html`. To obtain sea surface salinity at latest time available for the domain of the model:
 
 ```{r NAtlSSS, eval = FALSE, echo = TRUE}
 require("rerddap")

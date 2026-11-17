@@ -14,7 +14,9 @@ plotBBox(
   animate = FALSE,
   cumulative = FALSE,
   name = NA,
-  maxpixels = 10000
+  maxpixels = 10000,
+  contours = FALSE,
+  contour_opts = NULL
 )
 }
 \arguments{
@@ -39,6 +41,13 @@ for animation}
 
 \item{maxpixels}{maximum number of pixels to use in making the map
 - controls resolution}
+
+\item{contours}{whether to include contours in the plot.}
+
+\item{contour_opts}{NULL (the default) or a named list of options passed
+to 'plotdap::add_griddap_contours()'.  Allowed names are 'n_breaks',
+'breaks', 'color', 'linewidth' and 'alpha'.  Options not given use the
+'plotdap::add_griddap_contours()' defaults.  Only used if contours = TRUE.}
 }
 \value{
 a 'plotdap' plot
@@ -60,4 +69,7 @@ a 'plotdap' plot
 ##
 ## low resolution selected to keep time to render down
 # suppressWarnings(p <- plotBBox(MBsst, maxpixels = 50))
+## with contours
+# suppressWarnings(p <- plotBBox(MBsst, maxpixels = 50, contours = TRUE,
+#                  contour_opts = list(n_breaks = 5, color = 'white')))
 }

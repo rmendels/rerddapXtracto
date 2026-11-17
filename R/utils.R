@@ -2,20 +2,9 @@
 # All of these utilities are from the rerddap package
 #####
 
-
-
-getvar <- function(x, y){
-  x$alldata$NC_GLOBAL[ x$alldata$NC_GLOBAL$attribute_name == y, "value"]
-}
-
-getvars <- function(x){
-  vars <- names(x$alldata)
-  vars[ !vars %in% c("NC_GLOBAL", "time", x$variables$variable_name) ]
-}
-
 getallvars <- function(x){
   vars <- names(x$alldata)
-  vars[ !vars %in% "NC_GLOBAL" ]
+  vars[vars != "NC_GLOBAL"]
 }
 
 dimvars <- function(x){
@@ -23,8 +12,6 @@ dimvars <- function(x){
   vars[ !vars %in% c("NC_GLOBAL", x$variables$variable_name) ]
 }
 
-
-strextract1 <- function(str, pattern) regmatches(str, regexpr(pattern, str))
 
 strtrim1 <- function(str) gsub("^\\s+|\\s+$", "", str)
 
@@ -59,12 +46,12 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     erddapXcoord[2] <- dataCoordList[[xName]][newxIndex[2]]
     # check for edge effects and rounding errors
     if (newxIndex[1]  == 1) {
-      if (abs(dataCoordList[[xName]][newxIndex[1]] - xcoordLim[1]) < .0001) {
+      if (abs(dataCoordList[[xName]][newxIndex[1]] - xcoordLim[1]) < 0.0001) {
         erddapXcoord[1] <- xcoordLim[1]
       }
     }
     if (newxIndex[2]  == length(dataCoordList[[xName]])) {
-      if (abs(dataCoordList[[xName]][newxIndex[2]] - xcoordLim[2]) < .0001) {
+      if (abs(dataCoordList[[xName]][newxIndex[2]] - xcoordLim[2]) < 0.0001) {
         erddapXcoord[2] <- xcoordLim[2]
       }
     }
@@ -78,12 +65,12 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     erddapYcoord[2] <- dataCoordList[[yName]][newyIndex[2]]
     # check for edge effects and rounding errors
     if (newyIndex[1]  == 1) {
-      if (abs(dataCoordList[[yName]][newyIndex[1]] - ycoordLim[1]) < .0001) {
+      if (abs(dataCoordList[[yName]][newyIndex[1]] - ycoordLim[1]) < 0.0001) {
         erddapYcoord[1] <- ycoordLim[1]
       }
     }
     if (newyIndex[2]  == length(dataCoordList[[yName]])) {
-      if (abs(dataCoordList[[yName]][newyIndex[2]] - ycoordLim[2]) < .0001) {
+      if (abs(dataCoordList[[yName]][newyIndex[2]] - ycoordLim[2]) < 0.0001) {
         erddapYcoord[2] <- ycoordLim[2]
       }
     }
@@ -105,12 +92,12 @@ findERDDAPcoord <- function(dataCoordList, isotime, udtime, xcoordLim,
     erddapZcoord[2] <- dataCoordList[[zName]][newzIndex[2]]
     # check for edge effects and rounding errors
     if (newzIndex[1]  == 1) {
-      if (abs(dataCoordList[[zName]][newzIndex[1]] - zcoordLim[1]) < .0001) {
+      if (abs(dataCoordList[[zName]][newzIndex[1]] - zcoordLim[1]) < 0.0001) {
         erddapZcoord[1] <- zcoordLim[1]
       }
     }
     if (newzIndex[2]  == length(dataCoordList[[zName]])) {
-      if (abs(dataCoordList[[zName]][newzIndex[2]] - zcoordLim[2]) < .0001) {
+      if (abs(dataCoordList[[zName]][newzIndex[2]] - zcoordLim[2]) < 0.0001) {
         erddapZcoord[2] <- zcoordLim[2]
       }
     }
@@ -140,7 +127,7 @@ makeCmd <- function(dataInfo, urlbase, xName, yName, zName, tName, parameter,
   }
   myCallOptsNames <- list('datasetx')
   # if the url is not the default URL, add it to the list to be set
-  if (!(urlbase == "https://upwell.pfeg.noaa.gov/erddap/")) {
+  if (urlbase != "https://upwell.pfeg.noaa.gov/erddap/") {
     myCallOpts$url <- urlbase
     myCallOptsNames <- c(myCallOptsNames, 'url')
   }
@@ -188,7 +175,7 @@ removeLast <- function(isotime, tcoord1) {
   # calculates the bounds as R dates
   lenTime <- length(isotime)
 
-  if (grepl("last", tcoord1[1])) {
+  if (grepl("last", tcoord1[1], fixed = TRUE)) {
     tlen <- nchar(tcoord1[1])
     arith <- substr(tcoord1[1], 5, tlen)
     tempVar <- paste0(as.character(lenTime), arith)
@@ -196,7 +183,7 @@ removeLast <- function(isotime, tcoord1) {
     tcoord1[1] <- isotime[tIndex]
   }
 
-  if (grepl("last", tcoord1[2])) {
+  if (grepl("last", tcoord1[2], fixed = TRUE)) {
     tlen <- nchar(tcoord1[2])
     arith <- substr(tcoord1[2], 5, tlen)
     tempVar <- paste0(as.character(lenTime), arith)

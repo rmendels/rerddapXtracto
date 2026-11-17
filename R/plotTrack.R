@@ -36,10 +36,10 @@
 plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFunc = NA,
                       mapData = NULL, crs = NULL,
                       animate = FALSE, cumulative = FALSE,
-                      name = NA,  shape = 20, size = .5){
+                      name = NA,  shape = 20, size = 0.5){
 
   # check that the response is of the right class
-   if (!('rxtractoTrack' %in% class(resp))) {
+  if (!inherits(resp, 'rxtractoTrack')) {
    print('given extract is not valid rxtracto() output')
    print("class of the response is not' 'rxtractoTrack' ")
    stop('execution halted')
@@ -53,7 +53,7 @@ plotTrack <- function(resp, xcoord, ycoord, tcoord, plotColor = 'viridis', myFun
   }
   # check that if outline is given,  it is of class maps
   if (!is.null(mapData)) {
-    if (!("map" == class(mapData))) {
+    if (!inherits(mapData, 'map')) {
       stop('map outline given but not of class "maps" ')
     }
   }
@@ -100,13 +100,12 @@ myPlot <- do.call(plotdap::add_tabledap, myList)
 if (animate) {
   xlim <- c(min(xcoord), max(xcoord))
   ylim <- c(min(ycoord), max(ycoord))
-  suppressMessages(myPlot <- plotdap::add_ggplot(
+  myPlot <- suppressMessages(plotdap::add_ggplot(
     myPlot, ggplot2::coord_sf(
       crs = myPlot$crs, datum = myPlot$datum,
       xlim = xlim, ylim = ylim
     )
   ))
-
 }
 
 myPlot

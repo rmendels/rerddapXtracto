@@ -15,3 +15,8 @@
 ^CRAN-SUBMISSION$
 ^CLAUDE\.md$
 
+^\.claude$
+^\.agents$
+
+^doc$
+^Meta$

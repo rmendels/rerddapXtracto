@@ -43,6 +43,11 @@ Useful links:
 \author{
 \strong{Maintainer}: Roy Mendelssohn \email{roy.mendelssohn@noaa.gov}
 
+Authors:
+\itemize{
+  \item Roy Mendelssohn \email{roy.mendelssohn@noaa.gov}
+}
+
 Other contributors:
 \itemize{
   \item Marie Auger-Methe [contributor]

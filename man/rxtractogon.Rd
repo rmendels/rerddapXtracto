@@ -65,8 +65,9 @@ from an 'ERDDAP™' server in a polygon through time.
 \section{Details}{
 
  rxtractogon extracts the data from the smallest bounding box that contains
- the polygon, and then uses the function "point.in.polygon" from the "sp"
- package to mask out the areas outside of the polygon.
+ the polygon, and then uses the function "st_intersects" from the "sf"
+ package to mask out the areas outside of the polygon.  Grid points
+ on the edge of the polygon are included.
  rxtractogon only works with datasets defined
  on a latitude and longitude grid.
 }

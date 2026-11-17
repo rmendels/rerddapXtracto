@@ -12,25 +12,22 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   numtries <- 10
   tryn <- 0
   goodtry <- -1
-  while ((tryn <= numtries) & (goodtry == -1)) {
+  while ((tryn <= numtries) && (goodtry == -1)) {
     tryn <- tryn + 1
     griddapExtract <- suppressMessages(try(do.call(rerddap::griddap, griddapCmd ), silent = TRUE))
-    # if (!class(griddapExtract)[1] == "try-error") {
-    if (!methods::is(griddapExtract, "try-error")) {
-      goodtry <- 1
-    } else{
+    if (inherits(griddapExtract, "try-error")) {
       suppressWarnings(try(rerddap::cache_delete_all()))
       # rerddap::cache_list()
       Sys.sleep(tryn * 0.5)
+    } else {
+      goodtry <- 1
     }
   }
-#  if (class(griddapExtract)[1] == "try-error") {
   if (goodtry == -1) {
     print('error in trying to download the subset')
     print('check your settings')
     print(griddapCmd)
     print('stopping execution  - will return what has been downloaded so far')
-    #stop('check that the dataset is active in the given ERDDAP server')
     temp_extract <- -1
     return(temp_extract)
   }
@@ -81,7 +78,6 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
 
 
   temp_extract <- list(NA, NA, NA, NA, NA, NA)
-  # temp_extract <-  vector("list", 6)
   temp_extract[[1]] <- tempCoords$param
   temp_extract[[2]] <- attributes(dataInfo)$datasetid
   temp_extract[[3]] <- dataX
@@ -92,7 +88,7 @@ data_extract_read <- function(dataInfo, callDims, urlbase,
   if (!is.null(callDims[[4]])) {
     temp_extract[[6]] <-  datatime
   }
-  if (grepl('etopo',temp_extract[[2]])) {
+  if (grepl('etopo', temp_extract[[2]], fixed = TRUE)) {
     names(temp_extract) <- c('depth', "datasetname", names(callDims)[1], names(callDims)[2], names(callDims)[3], "time")
 
   }else{

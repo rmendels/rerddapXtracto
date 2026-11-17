@@ -16,6 +16,11 @@
 #' @param name name for colorbar label
 #' @param maxpixels maximum number of pixels to use in making the map
 #'  - controls resolution
+#' @param contours whether to include contours in the plot.
+#' @param contour_opts NULL (the default) or a named list of options passed
+#'  to 'plotdap::add_griddap_contours()'.  Allowed names are 'n_breaks',
+#'  'breaks', 'color', 'linewidth' and 'alpha'.  Options not given use the
+#'  'plotdap::add_griddap_contours()' defaults.  Only used if contours = TRUE.
 #' @return a 'plotdap' plot
 #'
 #' @examples
@@ -31,15 +36,18 @@
 #' ##
 #' ## low resolution selected to keep time to render down
 #' # suppressWarnings(p <- plotBBox(MBsst, maxpixels = 50))
+#' ## with contours
+#' # suppressWarnings(p <- plotBBox(MBsst, maxpixels = 50, contours = TRUE,
+#' #                  contour_opts = list(n_breaks = 5, color = 'white')))
 
 plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
                 mapData = NULL, crs = NULL,
                 animate = FALSE, cumulative = FALSE, name = NA,
-                maxpixels = 10000) {
+                maxpixels = 10000, contours = FALSE, contour_opts = NULL) {
 
 
   # check that the response is of the right class
-  if (!('rxtracto3D' %in% class(resp))) {
+  if (!inherits(resp, 'rxtracto3D')) {
     print('given extract is not valid rxtracto_3D() output')
     print("class of the response is not' 'rxtracto3D' ")
     stop('execution halted')
@@ -66,10 +74,12 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
   }
 # check that if outline is given,  it is of class maps
  if (!is.null(mapData)) {
-   if (!("map" == class(mapData))) {
+   if (!inherits(mapData, 'map')) {
      stop('map outline given but not of class "map" ')
    }
  }
+  # check the contour options
+  contour_opts <- check_contour_opts(contours, contour_opts)
     # if time s not given as a function,  set it to the default
   if (!is.function(time)) {
     time <- function(x) mean(x, na.rm = TRUE)
@@ -100,6 +110,13 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
   names(myList) <- c('plot', 'grid', 'var', 'fill', 'time',
                      'animate', 'cumulative', 'maxpixels')
   myplot <- do.call(plotdap::add_griddap, myList)
+  # add contours if requested,  options not given use the plotdap defaults
+  if (contours) {
+    contour_list <- c(list(p = myplot, data = contour_data(myStruct$data),
+                           var = paramName),
+                      contour_opts)
+    myplot <- do.call(plotdap::add_griddap_contours, contour_list)
+  }
   # if a name os given,  change the colorbar label
   if (!is.na(name)) {
     myplot <- plotdap::add_ggplot(myplot,
@@ -109,16 +126,77 @@ plotBBox <- function(resp, plotColor = 'viridis', time = NA, myFunc = NA,
   if (animate) {
     xlim <- c(min(myStruct$data$lon), max(myStruct$data$lon))
     ylim <- c(min(myStruct$data$lat), max(myStruct$data$lat))
-    suppressMessages(myplot <- plotdap::add_ggplot(
+    myplot <- suppressMessages(plotdap::add_ggplot(
       myplot, ggplot2::coord_sf(
         crs = myplot$crs, datum = myplot$datum,
         xlim = xlim, ylim = ylim
       )
     ))
-
   }
 
   myplot
+}
+
+# check the contour options
+#
+# "check_contour_opts()" checks that 'contour_opts' is NULL or a named list
+# with only the allowed 'plotdap::add_griddap_contours()' options,  each given
+# once.  Names must match exactly.
+#
+# contours - logical,  whether contours are requested
+# contour_opts - NULL or named list of contour options
+# return - list of the contour options (empty list if none given)
+check_contour_opts <- function(contours, contour_opts) {
+  allowed_opts <- c('n_breaks', 'breaks', 'color', 'linewidth', 'alpha')
+  allowed_text <- paste('allowed names are:', paste(allowed_opts, collapse = ', '))
+  if (!(is.logical(contours) && length(contours) == 1 && !is.na(contours))) {
+    stop('contours must be TRUE or FALSE')
+  }
+  if (is.null(contour_opts)) {
+    return(list())
+  }
+  if (!contours) {
+    stop('contour_opts given but contours = FALSE')
+  }
+  if (!is.list(contour_opts)) {
+    stop('contour_opts must be NULL or a named list,  ', allowed_text)
+  }
+  if (length(contour_opts) == 0) {
+    return(list())
+  }
+  opt_names <- names(contour_opts)
+  if (is.null(opt_names) || anyNA(opt_names) || any(opt_names == '')) {
+    stop('all elements of contour_opts must be named,  ', allowed_text)
+  }
+  bad_names <- setdiff(opt_names, allowed_opts)
+  if (length(bad_names) > 0) {
+    stop('invalid contour_opts name(s): ', paste(bad_names, collapse = ', '),
+         ',  ', allowed_text)
+  }
+  if (anyDuplicated(opt_names)) {
+    stop('contour_opts name(s) given more than once: ',
+         paste(unique(opt_names[duplicated(opt_names)]), collapse = ', '))
+  }
+  contour_opts
+}
+
+# put contour data on the same longitude scale as the plotted grid
+#
+# "contour_data()" copies the rule 'plotdap::add_griddap()' uses for the
+# raster: if both edges of the grid (cell centers +/- half a cell) are in
+# (180, 360) the longitudes are shifted by -360.  Otherwise the contours
+# would be drawn on the other side of the world from the grid.
+#
+# grid_df - the "data" dataframe from meltnc()
+# return - grid_df with longitude possibly shifted
+contour_data <- function(grid_df, xName = 'longitude') {
+  lons <- sort(unique(grid_df[[xName]]))
+  half_cell <- if (length(lons) > 1) stats::median(diff(lons)) / 2 else 0
+  lon_edges <- c(min(lons) - half_cell, max(lons) + half_cell)
+  if (all(lon_edges >= 180 & lon_edges <= 360)) {
+    grid_df[[xName]] <- grid_df[[xName]] - 360
+  }
+  grid_df
 }
 
 meltnc <- function(resp, xName = 'longitude', yName = 'latitude', tName = 'time'){

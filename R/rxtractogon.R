@@ -50,8 +50,9 @@
 
 #' @section Details:
 #'  rxtractogon extracts the data from the smallest bounding box that contains
-#'  the polygon, and then uses the function "point.in.polygon" from the "sp"
-#'  package to mask out the areas outside of the polygon.
+#'  the polygon, and then uses the function "st_intersects" from the "sf"
+#'  package to mask out the areas outside of the polygon.  Grid points
+#'  on the edge of the polygon are included.
 #'  rxtractogon only works with datasets defined
 #'  on a latitude and longitude grid.
 
@@ -134,10 +135,14 @@ if (length(unique(ew.sign)) > 1) {
 }
 
 # create new array masked by polygon
-in.poly <- matrix(sp::point.in.polygon(x.vals, y.vals, mypoly$x, mypoly$y),
+# no crs is set,  so sf treats the coordinates as planar.
+# st_intersects() includes points on the polygon edge
+grid_pts <- sf::st_as_sf(data.frame(x = as.vector(x.vals), y = as.vector(y.vals)),
+                         coords = c("x", "y"))
+poly_sf <- sf::st_sfc(sf::st_polygon(list(cbind(mypoly$x, mypoly$y))))
+in_poly_test <- lengths(sf::st_intersects(grid_pts, poly_sf)) > 0
+in.poly <- matrix(ifelse(in_poly_test, 1, NA_real_),
                   ncol = length(extract[[xName]]))
-in.poly[in.poly > 1] <- 1
-in.poly[in.poly == 0] <- NA
 dim(in.poly) <- dim(extract[[1]][, , 1])
 extract.in.poly <- apply(extract[[1]], 3, "*", in.poly)
 dim(extract.in.poly) <- dim(extract[[1]])
